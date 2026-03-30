@@ -8,3 +8,6 @@
 
 projects/
 papers/
+
+.projects/
+.papers/
