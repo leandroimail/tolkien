@@ -1,0 +1,84 @@
+# Combined Systematic Review Protocol (CSRP) Template
+# Merged from research_methodology.yaml and research_questions.yaml
+# Version 2.0 - Aligning with PRISMA guidelines
+
+metadata:
+  title: "A Systematic Review of [Insert Topic Here]"
+  slug: "[slug-identifier]"
+  protocol_version: "2.0"
+  date: "2026-03-30"
+  authors:
+    - name: "[Author Name]"
+      affiliation: "[Institution]"
+      contact: "[Email]"
+
+research_questions:
+  principal_question: "[What is the main research question?]"
+  additional_questions:
+    - id: "arq1"
+      question: "[Secondary question 1]"
+    - id: "arq2"
+      question: "[Secondary question 2]"
+  supporting_questions:
+    - id: "sq1"
+      question: "[Supporting question 1 (e.g., frameworks, tools)]"
+    - id: "sq2"
+      question: "[Supporting question 2 (e.g., communication patterns)]"
+
+selection_criteria:
+  inclusion:
+    - ic1: "[The article discusses topic X]"
+    - ic2: "[The content is relevant to RQ1]"
+    - ic3: "[Peer-reviewed conference or journal papers]"
+  exclusion:
+    - ec1: "[Single-agent systems (if applicable)]"
+    - ec2: "[Non-LLM based systems (if applicable)]"
+    - ec3: "[Editorials, opinions, sites/blogs]"
+
+methodology:
+  scope:
+    topic: "[Specific topic scope]"
+    objective: "[Synthesize existing literature on topic X]"
+    period:
+      start: "2020-01-01"
+      end: "2025-06-01"
+    languages: ["English", "Portuguese"]
+  
+  information_sources:
+    bibliographic_databases:
+      - name: "OpenAlex"
+      - name: "IEEE Xplore"
+      - name: "Scopus"
+      - name: "Web of Science"
+
+  search_strategy:
+    global_query: "[Primary search string]"
+    filter_query: "[Title/Abstract/Keywords filter string]"
+    search_fields: ["title", "abstract", "keywords"]
+
+screening_process:
+  # PRISMA-aligned screening workflow
+  total_initial_records: 0
+  duplicates_removed: 0
+  records_after_dedup: 0
+  
+  title_abstract_screening:
+    screened: 0
+    excluded: 0
+    to_full_text: 0
+  
+  full_text_assessment:
+    assessed: 0
+    excluded: 0
+    final_included_studies: 0
+
+data_extraction_plan:
+  - id: "de1"
+    field: "Architecture"
+    description: "[Description of the system architecture]"
+  - id: "de2"
+    field: "Coordination Mechanisms"
+    description: "[How agents collaborate]"
+  - id: "de3"
+    field: "Evaluation Metrics"
+    description: "[How results are measured]"
