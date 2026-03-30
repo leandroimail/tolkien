@@ -536,3 +536,43 @@ Certain: "Shows", "demonstrates", "proves" (requires strongest sources)
 5. **Detect Patterns**: Multiple issues suggest systemic problems
 6. **Provide Fixes**: Don't just identify problems - suggest solutions
 7. **Chain-of-Verification**: For critical claims, use multiple sources
+
+---
+
+## Example 6: Validating ABNT 2 Citations (LaTeX `abntex2`)
+
+### Input Content
+```latex
+As seen in recent studies about artificial intelligence \cite{silva2023}, there is a growing trend. 
+Segundo \cite{santos2024}, a implementação de IA na saúde é vital. 
+Além disso, a redução de custos foi de 30\% \citeonline{costa2022}.
+```
+
+### Validation Report
+
+```markdown
+# Citation Validation Report - ABNT Format Check
+
+## Executive Summary
+- **Total Claims Analyzed**: 3
+- **ABNT Format Violations**: 2
+
+## Detailed Findings
+
+### Claim 1: Recent studies trend
+**Citation**: `\cite{silva2023}` -> (SILVA, 2023)
+**Format Check**: ✓ CORRECT
+**Reasoning**: Used at the end of the phrase as an indirect citation. `\cite` correctly produces the ALL CAPS format in parenthesis.
+
+### Claim 2: Santos narrative citation
+**Citation**: `\cite{santos2024}` -> (SANTOS, 2024)
+**Format Check**: ✗ INCORRECT COMMAND
+**Reasoning**: "Segundo [Author]" is a direct narrative citation. Using `\cite{}` will produce "Segundo (SANTOS, 2024)", which violates ABNT norms.
+**Correction Required**: Change to `\citeonline{santos2024}` to produce "Segundo Santos (2024)".
+
+### Claim 3: Costa cost reduction
+**Citation**: `\citeonline{costa2022}` -> Costa (2022)
+**Format Check**: ✗ INCORRECT COMMAND
+**Reasoning**: Claim appears at the end of the sentence without narrative integration. Using `\citeonline` will produce "...de 30% Costa (2022)", which is incorrect. 
+**Correction Required**: Change to `\cite{costa2022}` to produce "...de 30% (COSTA, 2022)".
+```

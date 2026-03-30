@@ -18,8 +18,8 @@ def extract_cite_keys_from_drafts(draft_dir: Path) -> dict[str, list[tuple[str, 
     for md_file in sorted(draft_dir.glob("*.md")):
         content = md_file.read_text(encoding="utf-8")
         for line_num, line in enumerate(content.splitlines(), 1):
-            # Match \cite{key} or \cite{key1, key2}
-            for match in re.finditer(r"\\cite\{([^}]+)\}", line):
+            # Match \cite{key}, \citeonline{key}, \cite[p. 15]{key}, etc.
+            for match in re.finditer(r"\\(?:cite|citeonline|citeauthor|nocite|parencite)[^\{]*\{([^}]+)\}", line):
                 raw_keys = match.group(1)
                 for k in raw_keys.split(","):
                     k = k.strip()

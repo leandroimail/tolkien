@@ -103,6 +103,9 @@ For each entry with a DOI, check `is_retracted` via OpenAlex:
    - Citation keys in `FirstAuthorYearKeyword` format
    - Special characters protected with `{}`
    - Pages with `--` (double dash)
+   - **ABNT Specific (if style = ABNT/ABNT2)**:
+     - Ensure electronic sources contain `url` and `urlaccessdate` fields.
+     - Ensure authors are properly separated by `and` for correct capitalization by `abntex2`.
 2. Write updated `research/references.bib`
 3. Generate report in `review/bibliography-report.md`
 
@@ -135,3 +138,4 @@ For each entry with a DOI, check `is_retracted` via OpenAlex:
 
 - `references/openalex-api.md` — full guide to the OpenAlex API
 - `references/bibtex-types.md` — mandatory fields by entry type
+- `references/abnt2-latex-guide.md` — rules for defining bibliographies and using `abntex2` for the ABNT/ABNT2 style

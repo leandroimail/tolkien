@@ -41,7 +41,7 @@ Management and validation of in-text citations in the academic paper draft. Resp
 ### Phase 1: Citation Extraction
 
 Scan all `draft/*.md` files and extract:
-- All occurrences of `\cite{key}` (LaTeX style)
+- All occurrences of `\cite{key}`, `\citeonline{key}`, `\citeauthor{key}`, `\nocite{key}` (LaTeX styles, particularly `abntex2` commands)
 - All occurrences of `(Author, Year)` or `[N]` (inline text)
 - Exact position: file, line, context
 
@@ -56,10 +56,10 @@ Parse `research/references.bib` and extract all citation keys.
 ### Phase 3: Citation↔Bibliography Gate (BLOCKING)
 
 ```
-RULE 1: ∀ key in \cite{key} in draft → ∃ entry @{type}{key,...} in references.bib
+RULE 1: ∀ key in \cite{key} or \citeonline{key} in draft → ∃ entry @{type}{key,...} in references.bib
          Violation = ORPHAN CITATION
 
-RULE 2: ∀ key in references.bib → ∃ at least 1 \cite{key} in draft
+RULE 2: ∀ key in references.bib → ∃ at least 1 \cite{key} or \citeonline{key} in draft
          Violation = GHOST CITATION
 
 RULE 3: ∀ entry in references.bib → mandatory fields by type filled
@@ -77,13 +77,19 @@ python scripts/citation_gate.py draft/ research/references.bib
 
 By citation style:
 
-| Style | In-Text Format | Example |
-|--------|----------------|---------|
-| APA | (Author, Year) | (Smith, 2023) |
-| IEEE | [N] | [1] |
-| Vancouver | (N) | (1) |
-| ABNT | (AUTHOR, Year) | (SILVA, 2023) |
-| Chicago | (Author Year) or footnotes | (Smith 2023) |
+| Style | In-Text Format | Example | LaTeX Commands |
+|--------|----------------|---------|-----------------|
+| APA | (Author, Year) | (Smith, 2023) | `\cite{}` / `\parencite{}` |
+| IEEE | [N] | [1] | `\cite{}` |
+| Vancouver | (N) | (1) | `\cite{}` |
+| ABNT / ABNT 2 | (AUTHOR, Year) | (SILVA, 2023) | `\cite{}` for indirect, `\citeonline{}` for direct |
+| Chicago | (Author Year) | (Smith 2023) | `\cite{}` / footnotes |
+
+**Special note for ABNT (Associação Brasileira de Normas Técnicas):**
+When generating or validating LaTeX for ABNT:
+- Ensure the `abntex2cite` package is assumed.
+- Ensure all indirect citations (at the end of ideas) use `\cite{key}` (which renders as `(AUTHOR, Year)`).
+- Ensure all direct/narrative citations (part of the text) use `\citeonline{key}` (which renders as `Author (Year)`).
 
 ### Phase 5: Problem Detection
 

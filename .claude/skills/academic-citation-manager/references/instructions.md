@@ -61,6 +61,18 @@ Full: Gartner. (2024). "Cloud Computing Market Forecast, 2024." Retrieved [date]
 Full: World Health Organization. (2024). "COVID-19 Vaccine Guidelines." Retrieved [date] from https://www.who.int/xxxxx
 ```
 
+#### ABNT / ABNT 2 (Brazilian Standard)
+```
+Indirect citation (end of phrase): (SILVA, 2023, p. 145)
+Direct citation (in narrative): Silva (2023, p. 145)
+
+LaTeX with abntex2cite:
+Indirect: \cite[p.~145]{silva2023}
+Direct: \citeonline[p.~145]{silva2023}
+
+Full: SILVA, J. Title in Bold: Subtitle not bold. 2. ed. City: Publisher, 2023. Available at: <URL>. Accessed on: [Date].
+```
+
 ## Source Quality Rating System
 
 ### A - Excellent Sources

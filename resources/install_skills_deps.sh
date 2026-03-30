@@ -35,14 +35,14 @@ else
         export PATH="/Library/TeX/texbin:$PATH"
     fi
 
-    echo "Updating TeX Live Manager and installing LaTeX tools (latexmk, chktex)..."
+    echo "Updating TeX Live Manager and installing LaTeX tools (latexmk, chktex, abntex2)..."
     if command -v tlmgr &> /dev/null; then
         if sudo -n true &> /dev/null; then
             sudo tlmgr update --self || echo "⚠️  tlmgr update failed; continuing."
-            sudo tlmgr install latexmk chktex || echo "⚠️  tlmgr install failed; continuing."
+            sudo tlmgr install latexmk chktex abntex2 || echo "⚠️  tlmgr install failed; continuing."
         else
             echo "⚠️  Skipping tlmgr updates because passwordless sudo is not available."
-            echo "    Install latexmk/chktex manually if you need the LaTeX skill."
+            echo "    Install latexmk/chktex/abntex2 manually if you need the LaTeX skill."
         fi
     else
         echo "⚠️  tlmgr not found. Skipping LaTeX tool installation."

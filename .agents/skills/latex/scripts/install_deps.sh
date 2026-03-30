@@ -71,7 +71,9 @@ print_install_help() {
   case "$package" in
     texlive)
       cat >&2 <<'EOF'
-  macOS:          brew install --cask basictex
+  Project setup:  bash resources/install_skills_deps.sh
+  macOS manual:   brew install --cask basictex
+  macOS PATH:     eval "$(/usr/libexec/path_helper -s)"
   Debian/Ubuntu:  sudo apt-get install texlive-latex-extra texlive-fonts-recommended texlive-binaries texlive-extra-utils
   Fedora/RHEL:    sudo dnf install texlive-scheme-medium
   Alpine:         sudo apk add texlive
@@ -126,18 +128,17 @@ _install_with_brew() {
       fi
 
       if brew list --cask basictex &>/dev/null; then
-        brew reinstall --cask basictex
+        _brew_post_texlive
       else
         brew install --cask basictex
+        _brew_post_texlive
       fi
-
-      _brew_post_texlive
 
       if command -v pdflatex &>/dev/null; then
         return 0
       fi
 
-      echo "Error: BasicTeX was installed but pdflatex is still unavailable." >&2
+      echo "Error: BasicTeX is present but pdflatex is still unavailable." >&2
       return 1
       ;;
     poppler|chktex)
@@ -313,6 +314,38 @@ install_packages() {
   done
 
   return "$status"
+}
+
+ensure_tex_package() {
+  local package="$1"
+  local artifact="${2:-${package}.sty}"
+
+  if command -v kpsewhich &>/dev/null && kpsewhich "$artifact" &>/dev/null; then
+    return 0
+  fi
+
+  if ! command -v tlmgr &>/dev/null; then
+    echo "Error: tlmgr is not available to install LaTeX package '$package'." >&2
+    print_install_help "texlive"
+    return 1
+  fi
+
+  echo ":: Missing LaTeX package '$package' - installing via tlmgr..." >&2
+  if ! tlmgr install "$package" >&2; then
+    echo "Error: Failed to install LaTeX package '$package' via tlmgr." >&2
+    echo "  → Try: tlmgr install $package" >&2
+    print_install_help "texlive"
+    return 1
+  fi
+
+  if command -v kpsewhich &>/dev/null && kpsewhich "$artifact" &>/dev/null; then
+    return 0
+  fi
+
+  echo "Error: LaTeX package '$package' is still unavailable after tlmgr install." >&2
+  echo "  → Try: tlmgr install $package" >&2
+  print_install_help "texlive"
+  return 1
 }
 
 # Apply local PATH fixes immediately so wrappers can find TeX tools.

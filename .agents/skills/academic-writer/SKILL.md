@@ -108,9 +108,11 @@ Before presenting any section:
 
 ## Citation Integration
 
-- **Narrative**: when author identity matters — "Foucault (1975) argued..."
+- **Narrative**: when author identity matters — "Foucault (1975) argued..." 
+  - *If ABNT/LaTeX*: Use `\citeonline{foucault1975}`.
 - **Parenthetical**: when the finding matters — "rates tripled (Alexander, 2010)"
-- **Direct quote**: only when wording is the point — definitions, contested phrases
+  - *If ABNT/LaTeX*: Use `\cite{alexander2010}`.
+- **Direct quote**: only when wording is the point — definitions, contested phrases (include page numbers, e.g., `\cite[p.~45]{key}`)
 - **Synthesis**: to show consensus — "(Lee, 2019; Nakamura, 2020; dos Santos, 2021)"
 
 ## Integration with academic-media
