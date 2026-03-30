@@ -28,24 +28,36 @@ else
     echo "Installing required system packages (Tesseract, Poppler)..."
     brew install tesseract poppler
     
-    echo "Installing BasicTeX (lightweight LaTeX distribution)..."
-    if ! command -v pdflatex &> /dev/null; then
-        brew install --cask basictex
-        # Update PATH for the current session to include BasicTeX
-        export PATH="/Library/TeX/texbin:$PATH"
+    echo "Installing TinyTeX (fast, lightweight LaTeX distribution)..."
+    if ! command -v pdflatex &> /dev/null && [ ! -d "$HOME/Library/TinyTeX" ] && [ ! -d "$HOME/.TinyTeX" ]; then
+        curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
     fi
 
-    echo "Updating TeX Live Manager and installing LaTeX tools (latexmk, chktex, abntex2)..."
-    if command -v tlmgr &> /dev/null; then
-        if sudo -n true &> /dev/null; then
-            sudo tlmgr update --self || echo "⚠️  tlmgr update failed; continuing."
-            sudo tlmgr install latexmk chktex abntex2 || echo "⚠️  tlmgr install failed; continuing."
-        else
-            echo "⚠️  Skipping tlmgr updates because passwordless sudo is not available."
-            echo "    Install latexmk/chktex/abntex2 manually if you need the LaTeX skill."
+    # Determine TinyTeX bin dir (macOS default is ~/Library/TinyTeX/bin/universal-darwin)
+    TINYTEX_BIN_DIR=""
+    if [ -d "$HOME/Library/TinyTeX/bin/universal-darwin" ]; then
+        TINYTEX_BIN_DIR="$HOME/Library/TinyTeX/bin/universal-darwin"
+    elif [ -d "$HOME/.TinyTeX/bin/universal-darwin" ]; then
+        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/universal-darwin"
+    elif [ -d "$HOME/.TinyTeX/bin/x86_64-darwin" ]; then
+        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/x86_64-darwin"
+    elif [ -d "$HOME/.TinyTeX/bin/aarch64-darwin" ]; then
+        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/aarch64-darwin"
+    fi
+
+    if [ -n "$TINYTEX_BIN_DIR" ]; then
+        echo "Updating PATH and symlinking TinyTeX to virtual environment..."
+        export PATH="$TINYTEX_BIN_DIR:$PATH"
+        
+        # We will symlink binaries later, after .venv is created in step 3.
+        # But we can install the needed LaTeX tools now using tlmgr from TinyTeX
+        if command -v tlmgr &> /dev/null; then
+            echo "Installing necessary LaTeX tools via tlmgr..."
+            tlmgr update --self || echo "⚠️  tlmgr update failed."
+            tlmgr install latexmk chktex abntex2 || echo "⚠️  tlmgr install failed."
         fi
     else
-        echo "⚠️  tlmgr not found. Skipping LaTeX tool installation."
+        echo "⚠️  Could not locate TinyTeX binaries. LaTeX tools might fail."
     fi
 
     echo "Installing LibreOffice (required by docx skill for soffice command)..."
@@ -86,6 +98,18 @@ source "$VENV_DIR/bin/activate"
 
 # Ensure pip is up to date
 pip install --upgrade pip > /dev/null 2>&1
+echo ""
+
+if [ -n "$TINYTEX_BIN_DIR" ]; then
+    echo "Symlinking TinyTeX binaries to virtual environment ($VENV_DIR/bin)..."
+    for file in "$TINYTEX_BIN_DIR"/*; do
+        if [ -x "$file" ] && [ ! -d "$file" ]; then
+            ln -sf "$file" "$VENV_DIR/bin/$(basename "$file")"
+        fi
+    done
+    echo "TinyTeX successfully linked."
+    echo ""
+fi
 echo ""
 
 # 4. Installing Python Packages
