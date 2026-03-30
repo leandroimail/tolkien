@@ -88,6 +88,8 @@ If module is ambiguous, infer from the user's request. Ask only for the `.tex` p
   - \rowcolor → \usepackage{colortbl}
   - \begin{figure}[H] → \usepackage{float}
   - \checkmark → \usepackage{amssymb}
+□ For professional PDFs, prefer \usepackage[hidelinks]{hyperref}
+
 □ Special characters escaped in text mode: % $ & # _ { } ~ ^
 □ Angle brackets in text mode use math mode: $<$ $>$ or \textless \textgreater
   (NOT raw < > — they render as inverted question marks in T1 encoding)
@@ -116,7 +118,9 @@ If module is ambiguous, infer from the user's request. Ask only for the `.tex` p
 □ View all PNG previews
 □ Layout matches expectations (margins, columns, font sizes)
 □ No garbled characters or missing glyphs
-□ Figures and tables render correctly
+□ Figures and tables render correctly (near their first mention)
+  - If large stacked figures are pushed to the end, split them into individual figure[H] environments
+
 □ No text cut off by severe overfull hbox
 □ References show as [1] not [?], citations resolved
 → Only deliver to user after Gate 3 passes

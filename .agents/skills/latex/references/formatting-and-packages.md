@@ -59,9 +59,10 @@ Missing these packages causes `Undefined control sequence` — always include:
 | `\cref{}` | `\usepackage{cleveref}` |
 | `\begin{algorithm}` | `\usepackage{algorithm}` + `\usepackage{algorithmic}` |
 | `\begin{algorithm2e}` | `\usepackage[ruled]{algorithm2e}` |
+| `\usepackage[hidelinks]{hyperref}` | Disables colored boxes around links and citations |
 
-**hyperref**: Fine for normal documents. Avoid in PDF-to-LaTeX conversions with theorem
-environments (causes `\set@color` errors).
+**hyperref**: Fine for normal documents. Use `[hidelinks]` to avoid green/red boxes in professional PDFs. Avoid in PDF-to-LaTeX conversions with theorem environments.
+
 
 ## Standard Preamble
 
@@ -70,7 +71,8 @@ environments (causes `\set@color` errors).
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[margin=1in]{geometry}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
+
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb}
@@ -123,7 +125,14 @@ python clean_latex.py --input main.tex --output main_cleaned.tex
 \begin{figure}[htbp]   % preferred over [h] alone
 % Or force exact placement (requires float package)
 \begin{figure}[H]
-```
+\end{figure}
+
+**Large Figures & Legibility:**
+If large stacked subfigures (e.g., comparing many charts) are pushed to the end of the document:
+1. **Split them**: Re-structure from one `figure` with multiple `subfigure`s into individual `figure[H]` environments.
+2. **Deterministic Placement**: Using `[H]` from the `float` package ensures they appear immediately after their reference paragraph, preventing "figure orphans" at the end of the paper.
+3. **Width Tuning**: A width of `0.85\textwidth` is typically optimal for legibility in single-column templates while allowing for text flow between figures if split.
+
 
 **Overfull hbox:**
 ```latex

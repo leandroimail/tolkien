@@ -216,7 +216,9 @@ Replace `\documentclass[...]{...}` with target venue class and options.
 ```
 □ Anonymous/review mode set correctly for submission type
 □ Author information removed/anonymized (blind review)
+□ hidelinks option used for hyperref (professional PDF look)
 □ TODOs and placeholder text removed
+
 □ Venue-specific metadata present:
   - ACM: \begin{CCSXML}, \ccsdesc, \keywords
   - IEEE: \IEEEpeerreviewmaketitle
@@ -244,7 +246,10 @@ Replace `\documentclass[...]{...}` with target venue class and options.
 □ Run: bash $SKILL_DIR/scripts/compile_latex.sh main.tex --preview
 □ View all preview pages
 □ Column layout correct (two-column / single-column per venue)
+□ Figures and tables placed near references (no "orphans" at end of doc)
+  - Split large stacked figures if necessary for better placement flow
 □ Header/footer absent for anonymous, present for camera-ready
+
 □ Page count within venue limit
 □ References formatted correctly for venue style
 □ No garbled characters or missing fonts
