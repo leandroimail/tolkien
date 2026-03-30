@@ -1,9 +1,9 @@
 ---
 name: academic-citation-manager
 description: >
-  Gestão e validação de citações in-text — formato, completude, consistência e
-  validação cruzada com references.bib (gate Citation↔Bibliography).
-  Trigger: /academic-citation-manager, "verificar citações", "formatar citações",
+  Management and validation of in-text citations — format, completeness, consistency,
+  and cross-validation with references.bib (Citation↔Bibliography gate).
+  Trigger: /academic-citation-manager, "verify citations", "format citations",
   "citation audit", "check citations", "citation gate".
 allowed-tools: [Read, Write, Edit, Bash, Grep]
 metadata:
@@ -13,100 +13,100 @@ metadata:
 
 # Academic Citation Manager
 
-Gestão e validação de citações in-text no draft do artigo acadêmico. Responsável pelo gate determinístico Citation↔Bibliography que bloqueia o pipeline se houver inconsistências.
+Management and validation of in-text citations in the academic paper draft. Responsible for the deterministic Citation↔Bibliography gate that blocks the pipeline if inconsistencies are found.
 
 ## When To Use
 
-- Rastrear todas as citações `\cite{key}` ou `(Autor, Ano)` no draft
-- Validar formato de citação conforme estilo do PRD
-- Identificar citações órfãs (no texto mas sem entrada no `.bib`)
-- Identificar citações fantasma (no `.bib` mas não citadas no texto)
-- Executar o gate Citation↔Bibliography antes da revisão
-- Detectar chaves duplicadas citando a mesma obra
+- Tracking all `\cite{key}` or `(Author, Year)` citations in the draft
+- Validating citation format according to PRD style
+- Identifying orphan citations (in text but no entry in `.bib`)
+- Identifying ghost citations (in `.bib` but not cited in text)
+- Executing the Citation↔Bibliography gate before review
+- Detecting duplicate keys citing the same work
 
 ## When Not To Use
 
-- Para validar os campos do `.bib` → use `academic-bibliography-manager`
-- Para buscar novos papers → use `academic-researcher`
-- Para redigir o text → use `academic-writer`
+- To validate `.bib` fields → use `academic-bibliography-manager`
+- To search for new papers → use `academic-researcher`
+- To draft the text → use `academic-writer`
 
 ## Prerequisites
 
-1. **Draft completo** — `draft/*.md` (todas as seções)
-2. **`research/references.bib`** — validado pelo bibliography-manager
-3. **`prd.md`** — para identificar estilo de citação (APA, IEEE, ABNT etc.)
+1. **Complete Draft** — `draft/*.md` (all sections)
+2. **`research/references.bib`** — validated by bibliography-manager
+3. **`prd.md`** — to identify citation style (APA, IEEE, ABNT, etc.)
 
 ## Method
 
-### Fase 1: Extração de Citações
+### Phase 1: Citation Extraction
 
-Varrer todos os arquivos `draft/*.md` e extrair:
-- Todas as ocorrências de `\cite{key}` (LaTeX style)
-- Todas as ocorrências de `(Autor, Ano)` ou `[N]` (texto inline)
-- Posição exata: arquivo, linha, contexto
+Scan all `draft/*.md` files and extract:
+- All occurrences of `\cite{key}` (LaTeX style)
+- All occurrences of `(Author, Year)` or `[N]` (inline text)
+- Exact position: file, line, context
 
 ```bash
 python scripts/extract_citations.py draft/
 ```
 
-### Fase 2: Extração de Chaves do .bib
+### Phase 2: .bib Key Extraction
 
-Parsear `research/references.bib` e extrair todas as chaves de citação.
+Parse `research/references.bib` and extract all citation keys.
 
-### Fase 3: Gate Citation↔Bibliography (BLOQUEANTE)
+### Phase 3: Citation↔Bibliography Gate (BLOCKING)
 
 ```
-REGRA 1: ∀ key em \cite{key} no draft → ∃ entrada @{type}{key,...} em references.bib
-         Violação = CITAÇÃO ÓRFÃ
+RULE 1: ∀ key in \cite{key} in draft → ∃ entry @{type}{key,...} in references.bib
+         Violation = ORPHAN CITATION
 
-REGRA 2: ∀ key em references.bib → ∃ pelo menos 1 \cite{key} no draft
-         Violação = CITAÇÃO FANTASMA
+RULE 2: ∀ key in references.bib → ∃ at least 1 \cite{key} in draft
+         Violation = GHOST CITATION
 
-REGRA 3: ∀ entry em references.bib → campos obrigatórios por tipo preenchidos
-         Violação = ENTRADA INCOMPLETA
+RULE 3: ∀ entry in references.bib → mandatory fields by type filled
+         Violation = INCOMPLETE ENTRY
 
-RESULTADO ESPERADO: 0 violações
-BLOQUEANTE: Sim — pipeline não avança se resultado ≠ 0
+EXPECTED RESULT: 0 violations
+BLOCKING: Yes — pipeline does not advance if result ≠ 0
 ```
 
 ```bash
 python scripts/citation_gate.py draft/ research/references.bib
 ```
 
-### Fase 4: Validação de Formato
+### Phase 4: Format Validation
 
-Por estilo de citação:
+By citation style:
 
-| Estilo | Formato In-Text | Exemplo |
+| Style | In-Text Format | Example |
 |--------|----------------|---------|
-| APA | (Autor, Ano) | (Smith, 2023) |
+| APA | (Author, Year) | (Smith, 2023) |
 | IEEE | [N] | [1] |
 | Vancouver | (N) | (1) |
-| ABNT | (AUTOR, Ano) | (SILVA, 2023) |
-| Chicago | (Autor Ano) or footnotes | (Smith 2023) |
+| ABNT | (AUTHOR, Year) | (SILVA, 2023) |
+| Chicago | (Author Year) or footnotes | (Smith 2023) |
 
-### Fase 5: Detecção de Problemas
+### Phase 5: Problem Detection
 
-- **Duplicata de citação**: mesma obra citada com chaves diferentes
-- **Autocitação excessiva**: > 15% das citações são do mesmo autor
-- **Citações desbalanceadas**: concentração desproporcional em uma seção
-- **Citações antigas**: > 50% das fontes com mais de 10 anos (flag, não bloqueante)
+- **Citation Duplicate**: same work cited with different keys
+- **Excessive Self-citation**: > 15% of citations are from the same author
+- **Unbalanced Citations**: disproportionate concentration in one section
+- **Old Citations**: > 50% of sources are over 10 years old (flag, non-blocking)
 
-### Fase 6: Correção e Relatório
+### Phase 6: Correction and Reporting
 
-1. Corrigir problemas automaticamente quando possível
-2. Gerar relatório: `review/citation-report.md`
+1. Automatically correct issues when possible
+2. Generate report: `review/citation-report.md`
 
 ## Self-Review
 
-### Determinístico
-- [ ] Gate Citation↔Bibliography: 0 violações das 3 regras
-- [ ] 100% das citações no formato correto para o estilo do PRD
-- [ ] 0 chaves duplicadas referenciando a mesma obra
+### Deterministic
+- [ ] Citation↔Bibliography Gate: 0 violations of the 3 rules
+- [ ] 100% of citations in the correct format for the PRD style
+- [ ] 0 duplicate keys referencing the same work
 
-### Agêntico
-- Re-executar gate após correções para confirmar 0 inconsistências
-- Verificar distribuição de citações entre seções
+### Agentic
+- Re-execute gate after corrections to confirm 0 inconsistencies
+- Verify citation distribution across sections
 
 ## Output
 
@@ -122,5 +122,5 @@ Por estilo de citação:
 
 ## References
 
-- `references/citation-formats.md` — guia de formatos por estilo
-- `references/citation-quality.md` — métricas de qualidade bibliográfica
+- `references/citation-formats.md` — guide to formats by style
+- `references/citation-quality.md` — bibliographic quality metrics

@@ -1,11 +1,11 @@
 ---
 name: academic-humanizer
 description: >
-  Ajuste de registro, humanização e naturalização da escrita acadêmica.
-  Remove marcadores típicos de texto AI mantendo rigor acadêmico.
-  Suporta múltiplas línguas (EN, PT-BR, FI) com convenções disciplinares.
-  Trigger: /academic-humanizer, "humanizar", "ajustar registro",
-  "naturalizar escrita", "humanize text", "remove AI feel".
+  Register adjustment, humanization, and naturalization of academic writing.
+  Removes typical AI markers while maintaining academic rigor.
+  Supports multiple languages (EN, PT-BR, FI) with disciplinary conventions.
+  Trigger: /academic-humanizer, "humanize", "adjust register",
+  "naturalize writing", "humanize text", "remove AI feel".
 allowed-tools: [Read, Write, Edit, Bash]
 metadata:
   version: "1.0"
@@ -14,87 +14,87 @@ metadata:
 
 # Academic Humanizer
 
-Humanização e naturalização da escrita acadêmica. Remove artificialidade de texto gerado por IA mantendo registro acadêmico, terminologia técnica e integridade factual. Consolida as melhores práticas de humanize, humanize-academic-writing e finnish-humanizer.
+Humanization and naturalization of academic writing. Removes the artificiality of AI-generated text while maintaining academic register, technical terminology, and factual integrity. Consolidates best practices for humanize, humanize-academic-writing, and finnish-humanizer.
 
 ## When To Use
 
-- Texto acadêmico soa "perfeito demais", mecânico ou repetitivo
-- Parágrafos parecem template com estrutura uniforme
-- Transições são todas "Furthermore/Moreover/Additionally"
-- Linguagem é excessivamente abstrata sem exemplos concretos
-- Após draft do `academic-writer` e antes de revisão final
-- Quando autor quer ajustar o registro acadêmico por disciplina
+- Academic text sounds "too perfect," mechanical, or repetitive
+- Paragraphs look like a template with uniform structure
+- Transitions are all "Furthermore/Moreover/Additionally"
+- Language is excessively abstract without concrete examples
+- After the `academic-writer` draft and before the final review
+- When the author wants to adjust the academic register by discipline
 
 ## When Not To Use
 
-- Para redigir o artigo do zero → use `academic-writer`
-- Para revisão acadêmica/peer review → use `academic-reviewer`
-- Para usar API externa de humanização → consulte HumanizerAI API diretamente
+- To draft the article from scratch → use `academic-writer`
+- For academic review/peer review → use `academic-reviewer`
+- To use an external humanization API → consult HumanizerAI API directly
 
 ## Prerequisites
 
-1. **Draft completo ou seção** — `draft/*.md`
-2. Informação sobre disciplina e língua-alvo (do `prd.md`)
+1. **Complete Draft or Section** — `draft/*.md`
+2. Information about discipline and target language (from `prd.md`)
 
 ## Method
 
 ### Step 1: Analyze — Detect AI Patterns
 
-Identificar padrões problemáticos no texto:
+Identify problematic patterns in the text:
 
-#### 5 Categorias Principais
+#### 5 Main Categories
 
-| # | Padrão | Detecção |
+| # | Pattern | Detection |
 |---|--------|----------|
-| 1 | **Rhythm Uniformity** | Todas as sentenças com ~mesma extensão (15-20 palavras) |
-| 2 | **Formulaic Transitions** | Moreover/Furthermore/Additionally no início de sentenças |
-| 3 | **Abstract Scaffolding** | "various aspects", "in terms of", "multiple factors" |
-| 4 | **Generic Academic Tone** | Sem engajamento crítico com fontes, sem voz do autor |
+| 1 | **Rhythm Uniformity** | All sentences with ~same length (15-20 words) |
+| 2 | **Formulaic Transitions** | Moreover/Furthermore/Additionally at the start of sentences |
+| 3 | **Abstract Scaffolding** | "various aspects," "in terms of," "multiple factors" |
+| 4 | **Generic Academic Tone** | Lack of critical engagement with sources, no author voice |
 | 5 | **Voice Erasure** | "it can be argued...", "it is important to note..." |
 
-#### Métricas Quantitativas
+#### Quantitative Metrics
 
-- **Sentence Length Variance**: deve ser > 30%
-- **Type-Token Ratio (TTR)**: diversidade vocabular
-- **Transition Word Density**: < 5% das sentenças
-- **Passive Voice %**: apropriado para disciplina
-- **Consecutive Similarity**: sentenças adjacentes não devem ser estruturalmente idênticas
+- **Sentence Length Variance**: must be > 30%
+- **Type-Token Ratio (TTR)**: vocabulary diversity
+- **Transition Word Density**: < 5% of sentences
+- **Passive Voice %**: appropriate for the discipline
+- **Consecutive Similarity**: adjacent sentences should not be structurally identical
 
 ### Step 2: Rewrite with Targeted Strategies
 
 #### Strategy 1: Vary Sentence Rhythm (Burstiness)
 - Mix: short (5-10 words) + medium (15-20) + long (25-35)
-- Antes: "This study examines X. The research focuses on Y. The analysis considers Z."
-- Depois: "This study examines X's impact on Y, considering factors from identity formation to civic engagement."
+- Before: "This study examines X. The research focuses on Y. The analysis considers Z."
+- After: "This study examines X's impact on Y, considering factors from identity formation to civic engagement."
 
 #### Strategy 2: Eliminate Abstract Scaffolding
-- Replace "various aspects" → conceitos nomeados específicos
-- Replace "in terms of" → relação direta
-- Replace "it is important to note" → DELETE (comece com o conteúdo)
+- Replace "various aspects" → specific named concepts
+- Replace "in terms of" → direct relationship
+- Replace "it is important to note" → DELETE (start with the content)
 
 #### Strategy 3: Natural Transitions
 - Remove: Furthermore, Moreover, Additionally, It is important to note
-- Use: fluxo lógico direto, "This pattern echoes...", "Building on..."
-- Regra: se deletar a transição não muda o significado, delete
+- Use: direct logical flow, "This pattern echoes...", "Building on..."
+- Rule: if deleting the transition doesn't change the meaning, delete it
 
 #### Strategy 4: Ground in Specificity
 - Replace "research has shown" → "Patel et al. (2022) surveyed 814 nurses"
 - Replace "various studies" → "Four longitudinal cohort studies (totaling 23,000 participants)"
-- Replace "the field" → domínio concreto nomeado
+- Replace "the field" → concrete named domain
 
 #### Strategy 5: Restore Author Voice
 - Replace "it can be argued" → "We argue"
 - Replace "it was found" → "We found" / "The analysis reveals"
-- Usar primeira pessoa quando disciplina permite
+- Use first person when the discipline allows
 
 ### Step 3: Present with Rationale
 
-Para cada parágrafo modificado:
+For each modified paragraph:
 ```
-**Original:** [texto original]
-**Revised:** [texto humanizado]
+**Original:** [original text]
+**Revised:** [humanized text]
 **Rationale:** Removed 3x "Moreover" transitions, varied sentence length (8, 24, 15 words),
-     replaced "various studies" with specific citation (Smith 2022).
+     replaced "various studies" with a specific citation (Smith 2022).
 ```
 
 ## Language-Specific Considerations
@@ -105,40 +105,40 @@ Para cada parágrafo modificado:
 - Active voice default, passive in Methods when appropriate
 
 ### Portuguese (BR)
-- Preservar registro formal acadêmico brasileiro
-- Remover "Além disso/Ademais/Outrossim" em excesso
-- Manter termos técnicos em inglês quando é norma da área
-- ABNT: registro em terceira pessoa é padrão
+- Preserve formal Brazilian academic register
+- Remove excessive "Além disso/Ademais/Outrossim"
+- Keep technical terms in English when it's the field norm
+- ABNT: third-person register is standard
 
 ### Finnish (FI)
-- Suoruus (directness): dizer e seguir em frente
-- Partikkelit: -han/-hän, -pa/-pä, kyllä, vaan — mantêm texto natural
-- Não exagerar enthusiasmo — "Ihan hyvä" é elogio
+- Suoruus (directness): say it and move on
+- Partikkelit: -han/-hän, -pa/-pä, kyllä, vaan — keep text natural
+- Do not overstate enthusiasm — "Ihan hyvä" is a compliment
 
 ## Guardrails
 
-- **NÃO alterar significado** — apenas forma, nunca conteúdo factual
-- **NÃO adicionar informações** — não inventar citações ou dados
-- **NÃO simplificar demais** — naturalizar ≠ infantilizar
-- **Preservar citações** — toda referência fica intacta
-- **Respeitar registro** — texto formal permanece formal
-- **NÃO casualizar** — academic writing deve permanecer academic
+- **DO NOT change meaning** — only form, never factual content
+- **DO NOT add information** — do not invent citations or data
+- **DO NOT over-simplify** — naturalizing ≠ infantilizing
+- **Preserve citations** — every reference remains intact
+- **Respect register** — formal text stays formal
+- **DO NOT casualize** — academic writing must remain academic
 
 ## Self-Review
 
-### Determinístico
-- [ ] 0 informações factuais novas introduzidas (apenas ajustes de forma)
-- [ ] Todas as citações preservadas intactas
+### Deterministic
+- [ ] 0 new factual information introduced (only form adjustments)
+- [ ] All citations preserved intact
 - [ ] Sentence length variance > 30%
 - [ ] < 2 hedging words per paragraph
 - [ ] 0 instances of Furthermore/Moreover/Additionally
 
-### Agêntico
-- Verificar que tom acadêmico foi preservado por disciplina
-- Confirmar que terminologia técnica não foi alterada
-- Verificar que o texto soa natural para a língua-alvo
+### Agentic
+- Verify that academic tone was preserved by discipline
+- Confirm that technical terminology was not altered
+- Verify that the text sounds natural for the target language
 
 ## References
 
-- `references/ai-patterns.md` — lista completa de 26 padrões AI detectáveis
-- `references/language-specific.md` — convenções por língua
+- `references/ai-patterns.md` — complete list of 26 detectable AI patterns
+- `references/language-specific.md` — conventions by language

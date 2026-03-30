@@ -1,10 +1,10 @@
 ---
 name: academic-writer
 description: >
-  Redação completa de artigos acadêmicos seção por seção, seguindo outline aprovado.
-  Consolida boas práticas de escrita científica, registro acadêmico humano, e
-  estruturas IMRaD/review/case-study.
-  Trigger: /academic-writer, "escrever seção", "redigir artigo", "escrever introdução",
+  Full writing of academic articles section by section, following an approved outline.
+  Consolidates best practices for scientific writing, human academic register, and
+  IMRaD/review/case-study structures.
+  Trigger: /academic-writer, "write section", "write article", "write introduction",
   "write paper", "draft manuscript", "write methodology", "write discussion".
 allowed-tools: [Read, Write, Edit, Bash]
 metadata:
@@ -14,69 +14,69 @@ metadata:
 
 # Academic Writer
 
-Redação de artigos acadêmicos com qualidade publicável, seção por seção. Consolida as melhores práticas de scientific-writing, academic-paper, academic-writing, academic-writing-style e scientific-paper em uma skill unificada.
+Writing of academic articles with publishable quality, section by section. Consolidates best practices from scientific-writing, academic-paper, academic-writing, academic-writing-style, and scientific-paper into a unified skill.
 
 ## When To Use
 
-- Redigir qualquer seção de paper acadêmico (abstract, introduction, methods, results, discussion, conclusion)
-- Seguir estrutura IMRaD, revisão sistemática, estudo de caso ou temática
-- Produzir prosa acadêmica fluida, sem bullet points no output final
-- Ajustar registro acadêmico por disciplina (STEM, ciências sociais, humanities)
+- Drafting any section of an academic paper (abstract, introduction, methods, results, discussion, conclusion)
+- Following IMRaD, systematic review, case study, or thematic structures
+- Producing fluid academic prose without bullet points in the final output
+- Adjusting academic register by discipline (STEM, social sciences, humanities)
 
 ## When Not To Use
 
-- Para buscar literatura → use `academic-researcher`
-- Para validar citações in-text → use `academic-citation-manager`
-- Para revisão do artigo pronto → use `academic-reviewer`
-- Para humanizar texto já escrito → use `academic-humanizer`
-- Para gerar figuras/diagramas → use `academic-media`
+- To search for literature → use `academic-researcher`
+- To validate in-text citations → use `academic-citation-manager`
+- To review a finished article → use `academic-reviewer`
+- To humanize already written text → use `academic-humanizer`
+- To generate figures/diagrams → use `academic-media`
 
 ## Prerequisites
 
-1. **`prd.md`** — tipo de paper, disciplina, formato de citação, língua
-2. **`draft/outline.md`** — estrutura aprovada com alocação de palavras
-3. **`research/literature.md`** — síntese da literatura
-4. **`research/references.bib`** — referências disponíveis para citação
+1. **`prd.md`** — type of paper, discipline, citation format, language
+2. **`draft/outline.md`** — approved structure with word count allocation
+3. **`research/literature.md`** — literature synthesis
+4. **`research/references.bib`** — available references for citation
 
 ## Modes
 
 | Mode | Trigger | Behavior |
 |------|---------|----------|
-| `section` | "escrever introdução" | Redige uma seção específica |
-| `full` | "redigir artigo completo" | Todas as seções sequencialmente |
-| `continue` | "continuar draft" | Retoma a partir do último ponto |
+| `section` | "write introduction" | Drafts a specific section |
+| `full` | "draft full article" | All sections sequentially |
+| `continue` | "continue draft" | Resumes from the last point |
 
 ## Method: Two-Stage Writing Process
 
-### Stage 1: Outline com Key Points (Estrutural)
+### Stage 1: Outline with Key Points (Structural)
 
-Para cada seção, criar outline interno com:
-- Argumentos principais a apresentar
-- Estudos-chave para citar (com anos e achados)
-- Dados e estatísticas a incluir
-- Fluxo lógico e organização
+For each section, create an internal outline with:
+- Main arguments to present
+- Key studies to cite (with years and findings)
+- Data and statistics to include
+- Logical flow and organization
 
-> Este outline é scaffolding interno — NÃO é o output final.
+> This outline is internal scaffolding — it is NOT the final output.
 
-### Stage 2: Conversão para Prosa Completa
+### Stage 2: Conversion to Full Prose
 
-Expandir cada ponto em parágrafos fluidos:
-1. Transformar bullets em sentenças com sujeito, verbo, objeto
-2. Integrar citações naturalmente (narrativa vs. parentética)
-3. Variar estrutura de sentenças — evitar monotonia
-4. Conectar parágrafos por lógica de conteúdo, não por "Furthermore/Moreover"
+Expand each point into fluid paragraphs:
+1. Transform bullets into sentences with subject, verb, and object
+2. Integrate citations naturally (narrative vs. parenthetical)
+3. Vary sentence structure — avoid monotony
+4. Connect paragraphs by content logic, not by "Furthermore/Moreover"
 
 ## Writing Quality Standards
 
-### 5 Anti-Patterns a Evitar
+### 5 Anti-Patterns to Avoid
 
-| Padrão IA | Como Corrigir |
+| AI Pattern | How to Fix |
 |-----------|---------------|
-| **Hedging Soup** — stacking "potentially/possibly/may" | Uma declaração precisa + uma limitação precisa |
-| **Formulaic Transitions** — "Furthermore/Moreover/Additionally" | Deixar a lógica do conteúdo conectar; usar transições reais |
-| **Structural Monotony** — mesma extensão em cada parágrafo | Variar extensão ≥ 30%; misturar parágrafos curtos e longos |
-| **Abstraction Fog** — "various studies/the literature suggests" | Nomear estudos: "Patel et al. (2022) found..." |
-| **Voice Erasure** — "it can be argued/it was found" | Usar voz ativa: "We argue..." quando disciplina permite |
+| **Hedging Soup** — stacking "potentially/possibly/may" | Use one precise statement + one precise limitation |
+| **Formulaic Transitions** — "Furthermore/Moreover/Additionally" | Let content logic drive connections; use real transitions |
+| **Structural Monotony** — same length in every paragraph | Vary length by ≥ 30%; mix short and long paragraphs |
+| **Abstraction Fog** — "various studies/the literature suggests" | Name studies: "Patel et al. (2022) found..." |
+| **Voice Erasure** — "it can be argued/it was found" | Use active voice: "We argue..." when the discipline allows |
 
 ### Self-Audit Per Section
 
@@ -91,50 +91,50 @@ Before presenting any section:
 
 | Section | Must Have | Must NOT Have |
 |---------|-----------|---------------|
-| Introduction | Contexto + gap + objetivo + estrutura do paper | Resultados, interpretações |
-| Methods | Design, amostra, variáveis, protocolo reprodutível | Interpretações de resultados |
-| Results | Fatos, dados, estatísticas objetivas | Interpretação ou especulação |
-| Discussion | Conexão resultados↔questões, comparação com literatura | Dados novos não apresentados em Results |
-| Conclusion | Limitações, trabalhos futuros, implicações | Novos dados ou resultados |
+| Introduction | Context + gap + objective + paper structure | Results, interpretations |
+| Methods | Design, sample, variables, reproducible protocol | Interpretations of results |
+| Results | Facts, data, objective statistics | Interpretation or speculation |
+| Discussion | results↔questions connection, comparison with literature | New data not presented in Results |
+| Conclusion | Limitations, future work, implications | New data or results |
 
 ## Discipline-Aware Register
 
 | Discipline | Voice | Citation Style | Key Features |
 |-----------|-------|---------------|--------------|
-| STEM | Active for claims, passive acceptable in Methods | Author-date or numbered | Hypotheses numbered, statistical reporting |
+| STEM | Active for claims, passive acceptable in Methods | Author-date or numbered | Numbered hypotheses, statistical reporting |
 | Social Sciences | Active + first person plural | Author-date (APA) | Theoretical framing, effect sizes |
 | Humanities | First person singular | Notes or author-date | Close reading, interpretive argument |
 | Interdisciplinary | Active + first person plural | Per target journal | Define terms from each field |
 
 ## Citation Integration
 
-- **Narrative**: quando identidade do autor importa — "Foucault (1975) argued..."
-- **Parentetical**: quando o achado importa — "rates tripled (Alexander, 2010)"
-- **Direct quote**: apenas quando wording é o ponto — definição, frase contestada
-- **Synthesis**: para mostrar consenso — "(Lee, 2019; Nakamura, 2020; dos Santos, 2021)"
+- **Narrative**: when author identity matters — "Foucault (1975) argued..."
+- **Parenthetical**: when the finding matters — "rates tripled (Alexander, 2010)"
+- **Direct quote**: only when wording is the point — definitions, contested phrases
+- **Synthesis**: to show consensus — "(Lee, 2019; Nakamura, 2020; dos Santos, 2021)"
 
 ## Integration with academic-media
 
-Quando detectar necessidade de figura, esquema ou EDA:
+When detecting the need for a figure, schematic, or EDA:
 ```
-→ academic-media: {descrição do elemento visual necessário}
+→ academic-media: {description of the necessary visual element}
 ```
 
 ## Self-Review
 
-### Determinístico
-- [ ] ∀ citação usa formato `\cite{key}` ou `(Autor, Ano)` conforme style
-- [ ] Contagem de palavras ±10% da alocação no outline
-- [ ] Sem bullet points na prosa final (exceto Methods: inclusion criteria)
-- [ ] Registro acadêmico mantido (sem linguagem coloquial)
+### Deterministic
+- [ ] ∀ citation uses format `\cite{key}` or `(Author, Year)` as per style
+- [ ] Word count ±10% of outline allocation
+- [ ] No bullet points in final prose (except Methods: inclusion criteria)
+- [ ] Academic register maintained (no colloquial language)
 
-### Agêntico
-- Consistência de terminologia entre seções
-- Fluxo lógico da argumentação
-- Lacunas de evidência (afirmações factuais sem citação)
+### Agentic
+- consistency of terminology across sections
+- logical flow of argumentation
+- evidence gaps (factual claims without citation)
 
 ## References
 
-- `references/imrad-structure.md` — guia detalhado IMRAD
-- `references/writing-quality-check.md` — checklist anti-AI markers
-- `references/discipline-registers.md` — convenções por campo
+- `references/imrad-structure.md` — detailed IMRAD guide
+- `references/writing-quality-check.md` — anti-AI markers checklist
+- `references/discipline-registers.md` — conventions by field

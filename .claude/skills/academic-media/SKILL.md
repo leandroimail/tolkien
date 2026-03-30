@@ -1,10 +1,10 @@
 ---
 name: academic-media
 description: >
-  Criação de figuras, esquemas, diagramas e análises exploratórias de dados
-  para artigos acadêmicos. Gera elementos visuais publication-quality.
-  Trigger: /academic-media, "criar figura", "gerar esquema", "gerar diagrama",
-  "análise exploratória", "EDA", "create figure", "generate schematic".
+  Creation of figures, schematics, diagrams, and exploratory data analysis
+  for academic papers. Generates publication-quality visual elements.
+  Trigger: /academic-media, "create figure", "generate schematic", "generate diagram",
+  "exploratory analysis", "EDA", "create figure", "generate schematic".
 allowed-tools: [Read, Write, Edit, Bash]
 metadata:
   version: "1.0"
@@ -13,61 +13,61 @@ metadata:
 
 # Academic Media
 
-Criação de elementos visuais publication-quality para artigos acadêmicos: figuras de resultados, diagramas conceituais, flowcharts metodológicos e análises exploratórias de dados. Consolida scientific-eda, scientific-paper-figure-generator e scientific-schematics.
+Creation of publication-quality visual elements for academic papers: results figures, conceptual diagrams, methodological flowcharts, and exploratory data analysis. Consolidates scientific-eda, scientific-paper-figure-generator, and scientific-schematics.
 
 ## When To Use
 
-- Gerar figuras de resultados (bar charts, line plots, scatterplots, heatmaps)
-- Criar diagramas conceituais e workflows (Transformer, CONSORT, PRISMA)
-- Produzir esquemas de circuitos, pathways biológicos, arquiteturas de sistema
-- Realizar análise exploratória de dados (EDA) com visualizações
-- Quando o academic-writer emite chamada: `→ academic-media: {descrição}`
+- Generating results figures (bar charts, line plots, scatterplots, heatmaps)
+- Creating conceptual diagrams and workflows (Transformer, CONSORT, PRISMA)
+- Producing circuit diagrams, biological pathways, system architectures
+- Performing exploratory data analysis (EDA) with visualizations
+- When `academic-writer` issues a call: `→ academic-media: {description}`
 
 ## When Not To Use
 
-- Para redigir texto → use `academic-writer`
-- Para formatar LaTeX → use skill `latex`
-- Para compilar PDF → use skill `pdf`
+- To draft text → use `academic-writer`
+- To format LaTeX → use the `latex` skill
+- To compile PDF → use the `pdf` skill
 
 ## Prerequisites
 
-1. Descrição clara do elemento visual necessário
-2. Dados brutos (para figuras de resultados e EDA)
-3. `prd.md` — para estilo visual e template do paper (opcional)
+1. Clear description of the necessary visual element
+2. Raw data (for results figures and EDA)
+3. `prd.md` — for visual style and paper template (optional)
 
 ## Modes
 
 | Mode | Trigger | Output |
 |------|---------|--------|
-| `figure` | "criar gráfico de resultados" | Figuras de dados (matplotlib/ggplot2) |
-| `schematic` | "gerar diagrama" | Diagramas conceituais (graphviz/tikz) |
-| `eda` | "análise exploratória" | Visualizações de EDA + journal |
+| `figure` | "create results chart" | Data figures (matplotlib/ggplot2) |
+| `schematic` | "generate diagram" | Conceptual diagrams (graphviz/tikz) |
+| `eda` | "exploratory analysis" | EDA visualizations + journal |
 
 ## Method
 
 ### Mode: Figure (Publication-Quality Data Figures)
 
-1. **Identify chart type** baseado nos dados:
-   - Bar graphs: comparar categorias discretas
-   - Line graphs: tendências ao longo do tempo
-   - Scatterplots: correlações
-   - Box plots: distribuições e outliers
-   - Heatmaps: visualizar matrizes
+1. **Identify chart type** based on the data:
+   - Bar graphs: compare discrete categories
+   - Line graphs: trends over time
+   - Scatterplots: correlations
+   - Box plots: distributions and outliers
+   - Heatmaps: visualize matrices
 
 2. **Generate with publication standards**:
-   - Resolução ≥ 300 DPI
-   - Formato vetor preferido (PDF, SVG, EPS)
+   - Resolution ≥ 300 DPI
+   - Preferred vector format (PDF, SVG, EPS)
    - Colorblind-safe palettes (Okabe-Ito)
-   - Fontes sans-serif (Arial, Helvetica)
-   - Mínimo 7-8pt text at final print size
+   - Sans-serif fonts (Arial, Helvetica)
+   - Minimum 7-8pt text at final print size
 
-3. **APA 7.0 figure formatting** (quando aplicável):
-   - Title acima da figura
-   - Note abaixo com estatísticas
-   - Labels em todos os eixos com unidades
+3. **APA 7.0 figure formatting** (when applicable):
+   - Title above the figure
+   - Note below with statistics
+   - Labels on all axes with units
 
 ```python
-# Template base para figuras
+# Base template for figures
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(8, 6))
@@ -99,14 +99,14 @@ dot.render('output/figures/diagram_name', cleanup=True)
 
 ### Mode: EDA (Exploratory Data Analysis)
 
-Segue processo **defensive, human-guided**:
+Follows a **defensive, human-guided** process:
 
-1. **Context first** — capturar pergunta/domínio ANTES de tocar nos dados
-2. **One step at a time** — propor um plot/sumário, executar, sugerir próximo passo
-3. **Ask why** — quando usuário pede plot específico, perguntar qual decisão apoia
+1. **Context first** — capture the question/domain BEFORE touching the data
+2. **One step at a time** — propose one plot/summary, execute, suggest next step
+3. **Ask why** — when the user asks for a specific plot, ask which decision it supports
 4. **Session journal** — append-only `analysis/journal.md`
 
-Scripts com PEP723 + `uv run`:
+Scripts with PEP723 + `uv run`:
 ```python
 # /// script
 # requires-python = ">=3.11"
@@ -116,7 +116,7 @@ import pandas as pd
 # ... EDA code ...
 ```
 
-Plots em WebP para tamanho reduzido:
+WebP plots for reduced size:
 ```python
 fig.savefig("plots/overview.webp", format="webp")
 ```
@@ -134,7 +134,7 @@ OKABE_ITO = {
 
 ## LaTeX Integration
 
-Figuras geradas devem ser referenciáveis:
+Generated figures must be referencable:
 ```latex
 \begin{figure}[htbp]
   \centering
@@ -146,27 +146,27 @@ Figuras geradas devem ser referenciáveis:
 
 ## Self-Review
 
-### Determinístico
-- [ ] Figuras têm caption, label e referência no texto (`\ref{fig:X}`)
-- [ ] Resolução ≥ 300 DPI (para raster) ou formato vetor (PDF/SVG/EPS)
-- [ ] Paleta colorblind-safe utilizada
-- [ ] Text legível (≥ 7pt no tamanho final de impressão)
+### Deterministic
+- [ ] Figures have caption, label, and text reference (`\ref{fig:X}`)
+- [ ] Resolution ≥ 300 DPI (for raster) or vector format (PDF/SVG/EPS)
+- [ ] Colorblind-safe palette used
+- [ ] Legible text (≥ 7pt at final print size)
 
-### Agêntico
-- Aderência ao estilo visual do template especificado no PRD
-- Clareza: a figura é auto-explicativa com caption?
-- Completude: dados-chave do paper estão representados visualmente?
+### Agentic
+- Adherence to visual style of the template specified in the PRD
+- Clarity: is the figure self-explanatory with a caption?
+- Completeness: are key paper data represented visually?
 
 ## Output
 
-Arquivos em `output/figures/`:
-- `*.pdf` — para LaTeX
-- `*.svg` — para slides/web
-- `*.eps` — para journals legacy
-- `scripts/*.py` — código de geração (reprodutibilidade)
+Files in `output/figures/`:
+- `*.pdf` — for LaTeX
+- `*.svg` — for slides/web
+- `*.eps` — for legacy journals
+- `scripts/*.py` — generation code (reproducibility)
 
 ## References
 
-- `references/publication-standards.md` — standards por journal
-- `references/chart-decision-tree.md` — qual tipo de gráfico usar
-- `references/colorblind-palettes.md` — paletas acessíveis
+- `references/publication-standards.md` — standards by journal
+- `references/chart-decision-tree.md` — which chart type to use
+- `references/colorblind-palettes.md` — accessible palettes

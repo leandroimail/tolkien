@@ -1,10 +1,10 @@
 ---
 name: academic-orchestrator
 description: >
-  Coordenador master do pipeline AAPMAS. Executa as fases em ordem,
-  despacha skills e agentes corretos, gerencia checkpoints e mantém estado.
-  Trigger: /academic-orchestrator, "iniciar pipeline acadêmico",
-  "escrever artigo completo", "academic pipeline", /status.
+  Master coordinator for the AAPMAS pipeline. Executes phases in order,
+  dispatches correct skills and agents, manages checkpoints, and maintains state.
+  Trigger: /academic-orchestrator, "start academic pipeline",
+  "write full article", "academic pipeline", /status.
 skills:
   - academic-prd
   - academic-plan
@@ -17,141 +17,141 @@ agents:
 
 # Academic Orchestrator
 
-Coordenador master do Academic Article Production Multi-Agent System (AAPMAS). Executa o pipeline sequencial de 10 fases, despacha as skills e agentes corretos em cada fase, gerencia checkpoints obrigatórios e opcionais, mantém estado de sessão e suporta mid-entry.
+Master coordinator for the Academic Article Production Multi-Agent System (AAPMAS). Executes the 10-phase sequential pipeline, dispatches the correct skills and agents in each phase, manages mandatory and optional checkpoints, maintains session state, and supports mid-entry.
 
 ## Two Modes of Operation
 
-### MODO AUTO
-Executa pipeline completo automaticamente. Pausa APENAS nos 5 checkpoints obrigatórios (gates). Ideal para: usuário quer resultado final com mínima intervenção.
+### AUTO MODE
+Executes the full pipeline automatically. Pauses ONLY at the 5 mandatory checkpoints (gates). Ideal for: user wants the final result with minimal intervention.
 
-### MODO INTERATIVO (padrão)
-Solicita confirmação humana em CADA fase. Permite ajustes, feedback e redirecionamento entre fases. Ideal para: usuário quer controle total, primeira vez no sistema.
+### INTERACTIVE MODE (default)
+Requests human confirmation at EVERY phase. Allows for adjustments, feedback, and redirection between phases. Ideal for: user wants full control or is using the system for the first time.
 
-## Pipeline Sequencial (10 Fases)
+## Sequential Pipeline (10 Phases)
 
 ```
-Fase 0: Academic PRD           → prd.md
+Phase 0: Academic PRD           → prd.md
          ↓ [G1: CHECKPOINT ✓]
-Fase 1: Implementation Plan    → plan.md
+Phase 1: Implementation Plan    → plan.md
          ↓ [G2: CHECKPOINT ✓]
-Fase 2: Literature Research     → research/literature.md + references.bib
-         ↓ [CHECKPOINT opcional]
-Fase 3: Outline & Architecture  → draft/outline.md
+Phase 2: Literature Research     → research/literature.md + references.bib
+         ↓ [Optional CHECKPOINT]
+Phase 3: Outline & Architecture  → draft/outline.md
          ↓ [G3: CHECKPOINT ✓]
-Fase 4: Full-text Drafting      → draft/*.md (seção por seção)
-         ↓ [CHECKPOINT opcional por seção]
-Fase 5: Citation + Bibliography ─────────────────────────────┐
-         (executadas em paralelo)                            │
+Phase 4: Full-text Drafting      → draft/*.md (section by section)
+         ↓ [Optional CHECKPOINT per section]
+Phase 5: Citation + Bibliography ─────────────────────────────┐
+         (executed in parallel)                              │
          citation-manager → in-text citations               │
          bibliography-manager → references.bib + OpenAlex   │
-         ↓ [G4: Gate Citation↔Bibliography — 0 erros] ──────┘
+         ↓ [G4: Citation↔Bibliography Gate — 0 errors] ──────┘
          ↓ [CHECKPOINT ✓]
-Fase 6: Humanization & Register → draft/*.md (revisado)
-         ↓ [CHECKPOINT opcional]
-Fase 7: Peer Review             → review/review-report.md
-         ↓ [revisão + re-review se necessário]
+Phase 6: Humanization & Register → draft/*.md (revised)
+         ↓ [Optional CHECKPOINT]
+Phase 7: Peer Review             → review/review-report.md
+         ↓ [revision + re-review if necessary]
          ↓ [G5: CHECKPOINT ✓]
-Fase 8: Output Formatting       → output/paper.tex/.pdf/.docx
-         ↓ [G5.5: Gate LaTeX — compilação sem erros]
-Fase 9: Process Documentation   → process-record.md
+Phase 8: Output Formatting       → output/paper.tex/.pdf/.docx
+         ↓ [G5.5: LaTeX Gate — error-free compilation]
+Phase 9: Process Documentation   → process-record.md
 ```
 
-## 5 Gates Obrigatórios (Ambos os Modos)
+## 5 Mandatory Gates (Both Modes)
 
-| Gate | Após | Antes de | Critério |
+| Gate | After | Before | Criterion |
 |------|------|----------|----------|
-| G1 | Academic PRD gerado | Implementation Plan | 10 campos obrigatórios preenchidos |
-| G2 | Plan aprovado | Literature Research | Todas as 9 fases representadas |
-| G3 | Outline aprovado | Full-text Drafting | Estrutura + alocação confirmada pelo usuário |
-| G4 | Gate Citation↔Bib | Humanization/Review | 0 violações das 3 regras |
-| G5 | Review final aceito | Output Formatting | Score ≥ 65, 0 CRITICAL do Devil's Advocate |
+| G1 | Academic PRD generated | Implementation Plan | 10 mandatory fields filled |
+| G2 | Plan approved | Literature Research | All 9 phases represented |
+| G3 | Outline approved | Full-text Drafting | Structure + allocation confirmed by user |
+| G4 | Citation↔Bib Gate | Humanization/Review | 0 violations of the 3 rules |
+| G5 | Final Review accepted | Output Formatting | Score ≥ 65, 0 CRITICAL from Devil's Advocate |
 
 ## Dispatch Table
 
-| Fase | Skill/Agent Despachado |
+| Phase | Dispatched Skill/Agent |
 |------|----------------------|
-| 0 | `academic-prd` (skill direta) |
-| 1 | `academic-plan` (skill direta) |
+| 0 | `academic-prd` (direct skill) |
+| 1 | `academic-plan` (direct skill) |
 | 2 | `research-agent` (agent → academic-researcher + academic-bibliography-manager) |
-| 3 | `academic-writer` (skill direta, mode: outline) |
+| 3 | `academic-writer` (direct skill, mode: outline) |
 | 4 | `writing-agent` (agent → academic-writer + academic-media) |
 | 5 | `review-agent` (agent → citation-manager + bibliography-manager — gate only) |
 | 6 | `writing-agent` (agent → academic-humanizer) |
 | 7 | `review-agent` (agent → academic-reviewer — full review) |
 | 8 | `paper-generator-agent` (agent → latex + pdf + docx) |
-| 9 | Orchestrator gera `process-record.md` diretamente |
+| 9 | Orchestrator generates `process-record.md` directly |
 
 ## Mid-Entry Support
 
-O orchestrator detecta em qual fase o projeto está e oferece continuar:
+The orchestrator detects which phase the project is in and offers to continue:
 
 ```
-1. Ler estrutura de pastas do projeto:
-   ├── prd.md existe? → Fase 0 concluída
-   ├── plan.md existe? → Fase 1 concluída
-   ├── research/literature.md + references.bib? → Fase 2 concluída
-   ├── draft/outline.md? → Fase 3 concluída
-   ├── draft/*.md (múltiplas seções)? → Fase 4 em progresso/concluída
-   ├── review/citation-report.md? → Fase 5 concluída
-   ├── review/review-report.md? → Fase 7 concluída
-   └── output/paper.pdf? → Fase 8 concluída
+1. Read project folder structure:
+   ├── prd.md exists? → Phase 0 completed
+   ├── plan.md exists? → Phase 1 completed
+   ├── research/literature.md + references.bib? → Phase 2 completed
+   ├── draft/outline.md? → Phase 3 completed
+   ├── draft/*.md (multiple sections)? → Phase 4 in progress/completed
+   ├── review/citation-report.md? → Phase 5 completed
+   ├── review/review-report.md? → Phase 7 completed
+   └── output/paper.pdf? → Phase 8 completed
 
-2. Apresentar estado detectado ao usuário:
-   "Detectei que seu projeto está na Fase 4 (redação).
-    Deseja continuar a partir daqui?"
+2. Present detected state to user:
+   "I detected that your project is in Phase 4 (drafting).
+    Do you want to continue from here?"
 
-3. Permitir override:
-   "Quero re-executar a partir da Fase 2 (pesquisa)"
+3. Allow override:
+   "I want to re-execute from Phase 2 (research)"
 ```
 
 ## Status Dashboard (/status)
 
-Disponível a qualquer momento:
+Available at any time:
 
 ```
-Pipeline Status: Paper "{título}"
+Pipeline Status: Paper "{title}"
 ─────────────────────────────────
-✅ Fase 0: Academic PRD       (2026-03-29)
-✅ Fase 1: Implementation Plan (2026-03-29)
-🔄 Fase 2: Literature Research (em progresso)
-   ├── ✅ Busca inicial: 47 papers
-   ├── 🔄 Triagem: 32/47
-   └── ⏳ Síntese: pendente
-⏳ Fase 3: Outline
-⏳ Fase 4: Drafting
-⏳ Fase 5: Citation + Bibliography
-⏳ Fase 6: Humanization
-⏳ Fase 7: Peer Review
-⏳ Fase 8: Output Formatting
-⏳ Fase 9: Process Documentation
+✅ Phase 0: Academic PRD       (2026-03-29)
+✅ Phase 1: Implementation Plan (2026-03-29)
+🔄 Phase 2: Literature Research (in progress)
+   ├── ✅ Initial search: 47 papers
+   ├── 🔄 Screening: 32/47
+   └── ⏳ Synthesis: pending
+⏳ Phase 3: Outline
+⏳ Phase 4: Drafting
+⏳ Phase 5: Citation + Bibliography
+⏳ Phase 6: Humanization
+⏳ Phase 7: Peer Review
+⏳ Phase 8: Output Formatting
+⏳ Phase 9: Process Documentation
 ```
 
 ## Plan.md Tracking
 
-O orchestrator atualiza o `plan.md` após cada fase:
+The orchestrator updates `plan.md` after each phase:
 
 ```markdown
-- [x] Task 2.1: Definir estratégia de busca ← auto-checked
-- [x] Task 2.2: Executar busca OpenAlex
-- [x] Task 2.3: Triagem por critérios
-- [ ] Task 2.4: Sintetizar fontes ← next
+- [x] Task 2.1: Define search strategy ← auto-checked
+- [x] Task 2.2: Execute OpenAlex search
+- [x] Task 2.3: Screening by criteria
+- [ ] Task 2.4: Synthesize sources ← next
 ```
 
-## Process Record (Fase 9)
+## Process Record (Phase 9)
 
-Ao final, gera `process-record.md` com:
-- Histórico completo de decisões humanas nos checkpoints
-- Timestamps de cada fase
-- Resumo de intervenções humanas vs. automáticas
-- Ferramentas IA utilizadas e seu papel
-- Declaração de uso de IA para disclosure
+At the end, it generates `process-record.md` with:
+- Full history of human decisions at checkpoints
+- Timestamps for each phase
+- Summary of human vs. automatic interventions
+- AI tools used and their roles
+- AI use statement for disclosure
 
 ## Error Recovery
 
-| Situação | Ação do Orchestrator |
+| Situation | Orchestrator Action |
 |----------|---------------------|
-| Gate falha | Exibir violações, sugerir correções, aguardar re-execução |
-| Compilação LaTeX falha | Diagnóstico + correção + re-compilação (máx 3 tentativas) |
-| Reviewer rejeita | Diagnóstico detalhado, opção de Major Revision ou reestruturação |
-| Usuário abandona mid-pipeline | Salvar estado atual, pode retomar depois via mid-entry |
-| Skill/agent timeout | Retry 1x, se falhar novamente → reportar ao usuário |
+| Gate fails | Display violations, suggest corrections, wait for re-execution |
+| LaTeX compilation fails | Diagnosis + correction + re-compilation (max 3 attempts) |
+| Reviewer rejects | Detailed diagnosis, option for Major Revision or restructuring |
+| User abandons mid-pipeline | Save current state, can resume later via mid-entry |
+| Skill/agent timeout | Retry 1x, if it fails again → report to user |
