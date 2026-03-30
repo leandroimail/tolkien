@@ -25,9 +25,29 @@ else
     echo "Updating Homebrew..."
     brew update > /dev/null 2>&1
     
-    echo "Installing required system packages (LaTeX, Tesseract, Poppler)..."
-    brew install texlive latexmk chktex tesseract poppler
+    echo "Installing required system packages (Tesseract, Poppler)..."
+    brew install tesseract poppler
     
+    echo "Installing BasicTeX (lightweight LaTeX distribution)..."
+    if ! command -v pdflatex &> /dev/null; then
+        brew install --cask basictex
+        # Update PATH for the current session to include BasicTeX
+        export PATH="/Library/TeX/texbin:$PATH"
+    fi
+
+    echo "Updating TeX Live Manager and installing LaTeX tools (latexmk, chktex)..."
+    if command -v tlmgr &> /dev/null; then
+        if sudo -n true &> /dev/null; then
+            sudo tlmgr update --self || echo "⚠️  tlmgr update failed; continuing."
+            sudo tlmgr install latexmk chktex || echo "⚠️  tlmgr install failed; continuing."
+        else
+            echo "⚠️  Skipping tlmgr updates because passwordless sudo is not available."
+            echo "    Install latexmk/chktex manually if you need the LaTeX skill."
+        fi
+    else
+        echo "⚠️  tlmgr not found. Skipping LaTeX tool installation."
+    fi
+
     echo "Installing LibreOffice (required by docx skill for soffice command)..."
     brew install --cask libreoffice
 
@@ -73,7 +93,7 @@ echo "[4/4] Installing Python Packages..."
 echo "The following dependencies were identified across the skills:"
 echo "- pyyaml (academic-prd)"
 echo "- pandas, matplotlib (academic-media)"
-echo "- pytesseract, pdf2image (pdf)"
+echo "- pypdf, pdfplumber, reportlab, pillow, pytesseract, pdf2image (pdf)"
 echo "- requests (academic-researcher)"
 echo "- defusedxml (docx office scripts)"
 
@@ -83,6 +103,10 @@ pyyaml
 requests
 pandas
 matplotlib
+pypdf
+pdfplumber
+reportlab
+pillow
 pytesseract
 pdf2image
 defusedxml

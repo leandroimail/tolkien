@@ -1,0 +1,11 @@
+pyyaml
+requests
+pandas
+matplotlib
+pypdf
+pdfplumber
+reportlab
+pillow
+pytesseract
+pdf2image
+defusedxml

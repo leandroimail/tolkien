@@ -84,8 +84,25 @@ AAPMAS is configured via the following directories:
 - **`.claude/`**: Mirror configuration for Claude Code (CLI).
 
 ### Prerequisites
-To ensure all skills work correctly (especially for LaTeX and Media generation), run the setup script:
+To ensure all skills work correctly (especially for LaTeX, PDF, and Media generation), run the setup script from the repository root:
 `bash resources/install_skills_deps.sh`
+
+The script creates or updates the Python virtual environment at `.venv` and installs the required Python packages there.
+
+### Virtual Environment
+Before running any Python-based skill scripts manually, activate the virtual environment:
+```bash
+source .venv/bin/activate
+```
+
+When the environment is active, `python` and `pip` refer to the project-local `.venv`.
+
+If you open a new terminal session, activate `.venv` again before running scripts or skills that depend on Python packages.
+
+To leave the environment:
+```bash
+deactivate
+```
 
 ### How to use
 Simply call the Orchestrator to start a new project or resume an existing one:
