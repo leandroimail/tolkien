@@ -49,6 +49,7 @@ VALID_PAPER_TYPES = [
 VALID_CITATION_FORMATS = ["APA", "MLA", "Chicago", "IEEE", "Vancouver", "ABNT"]
 
 VALID_STRUCTURES = ["IMRaD", "systematic review", "thematic", "case study"]
+VALID_ROOTS = ["projects", "papers", ".projects", ".papers"]
 
 
 def extract_frontmatter(text: str) -> dict | None:
@@ -91,6 +92,24 @@ def validate(prd_path: str) -> dict:
 
     errors = []
     warnings = []
+
+    # Check file location
+    # Expected: root/paper-slug/prd.md
+    parts = list(path.resolve().parts)
+    # Search for the root in the path
+    root_idx = -1
+    for i, part in enumerate(parts):
+        if part in VALID_ROOTS:
+            root_idx = i
+            break
+    
+    if root_idx == -1:
+        errors.append(f"PRD file must be inside one of the approved root folders: {VALID_ROOTS}")
+    else:
+        # Check if there is at least one folder level between root and prd.md
+        # parts looks like: (..., root, paper-slug, prd.md)
+        if len(parts) - 1 - root_idx < 2:
+            errors.append("PRD file must be inside a project-specific subfolder within the root")
 
     # Check mandatory fields
     for field in MANDATORY_FIELDS:

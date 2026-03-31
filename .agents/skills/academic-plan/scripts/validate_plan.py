@@ -46,6 +46,7 @@ EXPECTED_DELIVERABLES = [
 ]
 
 MANDATORY_GATES = ["G3", "G4", "G5"]
+VALID_ROOTS = ["projects", "papers", ".projects", ".papers"]
 
 REQUIRED_SECTIONS_PER_PHASE = ["Tasks", "Deliverable", "Acceptance Criteria"]
 
@@ -60,6 +61,22 @@ def validate(plan_path: str) -> dict:
     errors = []
     warnings = []
 
+    # Check file location
+    # Expected: root/paper-slug/plan.md
+    parts = list(path.resolve().parts)
+    root_idx = -1
+    for i, part in enumerate(parts):
+        if part in VALID_ROOTS:
+            root_idx = i
+            break
+            
+    if root_idx == -1:
+        errors.append(f"Plan file must be inside one of the approved root folders: {VALID_ROOTS}")
+    else:
+        # Check if there is at least one folder level between root and plan.md
+        if len(parts) - 1 - root_idx < 2:
+            errors.append("Plan file must be inside a project-specific subfolder within the root")
+
     # Check all 9 phases are present (Phase 0 through Phase 9)
     phases_found = []
     for phase in REQUIRED_PHASES:
@@ -70,10 +87,12 @@ def validate(plan_path: str) -> dict:
         else:
             errors.append(f"Missing phase: {phase}")
 
-    # Check expected deliverables are mentioned
+    # Check expected deliverables are mentioned and follow structural rules
     for deliverable in EXPECTED_DELIVERABLES:
         if deliverable not in text:
             warnings.append(f"Expected deliverable not found in plan: {deliverable}")
+        elif deliverable.startswith("output/") and deliverable not in text: # This is partly redundant but good for clarity
+            errors.append(f"Missing mandatory output deliverable: {deliverable}")
 
     # Check mandatory gates
     for gate in MANDATORY_GATES:
@@ -90,10 +109,10 @@ def validate(plan_path: str) -> dict:
 
         has_tasks = bool(re.search(r"- \[[ x]\]", section))
         has_deliverable = bool(
-            re.search(r"(?:Deliverable|Entregável)", section, re.IGNORECASE)
+            re.search(r"(?:Deliverable|Deliverable)", section, re.IGNORECASE)
         )
         has_criteria = bool(
-            re.search(r"(?:Acceptance Criteria|Critério)", section, re.IGNORECASE)
+            re.search(r"(?:Acceptance Criteria|Criteria)", section, re.IGNORECASE)
         )
 
         if not has_tasks:
