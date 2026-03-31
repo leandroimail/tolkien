@@ -12,6 +12,15 @@ metadata:
   depends_on: "academic-prd, academic-plan, academic-researcher"
 ---
 
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Writer
 
 Writing of academic articles with publishable quality, section by section. Consolidates best practices from scientific-writing, academic-paper, academic-writing, academic-writing-style, and scientific-paper into a unified skill.
@@ -33,10 +42,12 @@ Writing of academic articles with publishable quality, section by section. Conso
 
 ## Prerequisites
 
-1. **`prd.md`** — type of paper, discipline, citation format, language
+1. **`{root}/paper-{slug}/prd.md`** — type of paper, discipline, citation format, language
 2. **`draft/outline.md`** — approved structure with word count allocation
 3. **`research/literature.md`** — literature synthesis
 4. **`research/references.bib`** — available references for citation
+
+> **Root Path**: The paper must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 
 ## Modes
 

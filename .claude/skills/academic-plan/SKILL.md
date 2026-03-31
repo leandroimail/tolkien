@@ -3,13 +3,21 @@ name: academic-plan
 description: >
   Reads an approved Academic PRD (prd.md) and generates a structured implementation plan (plan.md) with
   phases, tasks, deliverables, and acceptance criteria for the academic paper pipeline.
-  Triggers: /academic-plan, "generate plan", "create article tasks", "plan phases",
-  "gerar plano", "criar tasks do artigo".
+  Triggers: /academic-plan, "generate plan", "create article tasks", "plan phases"
 allowed-tools: [Read, Write, Edit, Bash]
 metadata:
   version: "1.0"
   depends_on: "academic-prd"
 ---
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
 
 # Academic Plan
 
@@ -29,7 +37,8 @@ Generate `plan.md` from an approved `prd.md`. This is **Phase 1** of the pipelin
 
 ## Prerequisites
 
-- `paper-{slug}/prd.md` must exist and be approved (status: "approved" in frontmatter)
+- `{root}/paper-{slug}/prd.md` must exist and be approved (status: "approved" in frontmatter)
+- Understand the root path (one of: `projects/`, `papers/`, `.projects/`, `.papers/`)
 - Read and understand all PRD fields before generating the plan
 
 ## Method
@@ -62,6 +71,8 @@ The plan MUST cover all **9 phases** of the pipeline (Phases 0-9). Use the templ
 | 7 | academic-reviewer | `review/review-report.md` |
 | 8 | paper-generator-agent | `output/paper.tex` + `output/paper.pdf` |
 | 9 | (orchestrator) | `process-record.md` |
+
+> **IMPORTANT**: All generated deliverables (LaTeX source, PDF, figures for submission) MUST be stored in the `output/` folder.
 
 ### 3. Generate Tasks per Phase
 
@@ -142,7 +153,7 @@ Before delivering, verify:
 
 ## Outputs
 
-- `paper-{slug}/plan.md` — complete implementation plan with task checklists
+- `{root}/paper-{slug}/plan.md` — complete implementation plan with task checklists
 
 ## Integration
 

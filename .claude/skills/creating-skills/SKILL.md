@@ -1,4 +1,16 @@
 ---
+
+# Virtualenv
+
+Note: When this skill executes Python scripts, run them within the project's virtual environment.
+Ative com:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 name: creating-skills
 description: >
   Creates, validates, and deploys Agent Skills following the open standard

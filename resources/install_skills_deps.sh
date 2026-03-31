@@ -30,7 +30,8 @@ else
     
     echo "Installing TinyTeX (fast, lightweight LaTeX distribution)..."
     if ! command -v pdflatex &> /dev/null && [ ! -d "$HOME/Library/TinyTeX" ] && [ ! -d "$HOME/.TinyTeX" ]; then
-        curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+        echo "pdflatex não encontrado. Tentando instalar TinyTeX..."
+        curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh || echo "⚠️ Falha ao instalar TinyTeX via script."
     fi
 
     # Determine TinyTeX bin dir (macOS default is ~/Library/TinyTeX/bin/universal-darwin)
@@ -46,9 +47,20 @@ else
     fi
 
     if [ -n "$TINYTEX_BIN_DIR" ]; then
-        echo "Updating PATH and symlinking TinyTeX to virtual environment..."
+        echo "Atualizando PATH temporariamente para TinyTeX..."
         export PATH="$TINYTEX_BIN_DIR:$PATH"
-        
+
+        # Persistir o PATH em arquivos de inicialização do shell, se necessário
+        for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
+            if [ -f "$SHELL_RC" ]; then
+                if ! grep -Fq "$TINYTEX_BIN_DIR" "$SHELL_RC" 2>/dev/null; then
+                    echo "# TinyTeX bin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
+                    echo "export PATH=\"$TINYTEX_BIN_DIR:\$PATH\"" >> "$SHELL_RC"
+                    echo "Adicionado TinyTeX PATH em $SHELL_RC"
+                fi
+            fi
+        done
+
         # We will symlink binaries later, after .venv is created in step 3.
         # But we can install the needed LaTeX tools now using tlmgr from TinyTeX
         if command -v tlmgr &> /dev/null; then
@@ -60,8 +72,23 @@ else
         echo "⚠️  Could not locate TinyTeX binaries. LaTeX tools might fail."
     fi
 
+    # Detect MacTeX (full) or BasicTeX and persist their texbin if present
+    if [ -d "/Library/TeX/texbin" ]; then
+        echo "Detectado MacTeX/BasicTeX em /Library/TeX/texbin"
+        export PATH="/Library/TeX/texbin:$PATH"
+        for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
+            if [ -f "$SHELL_RC" ]; then
+                if ! grep -Fq "/Library/TeX/texbin" "$SHELL_RC" 2>/dev/null; then
+                    echo "# MacTeX texbin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
+                    echo "export PATH=\"/Library/TeX/texbin:\$PATH\"" >> "$SHELL_RC"
+                    echo "Adicionado /Library/TeX/texbin em $SHELL_RC"
+                fi
+            fi
+        done
+    fi
+
     echo "Installing LibreOffice (required by docx skill for soffice command)..."
-    brew install --cask libreoffice
+    brew install --cask libreoffice || echo "⚠️ Falha ao instalar LibreOffice via brew. Verifique manualmente."
 
     echo "System packages installed successfully."
 fi
@@ -110,6 +137,27 @@ if [ -n "$TINYTEX_BIN_DIR" ]; then
     echo "TinyTeX successfully linked."
     echo ""
 fi
+
+# If pdflatex still missing, offer to install BasicTeX (smaller than MacTeX)
+if ! command -v pdflatex &> /dev/null; then
+    if command -v brew &> /dev/null; then
+        echo "pdflatex ainda não encontrado. Instalando BasicTeX via Homebrew Cask..."
+        brew install --cask basictex || echo "⚠️ Falha ao instalar basictex via brew. Você pode instalar MacTeX manualmente."
+        if [ -d "/Library/TeX/texbin" ]; then
+            export PATH="/Library/TeX/texbin:$PATH"
+            for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
+                if [ -f "$SHELL_RC" ]; then
+                    if ! grep -Fq "/Library/TeX/texbin" "$SHELL_RC" 2>/dev/null; then
+                        echo "# MacTeX texbin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
+                        echo "export PATH=\"/Library/TeX/texbin:\$PATH\"" >> "$SHELL_RC"
+                    fi
+                fi
+            done
+        fi
+    else
+        echo "Homebrew não disponível para instalar BasicTeX. Instale MacTeX/BasicTeX manualmente."
+    fi
+fi
 echo ""
 
 # 4. Installing Python Packages
@@ -121,8 +169,12 @@ echo "- pypdf, pdfplumber, reportlab, pillow, pytesseract, pdf2image (pdf)"
 echo "- requests (academic-researcher)"
 echo "- defusedxml (docx office scripts)"
 
-# Create a temporary requirements file to install
-cat << EOF > "$RESOURCES_DIR/requirements_skills.txt"
+# Use existing requirements_skills.txt if present, otherwise create a default
+if [ -f "$RESOURCES_DIR/requirements_skills.txt" ]; then
+    echo "Usando $RESOURCES_DIR/requirements_skills.txt existente."
+else
+    echo "Criando $RESOURCES_DIR/requirements_skills.txt padrão."
+    cat << EOF > "$RESOURCES_DIR/requirements_skills.txt"
 pyyaml
 requests
 pandas
@@ -135,6 +187,7 @@ pytesseract
 pdf2image
 defusedxml
 EOF
+fi
 
 echo "Installing requirements via pip..."
 pip install -r "$RESOURCES_DIR/requirements_skills.txt"

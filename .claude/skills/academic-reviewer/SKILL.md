@@ -12,6 +12,17 @@ metadata:
   depends_on: "academic-writer, academic-citation-manager, academic-bibliography-manager"
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Reviewer
 
 Multi-perspective academic review simulating a full peer review process. Consolidates logic from academic-paper-reviewer (5-reviewer panel), scientific-validation (methodological rigor), and scientific-manuscript-review (IMRaD quality).

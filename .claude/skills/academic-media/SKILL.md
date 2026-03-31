@@ -11,6 +11,17 @@ metadata:
   depends_on: ""
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Media
 
 Creation of publication-quality visual elements for academic papers: results figures, conceptual diagrams, methodological flowcharts, and exploratory data analysis. Consolidates scientific-eda, scientific-paper-figure-generator, and scientific-schematics.

@@ -3,13 +3,21 @@ name: academic-prd
 description: >
   Conducts a structured configuration interview to generate the Academic PRD (prd.md) for a scientific article.
   Use when starting a new academic paper, configuring an article project, or initiating the academic pipeline.
-  Triggers: /academic-prd, "create academic PRD", "configure article", "start pipeline", "new paper",
-  "criar PRD acadêmico", "configurar artigo", "iniciar pipeline".
+  Triggers: /academic-prd, "create academic PRD", "configure article", "start pipeline", "new paper"
 allowed-tools: [Read, Write, Edit, Bash, AskUserQuestion]
 metadata:
   version: "1.0"
   depends_on: ""
 ---
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
 
 # Academic PRD
 
@@ -30,7 +38,8 @@ Generate the foundational requirements document (`prd.md`) for an academic artic
 
 ## Prerequisites
 
-- A working directory for the paper project (will be created as `paper-{slug}/`)
+- A root directory for the paper project (must be one of: `projects/`, `papers/`, `.projects/`, `.papers/`)
+- A working directory for the paper project (will be created as `root/paper-{slug}/`)
 - User availability for the interview (10 mandatory fields require input)
 
 ## Method
@@ -38,11 +47,14 @@ Generate the foundational requirements document (`prd.md`) for an academic artic
 ### 1. Initialize Project Directory
 
 ```bash
-# Create project folder structure
-mkdir -p paper-{slug}/{research,draft,review,output}
+# Create project folder structure in one of the allowed roots
+# roots: projects/, papers/, .projects/, .papers/
+mkdir -p {root}/paper-{slug}/{research,draft,review,output}
 ```
 
-Ask the user for a short slug (e.g., "ml-healthcare-review") or derive one from the topic.
+Ask the user for:
+1. The **root directory** where the project should be created (`projects/`, `papers/`, `.projects/`, or `.papers/`).
+2. A short **slug** (e.g., "ml-healthcare-review") or derive one from the topic.
 
 ### 2. Conduct Configuration Interview
 
@@ -139,7 +151,7 @@ Before delivering, verify:
 
 ## Outputs
 
-- `paper-{slug}/prd.md` — the Academic PRD document
+- `{root}/paper-{slug}/prd.md` — the Academic PRD document
 - Terminal summary of all decisions for user confirmation
 
 ## Integration

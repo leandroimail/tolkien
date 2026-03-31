@@ -62,16 +62,22 @@ AAPMAS ensures quality through a structured flow with **5 Mandatory Gates (Check
 
 ## 📂 Project Structure
 
-Each article project follows a standardized folder layout to ensure state persistence:
+Each article project MUST be created within one of the following root directories:
+- `projects/`
+- `papers/`
+- `.projects/`
+- `.papers/`
+
+Inside the chosen root, a subfolder with the project or paper name (slug) MUST be created. All generated files MUST be stored in an `output/` subfolder within the project's directory.
 
 ```text
-paper-{slug}/
+{root}/paper-{slug}/
 ├── prd.md                    ← Paper requirements
 ├── plan.md                   ← Execution roadmap & checklist
 ├── research/                 ← Literature, search strategy, and references.bib
 ├── draft/                    ← Markdown sections (abstract, intro, methods, etc.)
 ├── review/                   ← Review reports and revision logs
-├── output/                   ← Final PDF, LaTeX source, and figures
+├── output/                   ← ALL generated deliverables (PDF, LaTeX, etc.)
 └── process-record.md         ← Human-AI collaboration history
 ```
 

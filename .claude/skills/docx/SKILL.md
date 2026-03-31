@@ -4,6 +4,17 @@ description: "Use this skill whenever the user wants to create, read, edit, or m
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # DOCX creation, editing, and analysis
 
 ## Overview
