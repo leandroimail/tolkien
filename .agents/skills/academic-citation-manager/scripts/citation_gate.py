@@ -4,6 +4,7 @@ Citation↔Bibliography Gate: deterministic cross-validation.
 Checks that every \cite{key} in draft exists in .bib and vice-versa.
 Usage: python citation_gate.py <draft_dir> <bib_file>
 """
+
 import re
 import sys
 from pathlib import Path
@@ -19,7 +20,10 @@ def extract_cite_keys_from_drafts(draft_dir: Path) -> dict[str, list[tuple[str, 
         content = md_file.read_text(encoding="utf-8")
         for line_num, line in enumerate(content.splitlines(), 1):
             # Match \cite{key}, \citeonline{key}, \cite[p. 15]{key}, etc.
-            for match in re.finditer(r"\\(?:cite|citeonline|citeauthor|nocite|parencite)[^\{]*\{([^}]+)\}", line):
+            for match in re.finditer(
+                r"\\(?:cite|citeonline|citeauthor|nocite|parencite)[^\{]*\{([^}]+)\}",
+                line,
+            ):
                 raw_keys = match.group(1)
                 for k in raw_keys.split(","):
                     k = k.strip()
@@ -81,11 +85,13 @@ def main():
         sys.exit(1)
 
     result = run_gate(draft_dir, bib_path)
-    total_violations = len(result["orphan_citations"]) + len(result["phantom_citations"])
+    total_violations = len(result["orphan_citations"]) + len(
+        result["phantom_citations"]
+    )
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Citation↔Bibliography Gate")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Citations in draft: {result['draft_keys']} unique keys")
     print(f"Entries in .bib:    {result['bib_keys']} entries")
 
@@ -101,14 +107,16 @@ def main():
         for key in result["phantom_citations"]:
             print(f"    ❌ {key}")
 
-    print(f"\n{'─'*60}")
+    print(f"\n{'─' * 60}")
     if total_violations == 0:
         print(f"Result: ✅ GATE PASS — 0 violations")
     else:
         print(f"Result: ❌ GATE FAIL — {total_violations} violations")
         print(f"   Orphan citations: {len(result['orphan_citations'])}")
         print(f"   Phantom citations: {len(result['phantom_citations'])}")
-        print(f"\n⛔ BLOQUEANTE: Pipeline cannot advance until all violations are resolved.")
+        print(
+            f"\n⛔ BLOCKING: Pipeline cannot advance until all violations are resolved."
+        )
 
     sys.exit(1 if total_violations else 0)
 
