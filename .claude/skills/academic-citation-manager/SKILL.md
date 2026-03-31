@@ -11,6 +11,17 @@ metadata:
   depends_on: "academic-bibliography-manager"
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Citation Manager
 
 Management and validation of in-text citations in the academic paper draft. Responsible for the deterministic Citation↔Bibliography gate that blocks the pipeline if inconsistencies are found.

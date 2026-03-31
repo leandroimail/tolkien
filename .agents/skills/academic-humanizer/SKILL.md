@@ -12,6 +12,17 @@ metadata:
   depends_on: "academic-writer"
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Humanizer
 
 Humanization and naturalization of academic writing. Removes the artificiality of AI-generated text while maintaining academic register, technical terminology, and factual integrity. Consolidates best practices for humanize, humanize-academic-writing, and finnish-humanizer.

@@ -3,13 +3,21 @@ name: academic-researcher
 description: >
   Conducts systematic literature search, screening, and synthesis for academic papers using OpenAlex API.
   Produces literature review, search strategy documentation, and validated BibTeX references.
-  Triggers: /academic-researcher, "search literature", "find papers about", "literature review",
-  "pesquisar literatura", "encontrar papers sobre", "revisão de literatura".
+  Triggers: /academic-researcher, "search literature", "find papers about", "literature review"
 allowed-tools: [Read, Write, Edit, Bash, WebSearch, WebFetch]
 metadata:
   version: "1.0"
   depends_on: "academic-prd"
 ---
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
 
 # Academic Researcher
 
@@ -31,8 +39,10 @@ Systematic literature search, screening, and synthesis for academic papers. This
 
 ## Prerequisites
 
-- `prd.md` with research questions, keywords, and search strategy (preferred)
+- `{root}/paper-{slug}/prd.md` with research questions, keywords, and search strategy (preferred)
 - Or: user-provided topic, keywords, and scope for standalone use
+
+> **Root Path**: The paper must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 
 ## Modes
 

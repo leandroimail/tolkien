@@ -23,6 +23,17 @@ metadata:
   version: "1.0"
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # LaTeX Document Skill
 
 Creates, compiles, formats, and reviews any LaTeX document. Applies a deterministic

@@ -11,6 +11,17 @@ metadata:
   depends_on: "academic-researcher"
 ---
 
+# Virtualenv
+
+Note: Python scripts for this skill must be executed within the project's virtual environment.
+Activate the environment with:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
+
 # Academic Bibliography Manager
 
 Management, validation, and enrichment of the `references.bib` file for an academic article project. Ensures bibliographic integrity as a prerequisite for the Citation↔Bibliography gate.
