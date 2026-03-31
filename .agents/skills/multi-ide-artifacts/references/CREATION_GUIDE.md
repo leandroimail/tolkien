@@ -263,7 +263,7 @@ Use the templates in [CANONICAL_TEMPLATES.md](./CANONICAL_TEMPLATES.md) for the 
 | Prompts/Commands | Create `.claude/skills/<name>/SKILL.md` with `disable-model-invocation: true` para user-triggered-only; use `$ARGUMENTS` / `$N` para parâmetros |
 | Agents/Subagents | Create `.claude/agents/<name>.md` com YAML frontmatter + markdown body como system prompt; use `skills:` para preload; `tools:` allowlist ou `disallowedTools:` denylist |
 | Hooks | Configure `hooks:` key em `.claude/settings.json` (project) ou `~/.claude/settings.json` (user); ou embutir `hooks:` inline no YAML frontmatter de skills/agents |
-| MCP | Para team-shared: criar `.mcp.json` na raiz do projeto; para pessoal: `claude mcp add --scope user`; para agent-only: inline `mcpServers:` no agent frontmatter |
+| MCP | Para team-shared: create `.mcp.json` na raiz do projeto; para personal: `claude mcp add --scope user`; para agent-only: inline `mcpServers:` no agent frontmatter |
 
 ---
 
