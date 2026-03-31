@@ -3,7 +3,7 @@
 # Virtualenv
 
 Note: When this skill executes Python scripts, run them within the project's virtual environment.
-Ative com:
+Activate with:
 
 ```bash
 source .venv/bin/activate

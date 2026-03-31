@@ -43,7 +43,7 @@ In ABNT 2, in-text citations are handled mainly by two commands provided by `abn
 
 2.  **Direct Citation (Part of the text flow):** Author (Year)
     -   Command: `\citeonline{key}`
-    -   Example: `Segundo \citeonline{silva2023}, o estudo...` -> `Segundo Silva (2023), o estudo...`
+    -   Example: `According to \citeonline{silva2023}, the study...` -> `According to Silva (2023), the study...`
 
 3.  **With Page Numbers:**
     -   Command: `\cite[p.~15]{key}` -> `(AUTHOR, 2023, p. 15)`
