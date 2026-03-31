@@ -18,6 +18,8 @@ Specialized agent that coordinates the full cycle of literature research for an 
 
 Produce validated `research/literature.md` + `research/references.bib` ready for the `writing-agent`.
 
+> **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
+
 ## Workflow
 
 ```

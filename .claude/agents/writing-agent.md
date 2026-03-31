@@ -18,6 +18,8 @@ Specialized agent that coordinates the full cycle of writing an academic paper. 
 
 Produce a complete, humanized `draft/*.md` with visual elements, ready for review by the `review-agent`.
 
+> **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
+
 ## Workflow
 
 ```

@@ -18,6 +18,8 @@ Specialized agent that coordinates the full cycle of academic review. Executes t
 
 Ensure the integrity of citations/bibliography and the academic quality of the article before final formatting.
 
+> **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
+
 ## Workflow
 
 ```

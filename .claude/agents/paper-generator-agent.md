@@ -20,6 +20,9 @@ Specialized agent that converts the revised draft into a final paper in publisha
 
 Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with all sections, figures, and references resolved.
 
+> **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
+> **Output Path**: All final deliverables MUST be stored in the `output/` subfolder.
+
 ## Workflow
 
 ```

@@ -54,6 +54,9 @@ Phase 7: Peer Review             → review/review-report.md
 Phase 8: Output Formatting       → output/paper.tex/.pdf/.docx
          ↓ [G5.5: LaTeX Gate — error-free compilation]
 Phase 9: Process Documentation   → process-record.md
+
+> **Root Path**: The project must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
+> **Output Path**: All final deliverables MUST be stored in the `output/` subfolder.
 ```
 
 ## 5 Mandatory Gates (Both Modes)
@@ -86,7 +89,7 @@ Phase 9: Process Documentation   → process-record.md
 The orchestrator detects which phase the project is in and offers to continue:
 
 ```
-1. Read project folder structure:
+1. Read project folder structure from allowed roots:
    ├── prd.md exists? → Phase 0 completed
    ├── plan.md exists? → Phase 1 completed
    ├── research/literature.md + references.bib? → Phase 2 completed
