@@ -542,7 +542,7 @@ Rule types reference:
 
 ### Claude Code Memory / Rules (`CLAUDE.md`)
 
-Project-level instructions — import AGENTS.md como única fonte de verdade:
+Project-level instructions — import AGENTS.md as the single source of truth:
 
 ```md
 @AGENTS.md
@@ -550,10 +550,10 @@ Project-level instructions — import AGENTS.md como única fonte de verdade:
 
 Claude Code-specific notes:
 
-- `CLAUDE.md` deve conter **apenas** `@AGENTS.md` (uma única linha), centralizando todas as regras no AGENTS.md.
-- O import `@AGENTS.md` injeta o conteúdo completo no contexto da sessão do Claude Code.
-- **Não adicione regras extras abaixo** — qualquer regra deve ir para o próprio AGENTS.md para que todos os IDEs se beneficiem.
-- Também funciona em `.claude/CLAUDE.md` para manter a raiz do projeto limpa.
+- `CLAUDE.md` must contain **only** `@AGENTS.md` (a single line), centralizing all rules in AGENTS.md.
+- The `@AGENTS.md` import injects the full content into the Claude Code session context.
+- **Do not add extra rules below** — any rule should go into AGENTS.md itself so all IDEs benefit.
+- Also works in `.claude/CLAUDE.md` to keep the project root clean.
 
 ### Claude Code Scoped Rules (`.claude/rules/*.md`)
 

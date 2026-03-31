@@ -260,10 +260,10 @@ Use the templates in [CANONICAL_TEMPLATES.md](./CANONICAL_TEMPLATES.md) for the 
 |---|---|
 | Rules | Create `CLAUDE.md` containing **only** `@AGENTS.md` (single line) — all rules live in AGENTS.md as the single source of truth; use `.claude/rules/*.md` with `paths:` exclusively for path-scoped rules that cannot go in AGENTS.md |
 | Skills | Copy to `.claude/skills/<name>/SKILL.md` (Claude Code does not read `.agents/skills/` natively); include all subdirectories recursively |
-| Prompts/Commands | Create `.claude/skills/<name>/SKILL.md` with `disable-model-invocation: true` para user-triggered-only; use `$ARGUMENTS` / `$N` para parâmetros |
-| Agents/Subagents | Create `.claude/agents/<name>.md` com YAML frontmatter + markdown body como system prompt; use `skills:` para preload; `tools:` allowlist ou `disallowedTools:` denylist |
-| Hooks | Configure `hooks:` key em `.claude/settings.json` (project) ou `~/.claude/settings.json` (user); ou embutir `hooks:` inline no YAML frontmatter de skills/agents |
-| MCP | Para team-shared: create `.mcp.json` na raiz do projeto; para personal: `claude mcp add --scope user`; para agent-only: inline `mcpServers:` no agent frontmatter |
+| Prompts/Commands | Create `.claude/skills/<name>/SKILL.md` with `disable-model-invocation: true` for user-triggered-only; use `$ARGUMENTS` / `$N` for parameters |
+| Agents/Subagents | Create `.claude/agents/<name>.md` with YAML frontmatter + markdown body as system prompt; use `skills:` for preload; `tools:` allowlist or `disallowedTools:` denylist |
+| Hooks | Configure `hooks:` key in `.claude/settings.json` (project) or `~/.claude/settings.json` (user); or embed `hooks:` inline in the YAML frontmatter of skills/agents |
+| MCP | For team-shared: create `.mcp.json` at the project root; for personal: `claude mcp add --scope user`; for agent-only: inline `mcpServers:` in agent frontmatter |
 
 ---
 

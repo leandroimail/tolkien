@@ -544,8 +544,8 @@ Certain: "Shows", "demonstrates", "proves" (requires strongest sources)
 ### Input Content
 ```latex
 As seen in recent studies about artificial intelligence \cite{silva2023}, there is a growing trend. 
-Segundo \cite{santos2024}, a implementação de IA na saúde é vital. 
-Além disso, a redução de custos foi de 30\% \citeonline{costa2022}.
+According to \cite{santos2024}, the implementation of AI in healthcare is vital.
+Additionally, the cost reduction was 30\% \citeonline{costa2022}.
 ```
 
 ### Validation Report
