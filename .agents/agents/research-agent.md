@@ -8,6 +8,8 @@ description: >
 skills:
   - academic-researcher
   - academic-bibliography-manager
+agents:
+  - web-browser-search-agent
 ---
 
 # Research Agent
@@ -29,6 +31,13 @@ Produce validated `research/literature.md` + `research/references.bib` ready for
    ├── socratic → if the research question needs refinement
    ├── full → complete systematic search
    └── quick → fast search for N papers
+
+2.5. [Optional] Invoke web-browser-search-agent:
+     ├── When OpenAlex coverage is insufficient for the topic
+     ├── For grey literature: reports, preprints, standards, white papers
+     ├── For full-text access to web-only content
+     ├── DuckDuckGo by default, Brave if $BRAVE_SEARCH_API_KEY set
+     └── Results → validate via academic-bibliography-manager (step 4)
 
 3. Receive outputs from researcher:
    ├── research/literature.md (sources + screening + synthesis)
@@ -59,6 +68,7 @@ Produce validated `research/literature.md` + `research/references.bib` ready for
 | Invoked by orchestrator (Phase 2) | Executes full workflow, reports to orchestrator |
 | Invoked directly by user | Executes full workflow, delivers to user |
 | User already has partial .bib | Skips to Phase 4 (validation/enrichment) |
+| Web search needed beyond OpenAlex | Delegates to web-browser-search-agent for supplementary sources |
 
 ## Quality Criteria
 

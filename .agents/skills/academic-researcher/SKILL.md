@@ -6,8 +6,8 @@ description: >
   Triggers: /academic-researcher, "search literature", "find papers about", "literature review"
 allowed-tools: [Read, Write, Edit, Bash, WebSearch, WebFetch]
 metadata:
-  version: "1.0"
-  depends_on: "academic-prd"
+  version: "1.1"
+  depends_on: ["academic-prd", "web-browser-search"]
 ---
 
 Note: Python scripts for this skill must be executed within the project's virtual environment.
@@ -100,6 +100,44 @@ uv run python -B scripts/search_openalex.py \
 3. Search for contradicting evidence and alternative perspectives
 4. Fill gaps identified in Cycle 1
 5. Verify key claims across multiple sources
+
+#### Step 2.5: Supplementary Web Search (Optional)
+
+When OpenAlex results are insufficient or the topic requires grey literature,
+web-accessible reports, or recent preprints not yet indexed:
+
+1. Invoke the `web-browser-search` skill (or `web-browser-search-agent`) with refined keywords
+2. DuckDuckGo is used by default; Brave Search if `$BRAVE_SEARCH_API_KEY` is set
+3. For results that need full-text access, use browser automation to navigate and extract content
+
+**Use cases:**
+- Government reports, white papers, technical documentation
+- Recent preprints on arXiv, SSRN, bioRxiv (not yet in OpenAlex)
+- Conference proceedings and workshop papers not indexed by OpenAlex
+- Industry reports and standards documents
+
+```bash
+# Example: search for grey literature via DuckDuckGo
+source .venv/bin/activate
+python3 -c "
+from duckduckgo_search import DDGS
+results = DDGS().text('machine learning healthcare policy report filetype:pdf', max_results=10)
+for r in results:
+    print(f\"{r['title']} — {r['href']}\")
+"
+
+# Example: browse a result page for content extraction
+agent-browser open "https://example.com/report.html"
+agent-browser wait --load networkidle
+agent-browser get title
+agent-browser close
+```
+
+**Important**: Web search results require manual quality assessment.
+They do not carry the same metadata guarantees as OpenAlex entries.
+Always validate and add to `references.bib` via `academic-bibliography-manager`.
+
+> For full web search and browser reference: see `web-browser-search` skill
 
 #### Step 3: Screen Results
 
@@ -200,6 +238,7 @@ Annotate confidence: `[HIGH]` (multiple high-quality agree), `[MEDIUM]` (limited
 
 - **Input from:** `academic-prd` (keywords, criteria, research questions)
 - **Output to:** `academic-writer` (literature for citation), `academic-bibliography-manager` (BibTeX for validation/enrichment)
+- **Supplementary search via:** `web-browser-search-agent` (web queries + browsing for grey literature)
 - **Called by:** `research-agent`, `academic-orchestrator` (Phase 2)
 
 For detailed OpenAlex API reference: [references/openalex-api.md](references/openalex-api.md)
