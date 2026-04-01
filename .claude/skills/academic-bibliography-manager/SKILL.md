@@ -7,8 +7,8 @@ description: >
   "resolve DOI", "enrich references", "check .bib".
 allowed-tools: [Read, Write, Edit, Bash, WebFetch]
 metadata:
-  version: "1.0"
-  depends_on: "academic-researcher"
+  version: "1.1"
+  depends_on: ["academic-researcher", "web-browser-search"]
 ---
 
 # Virtualenv
@@ -35,6 +35,8 @@ Management, validation, and enrichment of the `references.bib` file for an acade
 - Checking if articles have been retracted (`is_retracted`)
 - Formatting `.bib` according to PRD style (APA, IEEE, ABNT, etc.)
 - Before the Citation↔Bibliography gate (prerequisite)
+- Validating DOI resolution via web browser (checking if DOI URLs resolve)
+- Verifying references that are not indexed in OpenAlex via web search
 
 ## When Not To Use
 
@@ -102,10 +104,64 @@ OpenAlex → BibTeX mapping:
 - `doi` → `doi`
 - `is_retracted` → alert flag
 
+### Phase 4.5: DOI Validation via Web (Optional)
+
+For entries where OpenAlex enrichment returns no results or the DOI is suspect,
+use the `web-browser-search` skill to validate DOI resolution:
+
+1. Open `https://doi.org/{DOI}` in browser (agent-browser or playwright-cli)
+2. Wait for redirect to complete (network idle)
+3. Check if the final URL resolves to a valid publisher page (not an error page)
+4. If resolution fails: flag as **DOI_INVALID**
+5. If resolution succeeds: extract metadata from the landing page as fallback enrichment
+
+```bash
+# DOI validation via agent-browser
+agent-browser open "https://doi.org/10.1038/s41586-024-07487-w"
+agent-browser wait --load networkidle
+FINAL_URL=$(agent-browser get url)
+TITLE=$(agent-browser get title)
+# If FINAL_URL is not an error page → DOI is valid
+agent-browser close
+
+# Extract citation metadata from publisher page (if available)
+agent-browser open "$FINAL_URL"
+agent-browser eval 'document.querySelector("meta[name=citation_title]")?.content'
+agent-browser eval 'document.querySelector("meta[name=citation_author]")?.content'
+agent-browser eval 'document.querySelector("meta[name=citation_doi]")?.content'
+agent-browser close
+```
+
+This step is particularly useful for:
+- Recently published papers whose DOI is registered but not yet in OpenAlex
+- Conference papers with DOIs that resolve to publisher pages
+- Entries imported from external sources without OpenAlex coverage
+
+> For full browser tool reference: see `web-browser-search` skill
+
 ### Phase 5: Retraction Check
 
 For each entry with a DOI, check `is_retracted` via OpenAlex:
 - If `true`: issue a **CRITICAL ALERT** and suggest removal or replacement
+
+**Web-based retraction check (when OpenAlex data is unavailable):**
+
+When OpenAlex does not have retraction data for an entry, use `web-browser-search`
+to search for retraction notices:
+
+```bash
+# Search for retraction notices via DuckDuckGo
+source .venv/bin/activate
+python3 -c "
+from duckduckgo_search import DDGS
+results = DDGS().text('\"paper title here\" retracted OR retraction notice', max_results=5)
+for r in results:
+    print(f\"{r['title']} — {r['href']}\")
+"
+```
+
+- Check if Retraction Watch database or publisher retraction notices appear in results
+- Flag if retraction evidence is found
 
 ### Phase 6: Formatting and Output
 

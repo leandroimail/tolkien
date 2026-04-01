@@ -8,6 +8,8 @@ skills:
   - academic-citation-manager
   - academic-bibliography-manager
   - academic-reviewer
+agents:
+  - web-browser-search-agent
 ---
 
 # Review Agent
@@ -30,6 +32,8 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    ├── Invoke academic-bibliography-manager:
    │   ├── Validate mandatory fields in references.bib
    │   ├── Detect duplicates and retractions
+   │   ├── [Optional] Validate DOI resolution via web-browser-search-agent
+   │   ├── [Optional] Web-based retraction check for entries without OpenAlex data
    │   └── Result: ✅ / ❌
    │
    ├── Invoke academic-citation-manager:
@@ -38,6 +42,8 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    │   │   RULE 1: ∀ \cite{key} → ∃ entry in .bib
    │   │   RULE 2: ∀ key in .bib → ∃ \cite{key} in draft
    │   │   RULE 3: ∀ entry in .bib → mandatory fields OK
+   │   ├── [Optional] For orphan citations: attempt web search to find missing refs
+   │   │   via web-browser-search-agent
    │   └── Result: ✅ PASS (0 violations) / ❌ FAIL
    │
    ├── If FAIL:
@@ -91,6 +97,7 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
 | Invoked directly with existing paper | Executes gate + full review |
 | "verify citations" | Executes only Citation↔Bibliography gate |
 | "re-review" | Executes only post-revision verification |
+| "validate DOIs" / "verify references online" | Validates DOI resolution + web verification via web-browser-search-agent |
 
 ## Gate Rules (Non-Negotiable)
 

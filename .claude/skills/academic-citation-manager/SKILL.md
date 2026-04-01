@@ -7,8 +7,8 @@ description: >
   "citation audit", "check citations", "citation gate".
 allowed-tools: [Read, Write, Edit, Bash, Grep]
 metadata:
-  version: "1.0"
-  depends_on: "academic-bibliography-manager"
+  version: "1.1"
+  depends_on: ["academic-bibliography-manager", "web-browser-search"]
 ---
 
 # Virtualenv
@@ -34,6 +34,7 @@ Management and validation of in-text citations in the academic paper draft. Resp
 - Identifying ghost citations (in `.bib` but not cited in text)
 - Executing the Citation↔Bibliography gate before review
 - Detecting duplicate keys citing the same work
+- Resolving orphan citations by searching the web for missing references
 
 ## When Not To Use
 
@@ -83,6 +84,40 @@ BLOCKING: Yes — pipeline does not advance if result ≠ 0
 ```bash
 python scripts/citation_gate.py draft/ research/references.bib
 ```
+
+### Phase 3.5: Reference Verification via Web (Optional)
+
+When orphan citations are found (RULE 1 violations) and no `.bib` entry exists,
+use the `web-browser-search` skill to attempt resolution:
+
+1. Search the web for the cited work by title or author name
+2. If found on a known publisher/database: generate a BibTeX entry and add to `references.bib`
+3. If not found: flag as a genuinely missing reference requiring manual correction
+
+```bash
+# Search for a missing reference via DuckDuckGo
+source .venv/bin/activate
+python3 -c "
+from duckduckgo_search import DDGS
+results = DDGS().text('\"Attention Is All You Need\" Vaswani 2017 site:doi.org OR site:arxiv.org', max_results=5)
+for r in results:
+    print(f\"{r['title']} — {r['href']}\")
+"
+
+# If DOI found, browse to extract full metadata
+agent-browser open "https://doi.org/10.xxxx/xxxxx"
+agent-browser wait --load networkidle
+agent-browser eval 'document.querySelector(\"meta[name=citation_title]\")?.content'
+agent-browser eval 'document.querySelector(\"meta[name=citation_author]\")?.content'
+agent-browser close
+```
+
+This helps automatically resolve orphan citations caused by:
+- References mentioned in text but forgotten in `.bib`
+- Papers referenced by informal name rather than formal citation key
+- Entries that were accidentally deleted during editing
+
+> For full web search and browser reference: see `web-browser-search` skill
 
 ### Phase 4: Format Validation
 
