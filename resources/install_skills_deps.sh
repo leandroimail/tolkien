@@ -1,6 +1,7 @@
 #!/bin/bash
 # Install dependencies for AAPMAS skills in a virtual environment
 # Generates and sets up the environment to run the agent skills.
+# Supports macOS (Homebrew) and Linux (apt-get).
 
 # Exit immediately if a command exits with a non-zero status
 set -e
@@ -8,111 +9,202 @@ set -e
 PROJECT_DIR="$(pwd)"
 RESOURCES_DIR="$PROJECT_DIR/resources"
 VENV_DIR="$PROJECT_DIR/.venv"
+OS_TYPE="$(uname -s)"
 
 echo "================================================================="
 echo "  Starting Dependency Installation for AAPMAS Agent Skills       "
 echo "================================================================="
 echo "Project Directory: $PROJECT_DIR"
 echo "Virtual Environment: $VENV_DIR"
+echo "Detected OS: $OS_TYPE"
 echo ""
 
-# 1. Check for Homebrew (macOS package manager)
-echo "[1/4] Checking System Dependencies (macOS)..."
-if ! command -v brew &> /dev/null; then
-    echo "⚠️  Homebrew not found. Please install Homebrew (https://brew.sh/) to install system dependencies."
-    echo "Skipping system package installation."
-else
-    echo "Updating Homebrew..."
-    brew update > /dev/null 2>&1
-    
-    echo "Installing required system packages (Tesseract, Poppler)..."
-    brew install tesseract poppler
-    
-    echo "Installing TinyTeX (fast, lightweight LaTeX distribution)..."
-    if ! command -v pdflatex &> /dev/null && [ ! -d "$HOME/Library/TinyTeX" ] && [ ! -d "$HOME/.TinyTeX" ]; then
-        echo "pdflatex não encontrado. Tentando instalar TinyTeX..."
-        curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh || echo "⚠️ Falha ao instalar TinyTeX via script."
-    fi
+# 1. System Dependencies
+echo "[1/5] Checking System Dependencies..."
 
-    # Determine TinyTeX bin dir (macOS default is ~/Library/TinyTeX/bin/universal-darwin)
-    TINYTEX_BIN_DIR=""
-    if [ -d "$HOME/Library/TinyTeX/bin/universal-darwin" ]; then
-        TINYTEX_BIN_DIR="$HOME/Library/TinyTeX/bin/universal-darwin"
-    elif [ -d "$HOME/.TinyTeX/bin/universal-darwin" ]; then
-        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/universal-darwin"
-    elif [ -d "$HOME/.TinyTeX/bin/x86_64-darwin" ]; then
-        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/x86_64-darwin"
-    elif [ -d "$HOME/.TinyTeX/bin/aarch64-darwin" ]; then
-        TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/aarch64-darwin"
-    fi
-
-    if [ -n "$TINYTEX_BIN_DIR" ]; then
-        echo "Atualizando PATH temporariamente para TinyTeX..."
-        export PATH="$TINYTEX_BIN_DIR:$PATH"
-
-        # Persistir o PATH em arquivos de inicialização do shell, se necessário
-        for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
-            if [ -f "$SHELL_RC" ]; then
-                if ! grep -Fq "$TINYTEX_BIN_DIR" "$SHELL_RC" 2>/dev/null; then
-                    echo "# TinyTeX bin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
-                    echo "export PATH=\"$TINYTEX_BIN_DIR:\$PATH\"" >> "$SHELL_RC"
-                    echo "Adicionado TinyTeX PATH em $SHELL_RC"
-                fi
-            fi
-        done
-
-        # We will symlink binaries later, after .venv is created in step 3.
-        # But we can install the needed LaTeX tools now using tlmgr from TinyTeX
-        if command -v tlmgr &> /dev/null; then
-            echo "Installing necessary LaTeX tools via tlmgr..."
-            tlmgr update --self || echo "⚠️  tlmgr update failed."
-            tlmgr install latexmk chktex abntex2 || echo "⚠️  tlmgr install failed."
-        fi
+if [ "$OS_TYPE" = "Darwin" ]; then
+    # --- macOS (Homebrew) ---
+    if ! command -v brew &> /dev/null; then
+        echo "WARNING: Homebrew not found. Please install Homebrew (https://brew.sh/) to install system dependencies."
+        echo "Skipping system package installation."
     else
-        echo "⚠️  Could not locate TinyTeX binaries. LaTeX tools might fail."
-    fi
+        echo "Updating Homebrew..."
+        brew update > /dev/null 2>&1
 
-    # Detect MacTeX (full) or BasicTeX and persist their texbin if present
-    if [ -d "/Library/TeX/texbin" ]; then
-        echo "Detectado MacTeX/BasicTeX em /Library/TeX/texbin"
-        export PATH="/Library/TeX/texbin:$PATH"
-        for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
-            if [ -f "$SHELL_RC" ]; then
-                if ! grep -Fq "/Library/TeX/texbin" "$SHELL_RC" 2>/dev/null; then
-                    echo "# MacTeX texbin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
-                    echo "export PATH=\"/Library/TeX/texbin:\$PATH\"" >> "$SHELL_RC"
-                    echo "Adicionado /Library/TeX/texbin em $SHELL_RC"
+        echo "Installing required system packages (Tesseract, Poppler)..."
+        brew install tesseract poppler
+
+        echo "Installing TinyTeX (fast, lightweight LaTeX distribution)..."
+        if ! command -v pdflatex &> /dev/null && [ ! -d "$HOME/Library/TinyTeX" ] && [ ! -d "$HOME/.TinyTeX" ]; then
+            echo "pdflatex not found. Attempting TinyTeX installation..."
+            curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh || echo "WARNING: Failed to install TinyTeX via script."
+        fi
+
+        # Determine TinyTeX bin dir (macOS default is ~/Library/TinyTeX/bin/universal-darwin)
+        TINYTEX_BIN_DIR=""
+        if [ -d "$HOME/Library/TinyTeX/bin/universal-darwin" ]; then
+            TINYTEX_BIN_DIR="$HOME/Library/TinyTeX/bin/universal-darwin"
+        elif [ -d "$HOME/.TinyTeX/bin/universal-darwin" ]; then
+            TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/universal-darwin"
+        elif [ -d "$HOME/.TinyTeX/bin/x86_64-darwin" ]; then
+            TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/x86_64-darwin"
+        elif [ -d "$HOME/.TinyTeX/bin/aarch64-darwin" ]; then
+            TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/aarch64-darwin"
+        fi
+
+        if [ -n "$TINYTEX_BIN_DIR" ]; then
+            echo "Updating PATH for TinyTeX..."
+            export PATH="$TINYTEX_BIN_DIR:$PATH"
+
+            for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
+                if [ -f "$SHELL_RC" ]; then
+                    if ! grep -Fq "$TINYTEX_BIN_DIR" "$SHELL_RC" 2>/dev/null; then
+                        echo "# TinyTeX bin (added by install_skills_deps.sh)" >> "$SHELL_RC"
+                        echo "export PATH=\"$TINYTEX_BIN_DIR:\$PATH\"" >> "$SHELL_RC"
+                        echo "Added TinyTeX PATH to $SHELL_RC"
+                    fi
                 fi
+            done
+
+            if command -v tlmgr &> /dev/null; then
+                echo "Installing necessary LaTeX tools via tlmgr..."
+                tlmgr update --self || echo "WARNING: tlmgr update failed."
+                tlmgr install latexmk chktex abntex2 || echo "WARNING: tlmgr install failed."
             fi
-        done
+        else
+            echo "WARNING: Could not locate TinyTeX binaries. LaTeX tools might fail."
+        fi
+
+        # Detect MacTeX (full) or BasicTeX and persist their texbin if present
+        if [ -d "/Library/TeX/texbin" ]; then
+            echo "Detected MacTeX/BasicTeX at /Library/TeX/texbin"
+            export PATH="/Library/TeX/texbin:$PATH"
+            for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
+                if [ -f "$SHELL_RC" ]; then
+                    if ! grep -Fq "/Library/TeX/texbin" "$SHELL_RC" 2>/dev/null; then
+                        echo "# MacTeX texbin (added by install_skills_deps.sh)" >> "$SHELL_RC"
+                        echo "export PATH=\"/Library/TeX/texbin:\$PATH\"" >> "$SHELL_RC"
+                        echo "Added /Library/TeX/texbin to $SHELL_RC"
+                    fi
+                fi
+            done
+        fi
+
+        echo "Installing LibreOffice (required by docx skill for soffice command)..."
+        brew install --cask libreoffice || echo "WARNING: Failed to install LibreOffice via brew. Check manually."
+
+        echo "System packages installed successfully (macOS)."
     fi
 
-    echo "Installing LibreOffice (required by docx skill for soffice command)..."
-    brew install --cask libreoffice || echo "⚠️ Falha ao instalar LibreOffice via brew. Verifique manualmente."
+elif [ "$OS_TYPE" = "Linux" ]; then
+    # --- Linux (apt-get) ---
+    if command -v apt-get &> /dev/null; then
+        echo "Detected apt-get package manager."
+        echo "Installing system packages..."
+        sudo apt-get update -y
+        sudo apt-get install -y \
+            tesseract-ocr \
+            poppler-utils \
+            libreoffice \
+            chromium-browser || sudo apt-get install -y chromium || echo "WARNING: chromium install failed, try installing manually."
 
-    echo "System packages installed successfully."
+        echo "Installing TinyTeX..."
+        if ! command -v pdflatex &> /dev/null; then
+            curl -sL "https://yihui.org/tinytex/install-bin-unix.sh" | sh || echo "WARNING: Failed to install TinyTeX."
+        fi
+
+        # Determine TinyTeX bin dir (Linux)
+        TINYTEX_BIN_DIR=""
+        if [ -d "$HOME/.TinyTeX/bin/x86_64-linux" ]; then
+            TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/x86_64-linux"
+        elif [ -d "$HOME/.TinyTeX/bin/aarch64-linux" ]; then
+            TINYTEX_BIN_DIR="$HOME/.TinyTeX/bin/aarch64-linux"
+        fi
+
+        if [ -n "$TINYTEX_BIN_DIR" ]; then
+            export PATH="$TINYTEX_BIN_DIR:$PATH"
+            for SHELL_RC in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+                if [ -f "$SHELL_RC" ]; then
+                    if ! grep -Fq "$TINYTEX_BIN_DIR" "$SHELL_RC" 2>/dev/null; then
+                        echo "# TinyTeX bin (added by install_skills_deps.sh)" >> "$SHELL_RC"
+                        echo "export PATH=\"$TINYTEX_BIN_DIR:\$PATH\"" >> "$SHELL_RC"
+                    fi
+                fi
+            done
+
+            if command -v tlmgr &> /dev/null; then
+                echo "Installing LaTeX tools via tlmgr..."
+                tlmgr update --self || echo "WARNING: tlmgr update failed."
+                tlmgr install latexmk chktex abntex2 || echo "WARNING: tlmgr install failed."
+            fi
+        fi
+
+        echo "System packages installed successfully (Linux)."
+    else
+        echo "WARNING: apt-get not found. Please install system dependencies manually:"
+        echo "  tesseract-ocr, poppler-utils, libreoffice, chromium"
+    fi
+else
+    echo "WARNING: Unsupported OS ($OS_TYPE). Please install system dependencies manually."
 fi
 echo ""
 
-# 2. Check for Node.js / NPM (required for docx skill)
-echo "[2/4] Checking Node.js and NPM..."
+# 2. Node.js & NPM
+echo "[2/5] Checking Node.js and NPM..."
 if ! command -v npm &> /dev/null; then
-    echo "⚠️  NPM not found. Please install Node.js to use the 'docx' skill."
-    if command -v brew &> /dev/null; then
+    echo "WARNING: NPM not found. Please install Node.js."
+    if [ "$OS_TYPE" = "Darwin" ] && command -v brew &> /dev/null; then
         echo "Installing Node.js via Homebrew..."
         brew install node
-        echo "Installing global NPM packages..."
-        npm install -g docx
+    elif [ "$OS_TYPE" = "Linux" ] && command -v apt-get &> /dev/null; then
+        echo "Installing Node.js via apt-get..."
+        sudo apt-get install -y nodejs npm
     fi
-else
+fi
+
+if command -v npm &> /dev/null; then
     echo "Installing global NPM packages (docx)..."
     npm install -g docx
     echo "NPM packages installed successfully."
+else
+    echo "WARNING: NPM still not available. Skipping NPM packages."
 fi
 echo ""
 
-# 3. Setting up Python Virtual Environment
-echo "[3/4] Setting up Python Virtual Environment..."
+# 3. Browser Automation Tools
+echo "[3/5] Installing Browser Automation Tools..."
+
+if command -v npm &> /dev/null; then
+    # agent-browser
+    if ! command -v agent-browser &> /dev/null; then
+        echo "Installing agent-browser..."
+        npm install -g agent-browser || echo "WARNING: Failed to install agent-browser."
+        if command -v agent-browser &> /dev/null; then
+            echo "Downloading Chrome for agent-browser..."
+            agent-browser install || echo "WARNING: agent-browser install (Chrome download) failed."
+        fi
+    else
+        echo "agent-browser already installed."
+    fi
+
+    # playwright-cli
+    if ! command -v playwright-cli &> /dev/null; then
+        echo "Installing @playwright/cli..."
+        npm install -g @playwright/cli@latest || echo "WARNING: Failed to install @playwright/cli."
+    else
+        echo "playwright-cli already installed."
+    fi
+
+    # Install Playwright browsers (Chromium)
+    echo "Installing Playwright browsers (Chromium)..."
+    npx playwright install chromium 2>/dev/null || echo "WARNING: Playwright browser install failed."
+else
+    echo "WARNING: NPM not available. Skipping browser automation tools."
+fi
+echo ""
+
+# 4. Python Virtual Environment
+echo "[4/5] Setting up Python Virtual Environment..."
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment at $VENV_DIR..."
     python3 -m venv "$VENV_DIR"
@@ -138,42 +230,46 @@ if [ -n "$TINYTEX_BIN_DIR" ]; then
     echo ""
 fi
 
-# If pdflatex still missing, offer to install BasicTeX (smaller than MacTeX)
+# If pdflatex still missing, offer to install BasicTeX (macOS only)
 if ! command -v pdflatex &> /dev/null; then
-    if command -v brew &> /dev/null; then
-        echo "pdflatex ainda não encontrado. Instalando BasicTeX via Homebrew Cask..."
-        brew install --cask basictex || echo "⚠️ Falha ao instalar basictex via brew. Você pode instalar MacTeX manualmente."
+    if [ "$OS_TYPE" = "Darwin" ] && command -v brew &> /dev/null; then
+        echo "pdflatex still not found. Installing BasicTeX via Homebrew Cask..."
+        brew install --cask basictex || echo "WARNING: Failed to install basictex via brew."
         if [ -d "/Library/TeX/texbin" ]; then
             export PATH="/Library/TeX/texbin:$PATH"
             for SHELL_RC in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.bash_profile"; do
                 if [ -f "$SHELL_RC" ]; then
                     if ! grep -Fq "/Library/TeX/texbin" "$SHELL_RC" 2>/dev/null; then
-                        echo "# MacTeX texbin (adicionado por install_skills_deps.sh)" >> "$SHELL_RC"
+                        echo "# MacTeX texbin (added by install_skills_deps.sh)" >> "$SHELL_RC"
                         echo "export PATH=\"/Library/TeX/texbin:\$PATH\"" >> "$SHELL_RC"
                     fi
                 fi
             done
         fi
-    else
-        echo "Homebrew não disponível para instalar BasicTeX. Instale MacTeX/BasicTeX manualmente."
     fi
 fi
 echo ""
 
-# 4. Installing Python Packages
-echo "[4/4] Installing Python Packages..."
+# 5. Python Packages
+echo "[5/5] Installing Python Packages..."
 echo "The following dependencies were identified across the skills:"
 echo "- pyyaml (academic-prd)"
 echo "- pandas, matplotlib (academic-media)"
 echo "- pypdf, pdfplumber, reportlab, pillow, pytesseract, pdf2image (pdf)"
 echo "- requests (academic-researcher)"
 echo "- defusedxml (docx office scripts)"
+echo "- duckduckgo-search (web-browser-search / duckducksearch)"
 
 # Use existing requirements_skills.txt if present, otherwise create a default
 if [ -f "$RESOURCES_DIR/requirements_skills.txt" ]; then
-    echo "Usando $RESOURCES_DIR/requirements_skills.txt existente."
+    echo "Using existing $RESOURCES_DIR/requirements_skills.txt."
+    # Ensure duckduckgo-search is in the file
+    if ! grep -q "duckduckgo-search" "$RESOURCES_DIR/requirements_skills.txt"; then
+        echo "Adding duckduckgo-search to requirements_skills.txt..."
+        echo "duckduckgo-search" >> "$RESOURCES_DIR/requirements_skills.txt"
+    fi
 else
-    echo "Criando $RESOURCES_DIR/requirements_skills.txt padrão."
+    echo "Creating default $RESOURCES_DIR/requirements_skills.txt."
     cat << EOF > "$RESOURCES_DIR/requirements_skills.txt"
 pyyaml
 requests
@@ -186,6 +282,7 @@ pillow
 pytesseract
 pdf2image
 defusedxml
+duckduckgo-search
 EOF
 fi
 
@@ -197,8 +294,13 @@ echo ""
 echo "================================================================="
 echo "  Installation Complete!                                         "
 echo "================================================================="
-echo "System, Node.js, and Python dependencies have been set up."
+echo "System, Node.js, Browser Tools, and Python dependencies set up."
 echo "Dependencies list saved to: $RESOURCES_DIR/requirements_skills.txt"
+echo ""
+echo "Installed components:"
+echo "  - System: tesseract, poppler, TinyTeX, LibreOffice"
+echo "  - NPM: docx, agent-browser, @playwright/cli"
+echo "  - Python: $(cat $RESOURCES_DIR/requirements_skills.txt | tr '\n' ', ')"
 echo ""
 echo "To activate the virtual environment later, run:"
 echo "source .venv/bin/activate"

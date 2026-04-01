@@ -9,3 +9,4 @@ pillow
 pytesseract
 pdf2image
 defusedxml
+duckduckgo-search
