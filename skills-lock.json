@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "computedHash": "6bee044f51bfe9bcc20e2a779ca2a31fae5c6b0095ad30b264ecef9a27cb3ce6"
+    },
+    "duckducksearch": {
+      "source": "xsailor511/duckduck-web-search",
+      "sourceType": "github",
+      "computedHash": "d840255b2f8a018dc65c74f587cc8b4fa16ea7ad79c2c57640fe48a7c3ebcfd4"
+    },
+    "playwright-cli": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "computedHash": "b59ec572042f6191e62c2fcf11623846769bfdf26582540daf0ddd69bf401be3"
+    },
+    "web-search": {
+      "source": "brave/brave-search-skills",
+      "sourceType": "github",
+      "computedHash": "3bd3c40e767bbba3cfc4fd466dbe22aab5d0cb8476633d472655e20fa560ba92"
+    }
+  }
+}
