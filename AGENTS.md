@@ -1,6 +1,6 @@
 # Academic Article Production Multi-Agent System (tolkien)
 
-The **Academic Article Production Multi-Agent System (tolkien)** is a powerful multi-agent framework designed to support the complete production cycle of academic and scientific papers. It is fully compatible with both **Claude Code** (CLI) and **OpenCode**, using a standardized structure of specialized agents and atomic skills.
+The **Academic Article Production Multi-Agent System (tolkien)** is a powerful multi-agent framework designed to support the complete production cycle of academic and scientific papers. It is fully compatible with **Claude Code** (CLI), **OpenCode**, and **OpenAI Codex**, using a standardized structure of specialized agents and atomic skills.
 
 ## 🚀 Core Methodology: Academic SDD
 

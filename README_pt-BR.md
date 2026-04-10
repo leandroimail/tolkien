@@ -68,10 +68,9 @@ O tolkien armazena sua configuração em dois diretórios paralelos:
 | Diretório | Ferramenta |
 |-----------|------------|
 | `.claude/` | [Claude Code](https://claude.ai/code) — CLI da Anthropic |
-| `.agents/` | [OpenCode](https://opencode.ai) |
-| `.codex/` | [OpenAI Codex](https://openai.com/codex) |
+| `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) |
 
-Ambos os diretórios contêm definições de agentes e skills idênticas. Você pode usar o tolkien com qualquer uma das ferramentas sem precisar modificar os arquivos do seu projeto de artigo.
+Ambos os diretórios contêm definições de agentes e skills idênticas. O OpenAI Codex usa o mesmo diretório `.agents/` que o OpenCode. Você pode usar o tolkien com qualquer uma das ferramentas sem precisar modificar os arquivos do seu projeto de artigo.
 
 ---
 
