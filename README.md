@@ -17,6 +17,12 @@ For full license text, see [LICENSE](LICENSE) file.
 
 ---
 
+## Documentation in Other Languages
+
+- [README em Português (Brazilian Portuguese)](README_pt-BR.md) — Documentação completa disponível em português.
+
+---
+
 ## Features
 
 - **10-phase sequential pipeline** with 6 mandatory quality gates (G1–G5.5) — from research question to compiled PDF
