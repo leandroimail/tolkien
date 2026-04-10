@@ -1,93 +1,118 @@
 # tolkien
 
+**Academic Article Production Multi-Agent System** — a framework for producing complete, publication-ready scientific papers from first prompt to final PDF, powered by specialized AI agents and skills running inside Claude Code and OpenCode.
 
+![Compatible with Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-blue)
+![Compatible with OpenCode](https://img.shields.io/badge/OpenCode-compatible-green)
+![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-yellow)
+![Platform macOS | Linux](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey)
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Features
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **10-phase sequential pipeline** with 6 mandatory quality gates (G1–G5.5) — from research question to compiled PDF
+- **6 specialized agents**: orchestrator, research, writing, review, paper generator, and web search
+- **21 atomic skills**: literature search (OpenAlex), LaTeX compilation, 5-D peer review, humanization, citation validation, and more
+- **Cross-IDE compatibility** — identical configuration for Claude Code (`.claude/`) and OpenCode (`.agents/`)
+- **Spec-Driven Development** adapted for science — every paper starts with a validated PRD and implementation plan
 
-## Add your files
+---
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Quick Start
 
+```bash
+# 1. Clone the repository
+git clone https://gitlab.com/leandroimail/tolkien.git
+cd tolkien
+
+# 2. Install all dependencies (system, Node.js, Python)
+bash resources/install_skills_deps.sh
+
+# 3. Activate the Python virtual environment
+source .venv/bin/activate
+
+# 4. Start a new paper project (Claude Code)
+/academic-orchestrator "Start a new research article about transformer architectures"
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/leandroimail/tolkien.git
-git branch -M main
-git push -uf origin main
+
+The orchestrator will guide you through a structured PRD interview and then execute the full pipeline automatically, pausing at each mandatory gate for your review.
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/ARCHITECTURE.md) | System diagram, 3-layer model, 10-phase pipeline, gate criteria, data flow |
+| [Definitions](docs/DEFINITIONS.md) | Glossary, agent inventory, skill catalog, directory specification |
+| [Tutorial](docs/TUTORIAL.md) | Step-by-step guide: installation, Claude Code usage, OpenCode usage, end-to-end example, troubleshooting |
+| [Quickstart](docs/QUICKSTART.md) | 5-minute crash course with copy-paste commands (EN + pt-BR) |
+| [System PRD](docs/PRD-academic-multiagent-system.md) | Full technical specification for the tolkien system itself |
+
+---
+
+## Compatibility
+
+tolkien stores its configuration in two parallel directories:
+
+| Directory | AI Tool |
+|-----------|---------|
+| `.claude/` | [Claude Code](https://claude.ai/code) — Anthropic's CLI |
+| `.agents/` | [OpenCode](https://opencode.ai) |
+
+Both directories contain identical agent and skill definitions. You can use tolkien with either tool without any changes to your paper project files.
+
+---
+
+## Project Structure
+
+All paper projects must be created under one of the valid root directories:
+
+```text
+projects/   papers/   .projects/   .papers/
 ```
 
-## Integrate with your tools
+Each project follows a standard layout:
 
-* [Set up project integrations](https://gitlab.com/leandroimail/tolkien/-/settings/integrations)
+```text
+papers/paper-{slug}/
+├── prd.md                 # Paper requirements
+├── plan.md                # Execution roadmap
+├── research/              # Literature + references.bib
+├── draft/                 # Section markdown files
+├── review/                # Review reports + revision logs
+├── output/                # Final deliverables (PDF, LaTeX, DOCX)
+└── process-record.md      # Human-AI collaboration log
+```
 
-## Collaborate with your team
+---
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+## Pipeline Overview
 
-## Test and Deploy
+```mermaid
+flowchart LR
+    p0["Phase 0\nPRD Generation"] -->|G1| p1["Phase 1\nImplementation Plan"]
+    p1 -->|G2| p2["Phase 2\nLiterature Research"]
+    p2 --> p3["Phase 3\nOutline"]
+    p3 -->|G3| p4["Phase 4\nFull-text Drafting"]
+    p4 --> p5["Phase 5\nCitation Validation"]
+    p5 -->|G4| p6["Phase 6\nHumanization"]
+    p6 --> p7["Phase 7\nPeer Review"]
+    p7 -->|G5| p8["Phase 8\nOutput Generation"]
+    p8 -->|G5.5| p9["Phase 9\nProcess Documentation"]
+```
 
-Use the built-in continuous integration in GitLab.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the complete pipeline diagram with gate criteria.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+---
 
-***
+## Prerequisites
 
-# Editing this README
+- macOS or Linux
+- Python 3.8+
+- Node.js 16+
+- [Claude Code CLI](https://claude.ai/code) or [OpenCode](https://opencode.ai)
+- Homebrew (macOS) or apt-get (Linux) for system dependencies
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Run `bash resources/install_skills_deps.sh` to install all remaining dependencies automatically.
