@@ -1,16 +1,4 @@
 ---
-
-# Virtualenv
-
-Note: When this skill executes Python scripts, run them within the project's virtual environment.
-Ative com:
-
-```bash
-source .venv/bin/activate
-```
-
-Alternatively, use `uv run python -B ...` with the `.venv` active.
-
 name: multi-ide-artifacts
 description: >
   Designs, deduplicates, and converts AI agent artifacts (rules, skills, prompts,
@@ -22,6 +10,17 @@ description: >
 ---
 
 # Multi-IDE Agent Artifacts
+
+## Virtualenv
+
+Note: When this skill executes Python scripts, run them within the project's virtual environment.
+Ative com:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv run python -B ...` with the `.venv` active.
 
 ## Purpose
 
