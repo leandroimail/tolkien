@@ -30,7 +30,7 @@ source .venv/bin/activate
 # Web Browser Search
 
 Unified interface for web searching and browser automation. Coordinates four
-underlying skills to provide seamless web access for the AAPMAS pipeline and
+underlying skills to provide seamless web access for the tolkien pipeline and
 standalone use.
 
 ## Purpose

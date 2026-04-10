@@ -17,7 +17,7 @@ skills:
 
 # Web Browser Search Agent
 
-Specialized agent that coordinates web searching and browser automation for the AAPMAS pipeline. Provides a unified interface for finding information online and interacting with web pages.
+Specialized agent that coordinates web searching and browser automation for the tolkien pipeline. Provides a unified interface for finding information online and interacting with web pages.
 
 ## Responsibility
 

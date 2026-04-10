@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install dependencies for AAPMAS skills in a virtual environment
+# Install dependencies for tolkien skills in a virtual environment
 # Generates and sets up the environment to run the agent skills.
 # Supports macOS (Homebrew) and Linux (apt-get).
 
@@ -12,7 +12,7 @@ VENV_DIR="$PROJECT_DIR/.venv"
 OS_TYPE="$(uname -s)"
 
 echo "================================================================="
-echo "  Starting Dependency Installation for AAPMAS Agent Skills       "
+echo "  Starting Dependency Installation for tolkien Agent Skills       "
 echo "================================================================="
 echo "Project Directory: $PROJECT_DIR"
 echo "Virtual Environment: $VENV_DIR"

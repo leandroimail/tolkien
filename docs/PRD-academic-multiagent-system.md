@@ -1,4 +1,4 @@
-# Technical PRD: Multi-Agent System for Scientific Article Production (AAPMAS)
+# Technical PRD: Multi-Agent System for Scientific Article Production (tolkien)
 
 **Version:** 1.0
 **Date:** 2026-03-29
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-The **Academic Article Production Multi-Agent System (AAPMAS)** is a multi-agent harness for supporting the production of academic and scientific papers, runnable in **Claude Code** and **OpenCode**. The system follows a **Spec-Driven Development (SDD)** approach adapted to the academic context: the process starts with an **Academic PRD** (paper requirements document), which generates an implementation plan with tasks, and then executes the writing pipeline sequentially with mandatory human confirmation checkpoints.
+The **Academic Article Production Multi-Agent System (tolkien)** is a multi-agent harness for supporting the production of academic and scientific papers, runnable in **Claude Code** and **OpenCode**. The system follows a **Spec-Driven Development (SDD)** approach adapted to the academic context: the process starts with an **Academic PRD** (paper requirements document), which generates an implementation plan with tasks, and then executes the writing pipeline sequentially with mandatory human confirmation checkpoints.
 
 The system is composed of **atomic skills** (specialized capabilities) and **agents** (configurations that orchestrate those skills). Skills are the building blocks; agents decide which skills to use and in what order.
 
@@ -768,7 +768,7 @@ BLOCKING: Yes - pipeline does not advance if result != 0 violations
 
 ### 9.1 Normative Reference: `creating-skills`
 
-**Every creation, consolidation, or modification of a skill in AAPMAS must follow the concepts, principles, and specifications defined in the `creating-skills` skill** (`.claude/skills/creating-skills/` and `.agents/skills/creating-skills/`).
+**Every creation, consolidation, or modification of a skill in tolkien must follow the concepts, principles, and specifications defined in the `creating-skills` skill** (`.claude/skills/creating-skills/` and `.agents/skills/creating-skills/`).
 
 This skill is the **normative reference** for any skill implementation work in this project. It is not optional.
 
@@ -846,7 +846,7 @@ Every new skill must be validated against the `creating-skills` criteria before 
 - Scripts in `scripts/` if there is deterministic logic
 - Tested in Claude Code AND OpenCode
 
-### 9.3 Application to AAPMAS
+### 9.3 Application to tolkien
 
 For each skill listed in the Roadmap (§14), the implementation process is:
 
@@ -1040,4 +1040,4 @@ For implementing each skill, consult the following legacy skills in `.agents_old
 | **Agentic self-review** | Qualitative evaluation of the agent's own output |
 | **Citation↔Bibliography Gate** | Cross-validation between in-text citations and .bib entries |
 | **Mid-entry** | Entering the pipeline at a phase other than the initial one |
-| **AAPMAS** | Academic Article Production Multi-Agent System - system name |
+| **tolkien** | Academic Article Production Multi-Agent System - system name |

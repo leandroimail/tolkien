@@ -1,4 +1,4 @@
-# Research Initiation Form - AAPMAS
+# Research Initiation Form - tolkien
 
 This form is designed to collect all the necessary information to start the academic article production pipeline (Phase 0: Academic PRD).
 

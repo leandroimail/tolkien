@@ -1,10 +1,10 @@
-# Academic Article Production Multi-Agent System (AAPMAS)
+# Academic Article Production Multi-Agent System (tolkien)
 
-The **Academic Article Production Multi-Agent System (AAPMAS)** is a powerful multi-agent framework designed to support the complete production cycle of academic and scientific papers, running natively on **Claude Code CLI** via the `.claude/` configuration directory.
+The **Academic Article Production Multi-Agent System (tolkien)** is a powerful multi-agent framework designed to support the complete production cycle of academic and scientific papers, running natively on **Claude Code CLI** via the `.claude/` configuration directory.
 
 ## Core Methodology: Academic SDD
 
-AAPMAS follows an adapted **Spec-Driven Development (SDD)** approach for scientific writing. The process is strictly sequential and traceable:
+tolkien follows an adapted **Spec-Driven Development (SDD)** approach for scientific writing. The process is strictly sequential and traceable:
 
 1. **Academic PRD** (`prd.md`): Defines the "what" (research questions, constraints, style).
 2. **Implementation Plan** (`plan.md`): Translation of the PRD into a step-by-step roadmap.
@@ -50,7 +50,7 @@ Skills are atomic capabilities that perform specific tasks within the pipeline. 
 
 ## The 10-Phase Sequential Pipeline
 
-AAPMAS ensures quality through a structured flow with **5 Mandatory Gates (Checkpoints)**:
+tolkien ensures quality through a structured flow with **5 Mandatory Gates (Checkpoints)**:
 
 1. **Phase 0-1 (The Map)**: PRD Generation → Implementation Plan [Gate G1 & G2]
 2. **Phase 2-3 (The Foundation)**: Literature Research → Outline & Architecture [Gate G3]
@@ -85,7 +85,7 @@ Inside the chosen root, a subfolder with the project or paper name (slug) MUST b
 
 ## Configuration & Environment
 
-AAPMAS for Claude Code is configured exclusively via the **`.claude/`** directory at the repository root:
+tolkien for Claude Code is configured exclusively via the **`.claude/`** directory at the repository root:
 - **`.claude/commands/`**: All skill and agent definitions (`.md` files).
 - **`.claude/settings.json`**: Hooks and behavioral configuration for the Claude Code harness.
 

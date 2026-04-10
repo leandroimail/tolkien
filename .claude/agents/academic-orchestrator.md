@@ -1,7 +1,7 @@
 ---
 name: academic-orchestrator
 description: >
-  Master coordinator for the AAPMAS pipeline. Executes phases in order,
+  Master coordinator for the tolkien pipeline. Executes phases in order,
   dispatches correct skills and agents, manages checkpoints, and maintains state.
   Trigger: /academic-orchestrator, "start academic pipeline",
   "write full article", "academic pipeline", /status.
@@ -17,7 +17,7 @@ agents:
 
 # Academic Orchestrator
 
-Master coordinator for the Academic Article Production Multi-Agent System (AAPMAS). Executes the 10-phase sequential pipeline, dispatches the correct skills and agents in each phase, manages mandatory and optional checkpoints, maintains session state, and supports mid-entry.
+Master coordinator for the Academic Article Production Multi-Agent System (tolkien). Executes the 10-phase sequential pipeline, dispatches the correct skills and agents in each phase, manages mandatory and optional checkpoints, maintains session state, and supports mid-entry.
 
 ## Two Modes of Operation
 
