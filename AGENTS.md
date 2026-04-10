@@ -78,16 +78,38 @@ Inside the chosen root, a subfolder with the project or paper name (slug) MUST b
 ├── draft/                    ← Markdown sections (abstract, intro, methods, etc.)
 ├── review/                   ← Review reports and revision logs
 ├── output/                   ← ALL generated deliverables (PDF, LaTeX, etc.)
+├── resources/                ← (OPTIONAL) Base/auxiliary files provided by researcher
 └── process-record.md         ← Human-AI collaboration history
 ```
+
+> **About `resources/`**: This is an **optional** directory for base and auxiliary files. It is not mandatory — the pipeline works without it. Use it to store: reference guidelines, raw data, pre-existing documents, or any researcher-provided material that aids paper construction.
 
 ---
 
 ## ⚙️ Configuration & Environment
 
 tolkien is configured via the following directories:
-- **`.agents/`**: Standard configuration for OpenCode.
+- **`.agents/`**: Standard configuration for OpenCode and OpenAI Codex.
 - **`.claude/`**: Mirror configuration for Claude Code (CLI).
+
+### Project Root Directory Structure
+
+```
+tolkien/
+├── .agents/                    ← OpenCode & OpenAI Codex configuration
+├── .claude/                    ← Claude Code configuration
+├── resources/                  ← Installation scripts and Python dependencies
+│   ├── install_skills_deps.sh  ← Main dependency installer (run this first)
+│   └── requirements_skills.txt  ← Python package list
+├── templates/                  ← Ready-to-use templates for paper projects
+│   ├── research_request_form.md ← Structured form for PRD interview
+│   └── systematic_review_protocol.yaml ← PRISMA-aligned protocol template
+├── .venv/                      ← Python virtual environment (created by install script)
+├── docs/                       ← System documentation
+├── papers/                     ← Paper projects (one subdirectory per project)
+├── projects/                   ← Alternative root for paper projects
+└── AGENTS.md                   ← This file
+```
 
 ### Prerequisites
 To ensure all skills work correctly (especially for LaTeX, PDF, and Media generation), run the setup script from the repository root:

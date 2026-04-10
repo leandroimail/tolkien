@@ -41,6 +41,7 @@ Systematic literature search, screening, and synthesis for academic papers. This
 
 - `{root}/paper-{slug}/prd.md` with research questions, keywords, and search strategy (preferred)
 - Or: user-provided topic, keywords, and scope for standalone use
+- **`resources/`** (optional) — base/auxiliary files for research (raw data, reference documents, guidelines)
 
 > **Root Path**: The paper must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 

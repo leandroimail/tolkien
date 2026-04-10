@@ -137,7 +137,7 @@ Before delivering, verify:
 - [ ] Tasks are specific (include PRD-derived values, not generic placeholders)
 - [ ] Word allocations sum to a reasonable total for the paper type
 - [ ] Mandatory checkpoints G1-G5 are present
-- [ ] Deliverable paths match: `research/`, `draft/`, `review/`, `output/`
+- [ ] Deliverable paths match: `research/`, `draft/`, `review/`, `output/`, `resources/` (if present)
 - [ ] Plan reflects all PRD constraints (template, language, structure)
 
 **CHECKPOINT: Present plan summary and ask user to confirm before proceeding.**

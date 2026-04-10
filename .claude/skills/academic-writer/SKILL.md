@@ -46,6 +46,7 @@ Writing of academic articles with publishable quality, section by section. Conso
 2. **`draft/outline.md`** — approved structure with word count allocation
 3. **`research/literature.md`** — literature synthesis
 4. **`research/references.bib`** — available references for citation
+5. **`resources/`** (optional) — base/auxiliary files provided by researcher (guidelines, raw data, reference docs)
 
 > **Root Path**: The paper must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 

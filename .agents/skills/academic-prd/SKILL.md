@@ -50,7 +50,17 @@ Generate the foundational requirements document (`prd.md`) for an academic artic
 # Create project folder structure in one of the allowed roots
 # roots: projects/, papers/, .projects/, .papers/
 mkdir -p {root}/paper-{slug}/{research,draft,review,output}
+# Optional: resources/ folder for base/auxiliary files (guidelines, raw data, reference docs)
+mkdir -p {root}/paper-{slug}/resources
 ```
+
+> **About the `resources/` folder**: This is an **optional** directory for base and auxiliary files provided by the researcher. It is not mandatory — the pipeline works without it. Use it to store:
+> - Reference guidelines, protocols, or standards
+> - Raw data files to be analyzed
+> - Previously collected documents or pre-existing research
+> - Templates not handled by the `template` field in PRD
+>
+> The `resources/` folder is available for all phases; skills and agents may reference it when present.
 
 Ask the user for:
 1. The **root directory** where the project should be created (`projects/`, `papers/`, `.projects/`, or `.papers/`).
@@ -147,7 +157,8 @@ Before delivering, verify:
 - [ ] Coherence validation passes (`validate_prd.py` returns 0 errors)
 - [ ] `prd.md` written to `paper-{slug}/prd.md`
 - [ ] Summary printed and user confirmed
-- [ ] Project directory structure created
+- [ ] Project directory structure created (`research/`, `draft/`, `review/`, `output/`)
+- [ ] `resources/` folder created if researcher indicated intent to provide base files
 
 ## Outputs
 

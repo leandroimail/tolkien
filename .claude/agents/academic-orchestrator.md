@@ -97,7 +97,8 @@ The orchestrator detects which phase the project is in and offers to continue:
    ├── draft/*.md (multiple sections)? → Phase 4 in progress/completed
    ├── review/citation-report.md? → Phase 5 completed
    ├── review/review-report.md? → Phase 7 completed
-   └── output/paper.pdf? → Phase 8 completed
+   ├── output/paper.pdf? → Phase 8 completed
+   └── resources/? (optional) → base/auxiliary files present
 
 2. Present detected state to user:
    "I detected that your project is in Phase 4 (drafting).
