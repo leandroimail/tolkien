@@ -1,9 +1,10 @@
 # tolkien
 
-**Sistema Multi-Agente de Produção de Artigos Acadêmicos** — um framework para produzir artigos científicos completos e prontos para publicação, desde o primeiro prompt até o PDF final, utilizando agentes e skills especializados dentro do Claude Code e do OpenCode.
+**Sistema Multi-Agente de Produção de Artigos Acadêmicos** — um framework para produzir artigos científicos completos e prontos para publicação, desde o primeiro prompt até o PDF final, utilizando agentes e skills especializados dentro do Claude Code, OpenCode e OpenAI Codex.
 
 ![Compatível com Claude Code](https://img.shields.io/badge/Claude%20Code-compatível-blue)
 ![Compatível com OpenCode](https://img.shields.io/badge/OpenCode-compatível-green)
+![Compatível com OpenAI Codex](https://img.shields.io/badge/OpenAI%20Codex-compatível-orange)
 ![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-yellow)
 ![Plataforma macOS | Linux](https://img.shields.io/badge/Plataforma-macOS%20%7C%20Linux-lightgrey)
 
@@ -68,6 +69,7 @@ O tolkien armazena sua configuração em dois diretórios paralelos:
 |-----------|------------|
 | `.claude/` | [Claude Code](https://claude.ai/code) — CLI da Anthropic |
 | `.agents/` | [OpenCode](https://opencode.ai) |
+| `.codex/` | [OpenAI Codex](https://openai.com/codex) |
 
 Ambos os diretórios contêm definições de agentes e skills idênticas. Você pode usar o tolkien com qualquer uma das ferramentas sem precisar modificar os arquivos do seu projeto de artigo.
 
@@ -120,7 +122,7 @@ Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o diagrama completo d
 - macOS ou Linux
 - Python 3.8+
 - Node.js 16+
-- [Claude Code CLI](https://claude.ai/code) ou [OpenCode](https://opencode.ai)
+- [Claude Code CLI](https://claude.ai/code), [OpenCode](https://opencode.ai) ou [OpenAI Codex](https://openai.com/codex)
 - Homebrew (macOS) ou apt-get (Linux) para dependências do sistema
 
 Execute `bash resources/install_skills_deps.sh` para instalar todas as dependências restantes automaticamente.
