@@ -9,6 +9,14 @@
 
 ---
 
+## License
+
+This project is licensed under the **GNU General Public License v2.0 (GPL-2.0)**.
+
+For full license text, see [LICENSE](LICENSE) file.
+
+---
+
 ## Features
 
 - **10-phase sequential pipeline** with 6 mandatory quality gates (G1–G5.5) — from research question to compiled PDF

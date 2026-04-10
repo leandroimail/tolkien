@@ -9,6 +9,14 @@
 
 ---
 
+## Licença
+
+Este projeto está licenciado sob a **GNU General Public License v2.0 (GPL-2.0)**.
+
+Para o texto completo da licença, consulte o arquivo [LICENSE](LICENSE).
+
+---
+
 ## Funcionalidades
 
 - **Pipeline sequencial de 10 fases** com 6 gates obrigatórios de qualidade (G1–G5.5) — desde a pergunta de pesquisa até o PDF compilado
