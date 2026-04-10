@@ -74,11 +74,81 @@ The `templates/` directory provides ready-made starting points you can use befor
 | `templates/research_request_form.md` | A structured form that maps to all fields collected by the `academic-prd` interview. Fill it out offline before starting the pipeline to have your answers ready. Covers: paper type, research questions, target venue, citation style, inclusion/exclusion criteria, and expected structure. |
 | `templates/systematic_review_protocol.yaml` | A PRISMA-aligned protocol template for systematic literature reviews. Pre-populates the structure required by `academic-researcher` for systematic review papers. |
 
-To use the form as a reference during the PRD interview:
+### Using Templates
+
+#### Research Request Form (research_request_form.md)
+
+Use this form to prepare your answers before the PRD interview:
 
 ```bash
-# Open the form in a separate window before invoking the orchestrator
+# View the form
 cat templates/research_request_form.md
+
+# Copy to your project for offline preparation
+cp templates/research_request_form.md papers/paper-my-topic/research-request-form.md
+```
+
+**Example: Pre-filled research request form**
+```markdown
+* **Provisional Title:** Benchmarking Vector Databases for RAG Applications
+* **Paper Type:** Research Article (Benchmark Study)
+* **Field/Discipline:** Computer Science / Information Retrieval
+* **Target Language(s):** English
+* **Blind Review:** Yes
+* **General Objective:** Compare vector databases under RAG workloads
+* **Primary Research Question (RQ1):** Which vector DB offers best recall-latency tradeoff?
+* **Citation Style:** IEEE
+* **Final Output Format:** LaTeX → PDF
+* **Target Venue:** SIGMOD 2026
+* **Keywords:** vector database, RAG, benchmarking, retrieval
+* **Paper Structure:** IMRaD
+```
+
+#### Systematic Review Protocol (systematic_review_protocol.yaml)
+
+For systematic literature reviews, copy and fill the protocol:
+
+```bash
+# Copy the protocol template to your project
+cp templates/systematic_review_protocol.yaml papers/paper-my-systematic-review/research_protocol.yaml
+```
+
+**Example: Key sections to fill**
+```yaml
+metadata:
+  title: "A Systematic Review of Multi-Agent LLM Systems"
+  slug: "multi-agent-llm-review"
+
+research_questions:
+  principal_question: "What are the main coordination mechanisms in multi-agent LLM systems?"
+  additional_questions:
+    - id: "arq1"
+      question: "How do agents share context and memory?"
+    - id: "arq2"
+      question: "What evaluation metrics are used?"
+
+selection_criteria:
+  inclusion:
+    - ic1: "The paper discusses multi-agent LLM systems"
+    - ic2: "Published between 2023-2025"
+    - ic3: "Peer-reviewed conference or journal papers"
+  exclusion:
+    - ec1: "Single-agent systems only"
+    - ec2: "Non-LLM based systems"
+```
+
+### Resources Directory (resources/)
+
+The `resources/` directory contains installation and dependency management files:
+
+| File | Purpose |
+|------|---------|
+| `resources/install_skills_deps.sh` | Main installation script — installs system packages, Python packages, Node.js packages, and Playwright |
+| `resources/requirements_skills.txt` | Python package list used by the install script |
+
+**Always run the install script first:**
+```bash
+bash resources/install_skills_deps.sh
 ```
 
 ---

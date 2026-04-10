@@ -82,6 +82,27 @@ Both directories contain identical agent and skill definitions. OpenAI Codex sha
 
 ## Project Structure
 
+### System Directory
+
+```
+tolkien/
+├── .agents/                    ← OpenCode & OpenAI Codex configuration
+├── .claude/                    ← Claude Code configuration
+├── resources/                  ← Installation scripts and dependencies
+│   ├── install_skills_deps.sh  ← Main dependency installer
+│   └── requirements_skills.txt ← Python package list
+├── templates/                  ← Ready-to-use templates
+│   ├── research_request_form.md ← PRD interview form
+│   └── systematic_review_protocol.yaml ← PRISMA protocol
+├── .venv/                      ← Python virtual environment
+├── docs/                       ← System documentation
+├── papers/                     ← Paper projects
+├── projects/                   ← Alternative project root
+└── AGENTS.md                   ← This file
+```
+
+### Paper Project Structure
+
 All paper projects must be created under one of the valid root directories:
 
 ```text

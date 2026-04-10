@@ -74,11 +74,81 @@ O diretório `templates/` fornece pontos de partida prontos para usar antes ou j
 | `templates/research_request_form.md` | Formulário estruturado que mapeia todos os campos coletados pela entrevista do `academic-prd`. Preencha-o offline antes de iniciar o pipeline para ter suas respostas prontas. Cobre: tipo de artigo, perguntas de pesquisa, venue alvo, estilo de citação, critérios de inclusão/exclusão e estrutura esperada. |
 | `templates/systematic_review_protocol.yaml` | Template de protocolo alinhado com PRISMA para revisões sistemáticas da literatura. Pré-popula a estrutura requerida pelo `academic-researcher` para artigos de revisão sistemática. |
 
-Para usar o formulário como referência durante a entrevista do PRD:
+### Usando Templates
+
+#### Formulário de Requisição de Pesquisa (research_request_form.md)
+
+Use este formulário para preparar suas respostas antes da entrevista do PRD:
 
 ```bash
-# Abra o formulário em uma janela separada antes de invocar o orquestrador
+# Visualizar o formulário
 cat templates/research_request_form.md
+
+# Copiar para seu projeto para preparação offline
+cp templates/research_request_form.md papers/paper-meu-topico/formulario-pesquisa.md
+```
+
+**Exemplo: Formulário pré-preenchido**
+```markdown
+* **Título Provisório:** Benchmarking de Bancos de Dados Vetoriais para Aplicações RAG
+* **Tipo de Artigo:** Artigo de Pesquisa (Estudo de Benchmark)
+* **Campo/Disciplina:** Ciência da Computação / Recuperação de Informação
+* **Idioma Alvo:** Inglês
+* **Revisão Cega:** Sim
+* **Objetivo Geral:** Comparar bancos de dados vetoriais em cargas de trabalho RAG
+* **Pergunta de Pesquisa Principal (RQ1):** Qual BD vetorial oferece o melhor equilíbrio recall-latência?
+* **Estilo de Citação:** IEEE
+* **Formato de Saída Final:** LaTeX → PDF
+* **Venue Alvo:** SIGMOD 2026
+* **Palavras-chave:** banco de dados vetorial, RAG, benchmarking, recuperação
+* **Estrutura do Artigo:** IMRaD
+```
+
+#### Protocolo de Revisão Sistemática (systematic_review_protocol.yaml)
+
+Para revisões sistemáticas da literatura, copie e preencha o protocolo:
+
+```bash
+# Copiar o template de protocolo para seu projeto
+cp templates/systematic_review_protocol.yaml papers/paper-minha-revisao-sistematica/protocolo_pesquisa.yaml
+```
+
+**Exemplo: Seções principais para preencher**
+```yaml
+metadata:
+  title: "Uma Revisão Sistemática de Sistemas Multi-Agente com LLMs"
+  slug: "revisao-sistematica-multiagente-llm"
+
+research_questions:
+  principal_question: "Quais são os principais mecanismos de coordenação em sistemas multi-agente com LLMs?"
+  additional_questions:
+    - id: "arq1"
+      question: "Como os agentes compartilham contexto e memória?"
+    - id: "arq2"
+      question: "Quais métricas de avaliação são usadas?"
+
+selection_criteria:
+  inclusion:
+    - ic1: "O artigo discute sistemas multi-agente com LLMs"
+    - ic2: "Publicados entre 2023-2025"
+    - ic3: "Artigos de conferências ou periódicos revisados por pares"
+  exclusion:
+    - ec1: "Sistemas de agente único apenas"
+    - ec2: "Sistemas baseados em não-LLMs"
+```
+
+### Diretório Resources (resources/)
+
+O diretório `resources/` contém arquivos de instalação e gerenciamento de dependências:
+
+| Arquivo | Finalidade |
+|---------|-----------|
+| `resources/install_skills_deps.sh` | Script principal de instalação — instala pacotes do sistema, Python, Node.js e Playwright |
+| `resources/requirements_skills.txt` | Lista de pacotes Python usado pelo script de instalação |
+
+**Sempre execute o script de instalação primeiro:**
+```bash
+bash resources/install_skills_deps.sh
 ```
 
 ---

@@ -15,6 +15,12 @@ source .venv/bin/activate
 
 That's it — the script installs all system packages (Tesseract, Poppler, TinyTeX, LibreOffice), Node.js packages, and Python dependencies.
 
+The `resources/` directory contains:
+- `install_skills_deps.sh` — main installer script
+- `requirements_skills.txt` — Python package list
+
+**Templates:** Before starting, you can copy `templates/research_request_form.md` to prepare your paper requirements offline.
+
 ### 2. Start a New Paper
 
 In Claude Code or OpenCode, run:
@@ -93,6 +99,12 @@ source .venv/bin/activate
 ```
 
 Pronto — o script instala todos os pacotes do sistema (Tesseract, Poppler, TinyTeX, LibreOffice), pacotes Node.js e dependências Python.
+
+O diretório `resources/` contém:
+- `install_skills_deps.sh` — script principal de instalação
+- `requirements_skills.txt` — lista de pacotes Python
+
+**Templates:** Antes de começar, você pode copiar `templates/research_request_form.md` para preparar os requisitos do seu artigo offline.
 
 ### 2. Iniciar um Novo Artigo
 

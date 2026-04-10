@@ -85,9 +85,28 @@ Inside the chosen root, a subfolder with the project or paper name (slug) MUST b
 
 ## Configuration & Environment
 
-tolkien for Claude Code is configured exclusively via the **`.claude/`** directory at the repository root:
+tolkien for Claude Code is configured via the **`.claude/`** directory at the repository root:
 - **`.claude/commands/`**: All skill and agent definitions (`.md` files).
 - **`.claude/settings.json`**: Hooks and behavioral configuration for the Claude Code harness.
+
+### Project Root Directory Structure
+
+```
+tolkien/
+├── .claude/                    ← Claude Code configuration
+├── .agents/                    ← OpenCode & OpenAI Codex configuration
+├── resources/                  ← Installation scripts and dependencies
+│   ├── install_skills_deps.sh  ← Main dependency installer (run this first)
+│   └── requirements_skills.txt  ← Python package list
+├── templates/                  ← Ready-to-use templates for paper projects
+│   ├── research_request_form.md ← Structured form for PRD interview
+│   └── systematic_review_protocol.yaml ← PRISMA-aligned protocol template
+├── .venv/                      ← Python virtual environment (created by install script)
+├── docs/                       ← System documentation
+├── papers/                     ← Paper projects (one subdirectory per project)
+├── projects/                   ← Alternative root for paper projects
+└── CLAUDE.md                   ← This file
+```
 
 ### Prerequisites
 

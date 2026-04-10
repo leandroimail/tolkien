@@ -76,6 +76,27 @@ Ambos os diretórios contêm definições de agentes e skills idênticas. O Open
 
 ## Estrutura de Projetos
 
+### Diretório do Sistema
+
+```
+tolkien/
+├── .agents/                    ← Configuração do OpenCode & OpenAI Codex
+├── .claude/                    ← Configuração do Claude Code
+├── resources/                  ← Scripts de instalação e dependências
+│   ├── install_skills_deps.sh  ← Script principal de instalação
+│   └── requirements_skills.txt ← Lista de pacotes Python
+├── templates/                  ← Templates prontos para uso
+│   ├── research_request_form.md ← Formulário para entrevista do PRD
+│   └── systematic_review_protocol.yaml ← Protocolo PRISMA
+├── .venv/                      ← Ambiente virtual Python
+├── docs/                       ← Documentação do sistema
+├── papers/                     ← Projetos de artigos
+├── projects/                   ← Diretório raiz alternativo
+└── AGENTS.md                   ← Este arquivo
+```
+
+### Estrutura de Projetos de Artigos
+
 Todos os projetos de artigos devem ser criados em um dos diretórios raiz válidos:
 
 ```text
