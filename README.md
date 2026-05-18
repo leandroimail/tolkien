@@ -29,7 +29,7 @@ For full license text, see [LICENSE](LICENSE) file.
 - **10-phase sequential pipeline** with 6 mandatory quality gates (G1–G5.5) — from research question to compiled PDF
 - **6 specialized agents**: orchestrator, research, writing, review, paper generator, and web search
 - **21 atomic skills**: literature search (OpenAlex), LaTeX compilation, 5-D peer review, humanization, citation validation, and more
-- **Cross-IDE compatibility** — identical configuration for Claude Code (`.claude/`) and OpenCode (`.agents/`)
+- **Cross-IDE compatibility** — native support for Claude Code (`.claude/`), OpenCode (`.opencode/`), and OpenAI Codex (`.codex/`) with agent-specific formats for each IDE
 - **Spec-Driven Development** adapted for science — every paper starts with a validated PRD and implementation plan
 
 ---
@@ -69,14 +69,21 @@ The orchestrator will guide you through a structured PRD interview and then exec
 
 ## Compatibility
 
-tolkien stores its configuration in two parallel directories:
+tolkien is compatible with three AI IDEs/agents, each with its native configuration directory:
 
-| Directory | AI Tool |
-|-----------|---------|
-| `.claude/` | [Claude Code](https://claude.ai/code) — Anthropic's CLI |
-| `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) |
+| Directory | Tool | Agent Format | Skills Format |
+|-----------|------|-------------|---------------|
+| `.claude/` | [Claude Code](https://claude.ai/code) | Markdown (`.md`) | `SKILL.md` |
+| `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) | Markdown (`.md`) | `SKILL.md` |
+| `.codex/` | [OpenAI Codex](https://openai.com/codex) | TOML (`.toml`) | `SKILL.md` |
+| `.opencode/` | [OpenCode](https://opencode.ai) | Markdown w/ frontmatter (`.md`) | `SKILL.md` |
 
-Both directories contain identical agent and skill definitions. OpenAI Codex shares the same `.agents/` directory as OpenCode. You can use tolkien with any of these tools without any changes to your paper project files.
+### How it works
+
+- **Skills**: All IDEs share the same skills in `.agents/skills/` (Agent Skills open standard). No conversion needed.
+- **Agents (Claude Code)**: Read from `.claude/agents/` — Markdown with YAML frontmatter.
+- **Agents (OpenCode)**: Read from `.opencode/agents/` — Markdown with YAML frontmatter (frontmatter: `description`, `mode`, `permission`).
+- **Agents (Codex)**: Read from `.codex/agents/` — TOML with required fields `name`, `description`, and `developer_instructions`. The `model` field is optional and inherits from the parent session.
 
 ---
 
@@ -86,8 +93,11 @@ Both directories contain identical agent and skill definitions. OpenAI Codex sha
 
 ```
 tolkien/
-├── .agents/                    ← OpenCode & OpenAI Codex configuration
+├── .agents/                    ← Shared skills (Agent Skills standard)
+├── .agents/agents/             ← Agents (original tolkien format)
 ├── .claude/                    ← Claude Code configuration
+├── .codex/agents/              ← OpenAI Codex agents (TOML)
+├── .opencode/agents/           ← OpenCode agents (Markdown)
 ├── resources/                  ← Installation scripts and dependencies
 │   ├── install_skills_deps.sh  ← Main dependency installer
 │   └── requirements_skills.txt ← Python package list

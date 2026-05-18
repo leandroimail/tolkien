@@ -23,7 +23,7 @@ Para o texto completo da licença, consulte o arquivo [LICENSE](LICENSE).
 - **Pipeline sequencial de 10 fases** com 6 gates obrigatórios de qualidade (G1–G5.5) — desde a pergunta de pesquisa até o PDF compilado
 - **6 agentes especializados**: orquestrador, pesquisa, escrita, revisão, gerador de artigo e busca web
 - **21 skills atômicas**: busca bibliográfica (OpenAlex), compilação LaTeX, revisão por pares em 5 dimensões, humanização, validação de citações e mais
-- **Compatibilidade multi-IDE** — configuração idêntica para Claude Code (`.claude/`) e OpenCode (`.agents/`)
+- **Compatibilidade multi-IDE** — suporte nativo para Claude Code (`.claude/`), OpenCode (`.opencode/`) e OpenAI Codex (`.codex/`) com agentes em formatos específicos para cada IDE
 - **Desenvolvimento guiado por especificação (Academic SDD)** — todo artigo começa com um PRD validado e um plano de implementação
 
 ---
@@ -63,14 +63,32 @@ O orquestrador vai guiá-lo por uma entrevista estruturada de PRD e, em seguida,
 
 ## Compatibilidade
 
-O tolkien armazena sua configuração em dois diretórios paralelos:
+O tolkien é compatível com três IDEs/agentes de IA, cada um com seu diretório de configuração nativo:
 
-| Diretório | Ferramenta |
-|-----------|------------|
-| `.claude/` | [Claude Code](https://claude.ai/code) — CLI da Anthropic |
-| `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) |
+| Diretório | Ferramenta | Formato dos Agentes | Formato das Skills |
+|-----------|------------|---------------------|-------------------|
+| `.claude/` | [Claude Code](https://claude.ai/code) | Markdown (`.md`) | `SKILL.md` |
+| `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) | Markdown (`.md`) | `SKILL.md` |
+| `.codex/` | [OpenAI Codex](https://openai.com/codex) | TOML (`.toml`) | `SKILL.md` |
+| `.opencode/` | [OpenCode](https://opencode.ai) | Markdown com frontmatter (`.md`) | `SKILL.md` |
 
-Ambos os diretórios contêm definições de agentes e skills idênticas. O OpenAI Codex usa o mesmo diretório `.agents/` que o OpenCode. Você pode usar o tolkien com qualquer uma das ferramentas sem precisar modificar os arquivos do seu projeto de artigo.
+### Como funciona
+
+- **Skills**: Todos os IDEs compartilham as mesmas skills em `.agents/skills/` (padrão Agent Skills open standard). Não é necessária nenhuma conversão.
+- **Agentes (Claude Code)**: Lidos de `.claude/agents/` — formato Markdown com YAML frontmatter.
+- **Agentes (OpenCode)**: Lidos de `.opencode/agents/` — formato Markdown com YAML frontmatter (frontmatter: `description`, `mode`, `permission`).
+- **Agentes (Codex)**: Lidos de `.codex/agents/` — formato TOML com campos obrigatórios `name`, `description` e `developer_instructions`. O campo `model` é opcional e herda da sessão pai.
+
+### Subagentes disponíveis
+
+| Agente | Função | Modo OpenCode |
+|--------|--------|---------------|
+| `academic-orchestrator` | Coordenador mestre do pipeline de 10 fases | `primary` |
+| `research-agent` | Pesquisa bibliográfica sistemática + validação | `subagent` |
+| `writing-agent` | Redação, geração de mídia e humanização | `subagent` |
+| `review-agent` | Gate de citações + revisão por pares 5-D | `subagent` |
+| `paper-generator-agent` | Geração LaTeX/PDF/DOCX final | `subagent` |
+| `web-browser-search-agent` | Busca web e automação de navegador | `subagent` |
 
 ---
 
@@ -80,8 +98,11 @@ Ambos os diretórios contêm definições de agentes e skills idênticas. O Open
 
 ```
 tolkien/
-├── .agents/                    ← Configuração do OpenCode & OpenAI Codex
+├── .agents/                    ← Skills compartilhadas (padrão Agent Skills)
+├── .agents/agents/             ← Agentes (formato original tolkien)
 ├── .claude/                    ← Configuração do Claude Code
+├── .codex/agents/              ← Agentes para OpenAI Codex (TOML)
+├── .opencode/agents/           ← Agentes para OpenCode (Markdown)
 ├── resources/                  ← Scripts de instalação e dependências
 │   ├── install_skills_deps.sh  ← Script principal de instalação
 │   └── requirements_skills.txt ← Lista de pacotes Python
