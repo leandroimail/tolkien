@@ -21,7 +21,9 @@ Agents are high-level coordinators that orchestrate multiple skills to achieve s
 | **`academic-orchestrator`** | **Master Coordinator**. Executes the full 10-phase pipeline and manages gates. | `/academic-orchestrator`, `"start academic pipeline"`, `/status`, `"write full article"` |
 | **`research-agent`** | Specializes in literature search, triage, and bibliography synthesis. | `/research-agent`, `"search literature"`, `"find papers about"`, `"research for paper"` |
 | **`writing-agent`** | Focused on full-text drafting and scientific media (figures/EDA) generation. | `/writing-agent`, `"write section"`, `"draft article"`, `"write and humanize"` |
-| **`review-agent`** | Conducts 5-dimension peer review and validates citation consistency. | `/review-agent`, `"review article"`, `"peer review"`, `"verify citations"` |
+| **`review-agent`** | Conducts 6-dimension peer review and validates citation consistency. | `/review-agent`, `"review article"`, `"peer review"`, `"verify citations"` |
+| **`data-validation-agent`** | Validates congruence of the text with the data presented (numbers vs tables/figures); runs the Data Integrity Gate (G4.5). | `/data-validation-agent`, `"validate data congruence"`, `"check data integrity"` |
+| **`format-validation-agent`** | Always-on formatting validation across Markdown, LaTeX and Word (.docx); runs the Output Format Gate. | `/format-validation-agent`, `"validate formatting"`, `"check format"`, `"validate docx"` |
 | **`paper-generator-agent`** | Converts the reviewed draft into a finalized PDF/DOCX using LaTeX or Word. | `/paper-generator`, `"generate final paper"`, `"compile LaTeX"`, `"export paper"` |
 
 ---
@@ -37,7 +39,9 @@ Skills are atomic capabilities that perform specific tasks within the pipeline. 
 - **`academic-writer`**: Drafts sections (IMRaD or thematic) with field-specific register. (`/academic-writer`)
 - **`academic-citation-manager`**: Validates in-text citations against the bibliography. (`/academic-citation-manager`)
 - **`academic-bibliography-manager`**: Manages and enriches `.bib` files via OpenAlex. (`/academic-bibliography-manager`)
-- **`academic-reviewer`**: Simulates a reviewer panel for deep artifact evaluation. (`/academic-reviewer`)
+- **`academic-data-validator`**: Validates congruence of text with the data presented — numbers vs tables/figures, internal consistency, float integrity (Data Integrity Gate G4.5). (`/academic-data-validator`)
+- **`academic-format-validator`**: Always-on formatting validation for Markdown, LaTeX and Word (.docx) — the Output Format Gate. (`/academic-format-validator`)
+- **`academic-reviewer`**: Simulates a reviewer panel for deep 6-dimension artifact evaluation. (`/academic-reviewer`)
 - **`academic-humanizer`**: Adjusts tone and removes AI-writing markers. (`/academic-humanizer`)
 - **`academic-media`**: Generates publication-quality figures, schematics, and EDA. (`/academic-media`)
 
@@ -50,13 +54,27 @@ Skills are atomic capabilities that perform specific tasks within the pipeline. 
 
 ## The 10-Phase Sequential Pipeline
 
-tolkien ensures quality through a structured flow with **5 Mandatory Gates (Checkpoints)**:
+tolkien ensures quality through a structured flow with **mandatory Gates (Checkpoints)**:
 
 1. **Phase 0-1 (The Map)**: PRD Generation → Implementation Plan [Gate G1 & G2]
 2. **Phase 2-3 (The Foundation)**: Literature Research → Outline & Architecture [Gate G3]
-3. **Phase 4-5 (The Draft)**: Section Drafting → Citation & Bib Cross-Validation [Gate G4]
-4. **Phase 6-7 (The Quality)**: Humanization → Full 5-D Peer Review [Gate G5]
-5. **Phase 8-9 (The Finalized Output)**: Output Formatting (LaTeX/PDF) → Process Documentation.
+3. **Phase 4-5 (The Draft)**: Section Drafting → Citation & Bib Cross-Validation [Gate G4] → Data Integrity [Gate G4.5]
+4. **Phase 6-7 (The Quality)**: Humanization → Full 6-D Peer Review [Gate G5]
+5. **Phase 8-9 (The Finalized Output)**: Output Formatting (LaTeX/PDF/DOCX) [Output Format Gate — always-on] → Process Documentation.
+
+> **Always-on validation.** The Data Integrity Gate (G4.5) and the Output Format Gate are
+> non-skippable. The Output Format Gate also runs automatically via a hook in every harness
+> (Claude Code `.claude/settings.json`; Codex `.codex/hooks.json`; OpenCode `.opencode/plugins/`).
+
+> **Continuous Revision Loop.** After an article is drafted, validation and review **always**
+> run, and their output **always feeds rewriting**. Phases 5–7 form a loop:
+> *write → validate (G4, G4.5) → 6-D review (G5) → rewrite/correct (writing-agent) → re-review*,
+> repeating until **Complete Approval**: G4 PASS **and** G4.5 PASS **and** Output Format Gate
+> PASS **and** review verdict = Accept (0 unresolved Devil's Advocate CRITICAL, all Priority-1
+> Roadmap items FULLY_ADDRESSED). The orchestrator does not advance to final output before then.
+> After 3 loops without approval it pauses at a human checkpoint (continue / restructure / stop).
+> Owned by `academic-orchestrator`, routing findings to `data-validation-agent`,
+> `format-validation-agent`, `review-agent`, and `writing-agent`.
 
 ---
 

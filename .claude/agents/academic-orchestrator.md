@@ -12,6 +12,8 @@ agents:
   - research-agent
   - writing-agent
   - review-agent
+  - data-validation-agent
+  - format-validation-agent
   - paper-generator-agent
 ---
 
@@ -40,34 +42,103 @@ Phase 3: Outline & Architecture  → draft/outline.md
          ↓ [G3: CHECKPOINT ✓]
 Phase 4: Full-text Drafting      → draft/*.md (section by section)
          ↓ [Optional CHECKPOINT per section]
-Phase 5: Citation + Bibliography ─────────────────────────────┐
-         (executed in parallel)                              │
-         citation-manager → in-text citations               │
-         bibliography-manager → references.bib + OpenAlex   │
-         ↓ [G4: Citation↔Bibliography Gate — 0 errors] ──────┘
-         ↓ [CHECKPOINT ✓]
-Phase 6: Humanization & Register → draft/*.md (revised)
-         ↓ [Optional CHECKPOINT]
-Phase 7: Peer Review             → review/review-report.md
-         ↓ [revision + re-review if necessary]
-         ↓ [G5: CHECKPOINT ✓]
+╔═══════════ CONTINUOUS REVISION LOOP (always after writing) ═══════════╗
+Phase 5: Citation + Bibliography ─────────────────────────────┐         ║
+         (executed in parallel)                              │         ║
+         citation-manager → in-text citations               │         ║
+         bibliography-manager → references.bib + OpenAlex   │         ║
+         ↓ [G4: Citation↔Bibliography Gate — 0 errors] ──────┘         ║
+         ↓ [G4.5: Data Integrity Gate — text↔table/figure congruence]  ║
+         ↓ [CHECKPOINT ✓]                                              ║
+Phase 6: Humanization & Register → draft/*.md (revised)                ║
+         ↓ [Optional CHECKPOINT]                                       ║
+Phase 7: Peer Review (6-D)        → review/review-report.md            ║
+         ↓ [G5: verdict + Revision Roadmap]                            ║
+         │                                                             ║
+         ├─ NOT fully approved → REWRITE/CORRECT (writing-agent) ──────╣ (loop back)
+         └─ COMPLETE APPROVAL (all gates PASS + verdict Accept) ───────╝
+                                   ↓
 Phase 8: Output Formatting       → output/paper.tex/.pdf/.docx
-         ↓ [G5.5: LaTeX Gate — error-free compilation]
+         ↓ [Output Format Gate — md/tex/docx validated, error-free compilation]
+         ↓ (format/data re-checked on compiled .tex; on FAIL → loop back to rewrite)
 Phase 9: Process Documentation   → process-record.md
 
 > **Root Path**: The project must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 > **Output Path**: All final deliverables MUST be stored in the `output/` subfolder.
 ```
 
-## 5 Mandatory Gates (Both Modes)
+## Mandatory Gates (Both Modes)
 
 | Gate | After | Before | Criterion |
 |------|------|----------|----------|
 | G1 | Academic PRD generated | Implementation Plan | 10 mandatory fields filled |
 | G2 | Plan approved | Literature Research | All 9 phases represented |
 | G3 | Outline approved | Full-text Drafting | Structure + allocation confirmed by user |
-| G4 | Citation↔Bib Gate | Humanization/Review | 0 violations of the 3 rules |
-| G5 | Final Review accepted | Output Formatting | Score ≥ 65, 0 CRITICAL from Devil's Advocate |
+| G4 | Citation↔Bib Gate | Data Integrity | 0 violations of the 3 rules |
+| **G4.5** | **Data Integrity Gate** | **Humanization/Review** | **0 blocking data findings (text↔table/figure congruence, float integrity, table arithmetic); warnings acknowledged** |
+| G5 | Final Review accepted (6-D) | Output Formatting | Score ≥ 65, 0 CRITICAL from Devil's Advocate |
+| **Output Format Gate** | **Output Formatting** | **Process Documentation** | **md/tex/docx validated; 0 blocking format findings; error-free compilation** |
+
+## Continuous Revision Loop (write → validate → review → rewrite → re-review → until full approval)
+
+After an article is drafted, validation and review are **always** run, and their
+output **always feeds back into rewriting** — the orchestrator does not advance to
+final output until the article reaches **Complete Approval**. Phases 5–7 are not a
+one-shot pass; they are a loop.
+
+```
+        ┌──────────────────────────────────────────────────────────────┐
+        │  WRITE  (Phase 4 draft / Phase 6 humanization — writing-agent) │
+        └──────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+   VALIDATE + REVIEW  (always run after writing):
+     1. G4   Citation↔Bibliography   (review-agent → citation/bibliography managers)
+     2. G4.5 Data Integrity          (data-validation-agent → academic-data-validator)
+     3. Output Format Gate (advisory at draft stage)  (format-validation-agent)
+     4. G5   6-D Peer Review          (review-agent → academic-reviewer)
+                                   │
+                    ┌──────────────┴───────────────┐
+                    ▼                               ▼
+          COMPLETE APPROVAL?                 NOT approved
+       (all gates PASS AND               (any gate FAIL, or verdict
+        verdict = Accept)                 ≠ Accept, or open P1 items)
+                    │                               │
+                    ▼                               ▼
+            advance to Phase 8        REWRITE / CORRECT (writing-agent +
+            (final output)            academic-humanizer) using the gate
+                                      reports + Revision Roadmap, then
+                                      RE-RUN only the affected gate(s) and
+                                      RE-REVIEW (academic-reviewer re-review
+                                      mode: each Roadmap item →
+                                      FULLY_ADDRESSED / PARTIALLY /
+                                      NOT_ADDRESSED / MADE_WORSE)
+                                               │
+                                               └────────► loop back to VALIDATE + REVIEW
+```
+
+### Complete Approval (loop exit condition)
+
+The article is **fully approved** — and only then advances to final output — when **all**
+hold simultaneously:
+
+- **G4** Citation↔Bibliography: PASS (0 violations)
+- **G4.5** Data Integrity: PASS (0 blocking findings; warnings acknowledged)
+- **Output Format Gate**: PASS (md/tex/docx; 0 blocking findings; Phase-8 compile clean)
+- **G5** 6-D Review: verdict **Accept** (score ≥ threshold, **0 unresolved Devil's Advocate CRITICAL**, every Priority-1 Revision Roadmap item = FULLY_ADDRESSED)
+
+If any condition fails, the orchestrator stays in the loop: it routes each finding to the
+owning agent (data → `data-validation-agent`, format → `format-validation-agent`,
+citations → `review-agent`, content/structure → `writing-agent`), applies the correction,
+and re-runs the affected gate(s) + re-review.
+
+### Loop control (no infinite loops)
+
+- A gate/re-review re-runs **only** for what changed; unaffected gates are not redone.
+- After **3 full loops** without reaching Complete Approval, pause at a **human checkpoint**:
+  continue, escalate to Major-Revision restructuring, or stop. (This is a checkpoint, not a
+  silent cap — the loop is "continuous until approval", with human arbitration on stalls.)
+- Each loop iteration is appended to `review/revision-log.md` for traceability.
 
 ## Dispatch Table
 
@@ -79,9 +150,10 @@ Phase 9: Process Documentation   → process-record.md
 | 3 | `academic-writer` (direct skill, mode: outline) |
 | 4 | `writing-agent` (agent → academic-writer + academic-media) |
 | 5 | `review-agent` (agent → citation-manager + bibliography-manager — gate only) |
+| 5.5 | `data-validation-agent` (agent → academic-data-validator — Data Integrity Gate G4.5) |
 | 6 | `writing-agent` (agent → academic-humanizer) |
-| 7 | `review-agent` (agent → academic-reviewer — full review) |
-| 8 | `paper-generator-agent` (agent → latex + pdf + docx) |
+| 7 | `review-agent` (agent → academic-reviewer — full 6-D review) |
+| 8 | `paper-generator-agent` (agent → latex + pdf + docx) + `format-validation-agent` (Output Format Gate) |
 | 9 | Orchestrator generates `process-record.md` directly |
 
 ## Mid-Entry Support
@@ -96,7 +168,9 @@ The orchestrator detects which phase the project is in and offers to continue:
    ├── draft/outline.md? → Phase 3 completed
    ├── draft/*.md (multiple sections)? → Phase 4 in progress/completed
    ├── review/citation-report.md? → Phase 5 completed
+   ├── review/data-congruence-report.md? → Phase 5.5 (Data Integrity Gate) completed
    ├── review/review-report.md? → Phase 7 completed
+   ├── review/format-validation-report.md? → Output Format Gate run
    ├── output/paper.pdf? → Phase 8 completed
    └── resources/? (optional) → base/auxiliary files present
 
@@ -124,9 +198,10 @@ Pipeline Status: Paper "{title}"
 ⏳ Phase 3: Outline
 ⏳ Phase 4: Drafting
 ⏳ Phase 5: Citation + Bibliography
+⏳ Phase 5.5: Data Integrity Gate (G4.5)
 ⏳ Phase 6: Humanization
-⏳ Phase 7: Peer Review
-⏳ Phase 8: Output Formatting
+⏳ Phase 7: Peer Review (6-D)
+⏳ Phase 8: Output Formatting + Output Format Gate
 ⏳ Phase 9: Process Documentation
 ```
 

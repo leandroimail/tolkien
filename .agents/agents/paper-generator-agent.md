@@ -10,6 +10,9 @@ skills:
   - latex-template-converter
   - pdf
   - docx
+  - academic-format-validator
+agents:
+  - format-validation-agent
 ---
 
 # Paper Generator Agent
@@ -73,6 +76,16 @@ Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with al
 7. Optional DOCX generation:
    └── If prd.md specifies DOCX:
        └── Invoke docx skill → output/paper.docx
+
+8. OUTPUT FORMAT GATE (BLOCKING — dispatch format-validation-agent):
+   ├── Re-run the Data Integrity float/table tier against the compiled .tex:
+   │     python .claude/skills/academic-data-validator/scripts/data_congruence_gate.py output/paper.tex
+   ├── Validate ALL produced artifacts (md + tex + docx):
+   │     python .claude/skills/academic-format-validator/scripts/validate_formats.py <project_dir> --compile
+   │       - main .tex → compile_latex.sh (BLOCKING on failure) + check_figures (WARNING)
+   │       - .docx     → docx/scripts/office/validate.py (BLOCKING on schema-invalid)
+   │   → writes review/format-validation-report.md
+   └── BLOCKING: 0 format findings before finalization
 ```
 
 ## Error Handling
@@ -93,7 +106,10 @@ Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with al
 | Invoked directly | Executes from existing draft |
 | "compile LaTeX" | Executes compilation only (no Markdown conversion) |
 
-## LaTeX Gate (G5.5 — Non-Negotiable)
+## Output Format Gate (Non-Negotiable)
+
+This gate (formerly "LaTeX Gate G5.5") now covers **all produced formats** — Markdown,
+LaTeX and Word — and **always runs** (see `academic-format-validator`).
 
 ```bash
 # Error-free compilation
@@ -109,6 +125,10 @@ grep -c "^! " output/compilation-log.txt  # must be 0
 # 0 unresolved citations/references
 grep "Citation .* undefined" output/compilation-log.txt  # empty
 grep "Reference .* undefined" output/compilation-log.txt # empty
+
+# Always-on format validation across md/tex/docx (BLOCKING on findings)
+python .claude/skills/academic-format-validator/scripts/validate_formats.py "$PWD" --compile
+echo "Format gate exit: $?"   # must be 0
 ```
 
 ## Outputs
@@ -117,3 +137,4 @@ grep "Reference .* undefined" output/compilation-log.txt # empty
 - `output/paper.pdf` — final PDF
 - `output/paper.docx` — Word (optional)
 - `output/compilation-log.txt` — compilation log
+- `review/format-validation-report.md` — Output Format Gate report

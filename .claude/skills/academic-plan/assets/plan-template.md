@@ -102,6 +102,22 @@
 
 ---
 
+## Phase 5.5: Data Integrity Gate (G4.5)
+### Tasks
+- [ ] Run Data Integrity gate (`academic-data-validator`) on the draft
+- [ ] Verify text↔table/figure congruence (numbers in prose match tables/figures)
+- [ ] Verify internal numeric consistency (Ns, totals, percentages, ratios)
+- [ ] Verify float integrity (every Table/Figure defined ⇄ referenced)
+- [ ] Adjudicate the reconciliation worksheet (cross-section clusters, direction of claims)
+- [ ] Resolve `manual-verify` figures (data sidecar present)
+### Deliverables
+- `review/data-congruence-report.md`
+### Acceptance Criteria
+- **GATE G4.5**: 0 blocking data findings; warnings acknowledged
+### Checkpoint: ⏸ **GATE G4.5** — Data Integrity gate must pass (BLOCKING)
+
+---
+
 ## Phase 6: Humanization & Register
 ### Tasks
 - [ ] Scan for AI writing patterns
@@ -120,7 +136,7 @@
 
 ## Phase 7: Peer Review
 ### Tasks
-- [ ] Execute 5-dimension review (full mode)
+- [ ] Execute 6-dimension review (full mode)
 - [ ] Address reviewer feedback
 - [ ] Execute focused re-review
 ### Deliverables
@@ -142,17 +158,21 @@
 - [ ] Compile LaTeX → PDF: `output/paper.pdf`
 - [ ] Validate PDF (pages, sections, references resolved)
 - [ ] Generate DOCX if required: `output/paper.docx`
+- [ ] Run Output Format Gate (`academic-format-validator`) on md/tex/docx
+- [ ] Re-run Data Integrity float/table tier against the compiled `output/paper.tex`
 ### Deliverables
 - `output/paper.tex`
 - `output/paper.pdf`
 - `output/paper.docx` (if specified in PRD)
 - `output/compilation-log.txt`
+- `review/format-validation-report.md`
 ### Acceptance Criteria
 - LaTeX compiles with exit code 0
 - PDF generated, non-empty
 - 0 undefined citations in compilation log
 - 0 undefined references in compilation log
-### Checkpoint: ⏸ Gate LaTeX — compilation must succeed (BLOCKING)
+- **Output Format Gate**: md/tex/docx validated; 0 blocking format findings
+### Checkpoint: ⏸ **Output Format Gate** — md/tex/docx validation + compilation must succeed (BLOCKING)
 
 ---
 

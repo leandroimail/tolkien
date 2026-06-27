@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 Citation↔Bibliography Gate: deterministic cross-validation.
 Checks that every \cite{key} in draft exists in .bib and vice-versa.
 Usage: python citation_gate.py <draft_dir> <bib_file>
@@ -11,12 +11,19 @@ from pathlib import Path
 
 
 def extract_cite_keys_from_drafts(draft_dir: Path) -> dict[str, list[tuple[str, int]]]:
-    """Extract all citation keys from draft markdown files.
+    """Extract all citation keys from draft Markdown and LaTeX files.
     Returns: {key: [(filename, line_number), ...]}
+
+    Scans both Markdown (``*.md``/``*.markdown``) and LaTeX (``*.tex``) drafts so
+    LaTeX-native projects (manuscript in ``draft/main.tex``) are handled, not only
+    Markdown drafts.
     """
     keys: dict[str, list[tuple[str, int]]] = {}
 
-    for md_file in sorted(draft_dir.glob("*.md")):
+    draft_files = sorted(
+        f for ext in ("*.md", "*.markdown", "*.tex") for f in draft_dir.glob(ext)
+    )
+    for md_file in draft_files:
         content = md_file.read_text(encoding="utf-8")
         for line_num, line in enumerate(content.splitlines(), 1):
             # Match \cite{key}, \citeonline{key}, \cite[p. 15]{key}, etc.

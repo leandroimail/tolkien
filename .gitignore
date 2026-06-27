@@ -18,3 +18,9 @@ papers/
 .venv/*
 
 graphify-out/
+# Agent worktrees (throwaway)
+.claude/worktrees/
+
+# Python caches
+__pycache__/
+*.pyc

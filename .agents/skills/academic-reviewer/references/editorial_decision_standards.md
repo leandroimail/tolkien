@@ -1,6 +1,13 @@
 # Editorial Decision Standards — Criteria for Editorial Decision Making
 
-This document defines the explicit criteria for Accept / Minor Revision / Major Revision / Reject decisions, for use by `eic_agent` and `editorial_synthesizer_agent`.
+This document defines the explicit criteria for Accept / Minor Revision / Major Revision / Reject decisions, for use by the EIC and the editorial synthesizer.
+
+> **Scale.** All scores use the single **0–100 scale** and the **6 canonical
+> dimensions** (see `quality_rubrics.md`). Thresholds: Accept ≥ 80 · Minor 65–79 ·
+> Major 50–64 · Reject < 50. **Gate override:** any dimension governed by a BLOCKING
+> gate (Data Integrity G4.5; Citation↔Bib G4; Output Format Gate) that FAILS caps
+> that dimension at ≤ 50 and forces at least Major Revision. A Devil's Advocate
+> **Critical** issue blocks Accept regardless of the weighted total.
 
 ---
 
@@ -11,9 +18,11 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 **Definition**: The paper can be published without further review.
 
 **Criteria**:
-- Average score across all universal dimensions >= 4.0
-- No dimension scores below 3.0
+- Weighted total >= 80
+- No dimension scores below 60
+- No BLOCKING gate failure (Data Integrity, Citation↔Bib, Output Format)
 - At least 3/4 reviewers recommend Accept or Minor Revision
+- No unresolved Devil's Advocate Critical issue
 - No unresolved major academic issues
 
 **Conditions**:
@@ -32,8 +41,9 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 **Definition**: The paper is fundamentally acceptable and can be published after limited modifications; typically does not need to be sent for review again after revision.
 
 **Criteria**:
-- Average score across all universal dimensions >= 3.5
-- No dimension scores below 2.5
+- Weighted total 65–79
+- No dimension scores below 50
+- No BLOCKING gate failure
 - At least 3/4 reviewers recommend Accept or Minor Revision
 - Issues can be resolved within 2-4 weeks
 - Modifications do not involve restructuring core arguments or methods
@@ -58,8 +68,8 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 **Definition**: The paper has potential but has significant issues, requiring substantial revision followed by re-review.
 
 **Criteria**:
-- Universal dimension average score between 2.5-3.4
-- Some dimensions may score below 2.5 (but not fatal)
+- Weighted total 50–64
+- Some dimensions may score below 50 (but not fatal); OR a BLOCKING gate failed (forces at least Major)
 - At least 2/4 reviewers recommend Major Revision or better
 - Issues are serious but fixable (not fundamental design flaws)
 - Revision requires 6-8 weeks of work
@@ -86,8 +96,9 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 **Definition**: The paper is not suitable for publication in this journal, even with revision.
 
 **Criteria (meeting any one may trigger Reject consideration)**:
-- Universal dimension average score < 2.5
-- Any core dimension (methodology, evidence) = 1
+- Weighted total < 50
+- Any core dimension (Scientific Rigor, Data & Results Integrity) < 45
+- An unresolvable BLOCKING gate failure (e.g., data in text contradicts the tables/figures and cannot be reconciled)
 - At least 3/4 reviewers recommend Reject
 - Fundamental unfixable issues exist
 
@@ -149,6 +160,9 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 
 ### Impact of Reviewer Confidence Score
 
+> Note: this 1–5 scale is the reviewer's **self-rated confidence**, not a manuscript
+> score. It is distinct from the 0–100 dimension scale.
+
 | Confidence | Impact on Decision |
 |-----------|-------------------|
 | 5 (Very High) | This reviewer's opinion carries the highest weight |
@@ -161,10 +175,11 @@ This document defines the explicit criteria for Accept / Minor Revision / Major 
 
 | Situation | Severity | Handling |
 |-----------|----------|---------|
-| Methodology has fatal flaw (R1 score = 1) | Critical | Even if other dimensions are excellent, lean toward Reject |
-| Major literature review omission (R2 score = 2) | Serious | Major Revision, require supplementation |
-| Cross-disciplinary perspective overlooked (R3 score = 2) | Moderate | Minor/Major, depends on other dimensions |
-| Poor writing quality (score = 2) | Minor | Does not affect academic decision, but require language revision |
+| Methodology has fatal flaw (Rigor < 45) | Critical | Even if other dimensions are excellent, lean toward Reject |
+| Data contradicts tables/figures (Data Integrity gate FAIL) | Critical | Capped ≤ 50; blocks pipeline; at least Major Revision until reconciled |
+| Major literature/bibliographic omission (Format & Bibliographic < 50) | Serious | Major Revision, require supplementation |
+| Cross-disciplinary perspective overlooked (Originality ~50) | Moderate | Minor/Major, depends on other dimensions |
+| Poor writing quality (Writing < 50) | Minor | Does not affect academic decision, but require language revision |
 
 ---
 

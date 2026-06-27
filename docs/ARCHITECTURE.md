@@ -55,8 +55,10 @@ graph TD
 | `academic-orchestrator` | All (0–9) | Pipeline coordinator; enforces gates; maintains project state | All agents | `/academic-orchestrator`, `"start academic pipeline"`, `"write full article"`, `"academic pipeline"`, `/status` |
 | `research-agent` | 2 | Literature search, triage, and bibliography synthesis | `academic-researcher`, `academic-bibliography-manager`, `web-browser-search-agent` | `/research-agent`, `"research for paper"`, `"search literature and validate bib"` |
 | `writing-agent` | 3–4, 6 | Section drafting, figure generation, humanization | `academic-writer`, `academic-media`, `academic-humanizer` | `/writing-agent`, `"draft full article"`, `"write and humanize"` |
-| `review-agent` | 5, 7 | Citation↔Bibliography gate + 5-D peer review | `academic-citation-manager`, `academic-bibliography-manager`, `academic-reviewer`, `web-browser-search-agent` | `/review-agent`, `"review full article"`, `"execute academic review"` |
-| `paper-generator-agent` | 8 | LaTeX compilation and final document export | `latex`, `latex-template-converter`, `pdf`, `docx` | `/paper-generator`, `"generate final paper"`, `"compile LaTeX"` |
+| `review-agent` | 5, 5.5, 7 | Citation↔Bibliography gate + Data Integrity gate (G4.5) + 6-D peer review | `academic-citation-manager`, `academic-bibliography-manager`, `academic-data-validator`, `academic-reviewer`, `web-browser-search-agent` | `/review-agent`, `"review full article"`, `"execute academic review"` |
+| `data-validation-agent` | 5.5, 8 | Data Integrity gate (G4.5): text↔table/figure congruence, numeric consistency, float integrity | `academic-data-validator`, `academic-media` | `/data-validation-agent`, `"validate data congruence"` |
+| `format-validation-agent` | 8 | Output Format Gate: always-on md/tex/docx formatting validation | `academic-format-validator`, `latex`, `docx` | `/format-validation-agent`, `"validate formatting"`, `"validate docx"` |
+| `paper-generator-agent` | 8 | LaTeX compilation and final document export | `latex`, `latex-template-converter`, `pdf`, `docx`, `academic-format-validator` | `/paper-generator`, `"generate final paper"`, `"compile LaTeX"` |
 | `web-browser-search-agent` | 2, 7 | Web search for grey literature, full-text retrieval, retraction checks | `web-browser-search`, `duckducksearch`, `agent-browser`, `playwright-cli` | `/web-browser-search-agent` (internal); also `"search the web"`, `"browse URL"`, `"validate DOI online"`, `"check URL"`, `"open website"`, `"extract web content"` |
 
 ---

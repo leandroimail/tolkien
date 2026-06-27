@@ -2,11 +2,30 @@
 
 ## Purpose
 
-Provides calibrated scoring rubrics for the 7 review dimensions used by all reviewers (R1, R2, R3, DA). Ensures consistent, reproducible scoring across different papers and review sessions.
+Provides calibrated scoring rubrics for the **6 canonical review dimensions** used by
+all reviewers (EIC, R1, R2, R3, Devil's Advocate). Ensures consistent, reproducible
+scoring across different papers and review sessions.
+
+> **Single source of truth.** The dimensions and weights below match exactly the
+> table in `SKILL.md` (Phase 1) and `review_criteria_framework.md`. All three use a
+> single **0–100 scale**. Do not introduce a separate 1–5 scale.
 
 ## Scoring Scale
 
-All dimensions scored 0-100. Final weighted score determines editorial decision.
+All dimensions scored 0–100. The final weighted score determines the editorial decision.
+
+## Canonical Dimensions & Weights
+
+| # | Dimension | Weight |
+|---|-----------|--------|
+| 1 | Scientific Rigor & Methodology | 25% |
+| 2 | Data & Results Integrity | 20% |
+| 3 | Originality & Contribution | 15% |
+| 4 | Argument & Evidence Coherence | 15% |
+| 5 | Writing Quality | 15% |
+| 6 | Format & Bibliographic Compliance | 10% |
+
+Weights sum to 100.
 
 ## Decision Mapping
 
@@ -19,17 +38,7 @@ All dimensions scored 0-100. Final weighted score determines editorial decision.
 
 ---
 
-## Dimension 1: Originality (Weight: 20%)
-
-| Score Range | Descriptor | Behavioral Indicators |
-|------------|------------|----------------------|
-| 90-100 | Exceptional | Novel theoretical framework supported by empirical evidence; opens entirely new research direction; implications span 3+ fields; no prior work addresses this exact question |
-| 75-89 | Strong | Novel methodology OR novel application of existing theory to new context; clear contribution beyond incremental extension; implications for 2+ fields |
-| 60-74 | Adequate | Extends existing framework with new data, population, or context; contribution is clear but incremental; single-field implications |
-| 45-59 | Weak | Replicates existing study with minor variations; contribution is marginal; "so what?" question not convincingly answered |
-| < 45 | Insufficient | No discernible original contribution; duplicates existing work without justification; purely descriptive without analytical insight |
-
-## Dimension 2: Methodological Rigor (Weight: 25%)
+## Dimension 1: Scientific Rigor & Methodology (Weight: 25%)
 
 | Score Range | Descriptor | Behavioral Indicators |
 |------------|------------|----------------------|
@@ -39,24 +48,41 @@ All dimensions scored 0-100. Final weighted score determines editorial decision.
 | 45-59 | Weak | Design has significant flaws; method choice questionable; multiple reporting gaps; reproducibility doubtful |
 | < 45 | Insufficient | Fundamental design flaws that invalidate findings; inappropriate methods; results cannot be trusted |
 
-## Dimension 3: Evidence Sufficiency (Weight: 25%)
+## Dimension 2: Data & Results Integrity (Weight: 20%)
+
+Scored together with the deterministic **Data Integrity Gate (G4.5)** of the
+`academic-data-validator` skill. **A BLOCKING gate failure caps this dimension at
+≤ 50** (and blocks the pipeline). A PASS-with-warnings leaves scoring to qualitative
+judgement on residual issues.
 
 | Score Range | Descriptor | Behavioral Indicators |
 |------------|------------|----------------------|
-| 90-100 | Exceptional | >40 sources, 80%+ peer-reviewed, multi-method triangulation, primary + secondary data, all claims well-supported, counter-evidence acknowledged |
-| 75-89 | Strong | 25-40 sources, 70%+ peer-reviewed, adequate evidence for main claims, some triangulation |
-| 60-74 | Adequate | 15-25 sources, 60%+ peer-reviewed, key claims supported but some gaps, limited triangulation |
-| 45-59 | Weak | <15 sources OR <50% peer-reviewed, several unsupported claims, no triangulation |
-| < 45 | Insufficient | Severely under-sourced, major claims unsupported, relies heavily on grey literature or anecdotal evidence |
+| 90-100 | Exceptional | Every number in prose matches its table/figure; full internal consistency (Ns, totals, %); all floats defined ⇄ referenced; captions accurate; every quantitative claim traceable to shown evidence with correct direction; figure data verifiable (sidecars present) |
+| 75-89 | Strong | All key numbers congruent; minor precision/rounding variance only; floats and references resolve; claims well-supported |
+| 60-74 | Adequate | Main results congruent but minor discrepancies (a stray number, one unreferenced float, one `manual-verify` figure) that do not change conclusions |
+| 45-59 | Weak | Several text↔table/figure mismatches OR internal inconsistencies (Ns/%) OR claims whose direction is not clearly supported by the data |
+| < 45 | Insufficient | Numbers in text contradict the tables/figures; results not reproducible from what is shown; conclusions not supported by the presented data |
 
-## Dimension 4: Argument Coherence (Weight: 15%)
+## Dimension 3: Originality & Contribution (Weight: 15%)
 
 | Score Range | Descriptor | Behavioral Indicators |
 |------------|------------|----------------------|
-| 90-100 | Exceptional | Crystal-clear logical flow from problem -> gap -> RQ -> method -> findings -> implications; every section builds on previous; no logical jumps; counterarguments pre-empted |
-| 75-89 | Strong | Clear logical flow with minor gaps; most transitions well-handled; argument generally persuasive |
-| 60-74 | Adequate | Main argument visible but some sections feel disconnected; occasional logical jumps; conclusions mostly follow from evidence |
-| 45-59 | Weak | Argument structure unclear; significant logical gaps; conclusions overreach evidence; reader must infer connections |
+| 90-100 | Exceptional | Novel theoretical framework supported by evidence; opens a new research direction; implications span 3+ fields; no prior work addresses this exact question |
+| 75-89 | Strong | Novel methodology OR novel application of existing theory to a new context; clear contribution beyond incremental extension; implications for 2+ fields |
+| 60-74 | Adequate | Extends an existing framework with new data, population, or context; contribution clear but incremental; single-field implications |
+| 45-59 | Weak | Replicates an existing study with minor variations; contribution marginal; the "so what?" question not convincingly answered |
+| < 45 | Insufficient | No discernible original contribution; duplicates existing work without justification; purely descriptive without analytical insight |
+
+## Dimension 4: Argument & Evidence Coherence (Weight: 15%)
+
+Merges argument coherence with evidence sufficiency. Co-owned by R2 and the Devil's Advocate.
+
+| Score Range | Descriptor | Behavioral Indicators |
+|------------|------------|----------------------|
+| 90-100 | Exceptional | Crystal-clear flow problem → gap → RQ → method → findings → implications; every section builds on the previous; no logical jumps; counterarguments pre-empted; evidence sufficiently supports all claims |
+| 75-89 | Strong | Clear flow with minor gaps; most transitions well-handled; argument generally persuasive; evidence adequate for main claims |
+| 60-74 | Adequate | Main argument visible but some sections disconnected; occasional logical jumps; most claims supported, a few need more evidence |
+| 45-59 | Weak | Argument structure unclear; significant logical gaps; conclusions overreach evidence; key claims under-supported |
 | < 45 | Insufficient | No coherent argument; sections appear unrelated; conclusions do not follow from evidence; circular reasoning |
 
 ## Dimension 5: Writing Quality (Weight: 15%)
@@ -69,42 +95,43 @@ All dimensions scored 0-100. Final weighted score determines editorial decision.
 | 45-59 | Weak | Below journal standards; frequent verbose/unclear passages; terminology inconsistent; multiple grammar issues |
 | < 45 | Insufficient | Unacceptable writing quality; incomprehensible passages; severe grammar problems; not suitable for peer review |
 
-## Optional Dimensions (reviewer-specific)
+## Dimension 6: Format & Bibliographic Compliance (Weight: 10%)
 
-### Literature Integration (R2 Domain Expert focus)
+Scored together with the **Citation↔Bibliography Gate (G4)** (`academic-citation-manager`
++ `academic-bibliography-manager`) and the **Output Format Gate** (`academic-format-validator`).
+A BLOCKING gate failure caps this dimension at ≤ 50.
 
-| Score Range | Descriptor |
-|------------|------------|
-| 90-100 | Comprehensive coverage of seminal + recent works; identifies theoretical lineage; positions paper precisely in scholarly conversation |
-| 75-89 | Good coverage; most key works cited; reasonable positioning in literature |
-| 60-74 | Adequate but gaps in coverage; some important works missing; positioning somewhat vague |
-| < 60 | Significant literature gaps; key works missing; poor positioning |
-
-### Significance & Impact (R3 Perspective Reviewer focus)
-
-| Score Range | Descriptor |
-|------------|------------|
-| 90-100 | Clear practical implications for policy/practice AND theory; addresses urgent real-world problem; likely to influence field direction |
-| 75-89 | Good practical OR theoretical implications; addresses relevant problem; moderate influence potential |
-| 60-74 | Some implications but narrowly scoped; relevance clear but impact limited |
-| < 60 | Minimal practical or theoretical significance; unclear why this matters |
+| Score Range | Descriptor | Behavioral Indicators |
+|------------|------------|----------------------|
+| 90-100 | Exceptional | Flawless template/venue compliance; all citations resolve both ways; complete .bib entries; figures/tables formatted to spec; document compiles/validates cleanly (md/tex/docx) |
+| 75-89 | Strong | Minor formatting/citation issues only; bibliography complete; compiles/validates with non-critical warnings |
+| 60-74 | Adequate | Some formatting gaps or a few incomplete .bib entries; resolvable in one pass |
+| 45-59 | Weak | Multiple orphan/ghost citations OR incomplete bibliography OR format gate failures |
+| < 45 | Insufficient | Pervasive citation/format problems; does not compile/validate; not submission-ready |
 
 ---
 
 ## Aggregation Formula
 
 ```
-Final Score = (Originality x 0.20) + (Methodology x 0.25) + (Evidence x 0.25) + (Coherence x 0.15) + (Writing x 0.15)
+Final Score =
+  (Rigor       × 0.25) +
+  (DataIntegrity × 0.20) +
+  (Originality × 0.15) +
+  (Coherence   × 0.15) +
+  (Writing     × 0.15) +
+  (Format      × 0.10)
 ```
-
-Optional dimensions are reported separately and factored into the editorial synthesis narrative but do not change the numerical score.
 
 ---
 
 ## Calibration Notes
 
-- Scores should reflect the paper's quality relative to the target journal's standards
-- A "75" for Nature is not equivalent to "75" for a regional journal
-- When in doubt, err toward the middle of a range
-- Reviewers should explicitly state which range descriptor best matches, then fine-tune within that range
-- If two dimensions are at odds (e.g., excellent methodology but weak writing), do NOT average down — report both scores honestly
+- Scores should reflect the paper's quality relative to the target journal's standards.
+- A "75" for Nature is not equivalent to "75" for a regional journal.
+- When in doubt, err toward the middle of a range.
+- Reviewers should explicitly state which range descriptor best matches, then fine-tune within that range.
+- If two dimensions are at odds (e.g., excellent methodology but weak writing), do NOT average down — report both scores honestly.
+- **Gate override**: any single dimension governed by a BLOCKING gate that FAILS is
+  capped at ≤ 50 and forces at least Major Revision regardless of the weighted average.
+- A Devil's Advocate **Critical** issue blocks Accept regardless of the numeric total.

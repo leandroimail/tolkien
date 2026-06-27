@@ -18,17 +18,21 @@ Master coordinator for the Academic Article Production Multi-Agent System (tolki
 - academic-writer (Phase 3 outline + Phase 4 sections, via writing-agent)
 - academic-media (Phase 4, via writing-agent)
 - academic-citation-manager (Phase 5, via review-agent)
+- academic-data-validator (Phase 5.5, via data-validation-agent)
 - academic-humanizer (Phase 6, via writing-agent)
 - academic-reviewer (Phase 7, via review-agent)
 - latex (Phase 8, via paper-generator-agent)
 - latex-template-converter (Phase 8, via paper-generator-agent)
 - pdf (Phase 8, via paper-generator-agent)
 - docx (Phase 8, via paper-generator-agent)
+- academic-format-validator (Phase 8, via format-validation-agent)
 
 ## Agents to Dispatch
 - research-agent (Phase 2)
 - writing-agent (Phase 4, Phase 6)
 - review-agent (Phase 5, Phase 7)
+- data-validation-agent (Phase 5.5 — Data Integrity Gate G4.5)
+- format-validation-agent (Phase 8 — Output Format Gate)
 - paper-generator-agent (Phase 8)
 
 ## Two Modes of Operation
@@ -55,28 +59,44 @@ Phase 5: Citation + Bibliography (executed in parallel)
          citation-manager -> in-text citations
          bibliography-manager -> references.bib + OpenAlex
          [G4: Citation-Bibliography Gate -- 0 errors]
+         [G4.5: Data Integrity Gate -- text<->table/figure congruence]
          [CHECKPOINT]
 Phase 6: Humanization and Register -> draft/*.md (revised)
          [Optional CHECKPOINT]
-Phase 7: Peer Review             -> review/review-report.md
+Phase 7: Peer Review (6-D)        -> review/review-report.md
          [revision + re-review if necessary]
          [G5: CHECKPOINT]
 Phase 8: Output Formatting       -> output/paper.tex/.pdf/.docx
-         [G5.5: LaTeX Gate -- error-free compilation]
+         [Output Format Gate -- md/tex/docx validated, error-free compilation]
 Phase 9: Process Documentation   -> process-record.md
 
 Root Path: The project must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
 Output Path: All final deliverables MUST be stored in the `output/` subfolder.
 
-## 5 Mandatory Gates (Both Modes)
+## Mandatory Gates (Both Modes)
 
 | Gate | After | Before | Criterion |
 |------|-------|--------|-----------|
 | G1 | Academic PRD generated | Implementation Plan | 10 mandatory fields filled |
 | G2 | Plan approved | Literature Research | All 9 phases represented |
 | G3 | Outline approved | Full-text Drafting | Structure + allocation confirmed by user |
-| G4 | Citation-Bib Gate | Humanization/Review | 0 violations of the 3 rules |
-| G5 | Final Review accepted | Output Formatting | Score >= 65, 0 CRITICAL from Devil's Advocate |
+| G4 | Citation-Bib Gate | Data Integrity | 0 violations of the 3 rules |
+| G4.5 | Data Integrity Gate | Humanization/Review | 0 blocking data findings (text<->table/figure congruence, float integrity, table arithmetic); warnings acknowledged |
+| G5 | Final Review accepted (6-D) | Output Formatting | Score >= 65, 0 CRITICAL from Devil's Advocate |
+| Output Format Gate | Output Formatting | Process Documentation | md/tex/docx validated; 0 blocking format findings; error-free compilation |
+
+## Continuous Revision Loop (always after writing)
+
+After an article is drafted, validation and review ALWAYS run and ALWAYS feed back into rewriting. Phases 5-7 are a loop; the orchestrator does not advance to final output until Complete Approval.
+
+```
+WRITE (Phase 4/6, writing-agent)
+ -> VALIDATE+REVIEW: G4 (review-agent) -> G4.5 (data-validation-agent) -> Output Format Gate advisory (format-validation-agent) -> G5 6-D review (review-agent)
+ -> Complete Approval? yes -> Phase 8 (final output)
+                       no  -> REWRITE/CORRECT (writing-agent + academic-humanizer) using gate reports + Revision Roadmap, re-run affected gate(s), re-review -> loop back
+```
+
+**Complete Approval** (loop exit) requires ALL: G4 PASS + G4.5 PASS + Output Format Gate PASS + G5 verdict = Accept (0 unresolved Devil's Advocate CRITICAL, all Priority-1 Roadmap items FULLY_ADDRESSED). Re-run only what changed; after 3 loops without approval, pause at a human checkpoint (continue / restructure / stop).
 
 ## Dispatch Table
 
@@ -88,9 +108,10 @@ Output Path: All final deliverables MUST be stored in the `output/` subfolder.
 | 3 | academic-writer (direct skill, mode: outline) |
 | 4 | writing-agent (agent -> academic-writer + academic-media) |
 | 5 | review-agent (agent -> citation-manager + bibliography-manager -- gate only) |
+| 5.5 | data-validation-agent (agent -> academic-data-validator -- Data Integrity Gate G4.5) |
 | 6 | writing-agent (agent -> academic-humanizer) |
-| 7 | review-agent (agent -> academic-reviewer -- full review) |
-| 8 | paper-generator-agent (agent -> latex + pdf + docx) |
+| 7 | review-agent (agent -> academic-reviewer -- full 6-D review) |
+| 8 | paper-generator-agent (agent -> latex + pdf + docx) + format-validation-agent (Output Format Gate) |
 | 9 | Orchestrator generates process-record.md directly |
 
 ## Mid-Entry Support
@@ -104,7 +125,9 @@ The orchestrator detects which phase the project is in and offers to continue:
    - draft/outline.md? -> Phase 3 completed
    - draft/*.md (multiple sections)? -> Phase 4 in progress/completed
    - review/citation-report.md? -> Phase 5 completed
+   - review/data-congruence-report.md? -> Phase 5.5 (Data Integrity Gate) completed
    - review/review-report.md? -> Phase 7 completed
+   - review/format-validation-report.md? -> Output Format Gate run
    - output/paper.pdf? -> Phase 8 completed
    - resources/? (optional) -> base/auxiliary files present
 

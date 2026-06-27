@@ -16,6 +16,10 @@ Output Path: All final deliverables MUST be stored in the output/ subfolder.
 - latex-template-converter: adapts documents to conference templates
 - pdf: PDF manipulation and generation
 - docx: Word document generation
+- academic-format-validator: always-on Output Format Gate (md/tex/docx)
+
+## Agents Available
+- format-validation-agent: runs the Output Format Gate before finalization
 
 ## Workflow
 
@@ -63,6 +67,16 @@ Output Path: All final deliverables MUST be stored in the output/ subfolder.
 7. Optional DOCX generation:
    - If prd.md specifies DOCX: invoke docx skill -> output/paper.docx
 
+8. OUTPUT FORMAT GATE (BLOCKING - dispatch format-validation-agent):
+   - Re-run the Data Integrity float/table tier against the compiled .tex:
+     python .agents/skills/academic-data-validator/scripts/data_congruence_gate.py output/paper.tex
+   - Validate ALL produced artifacts (md + tex + docx):
+     python .agents/skills/academic-format-validator/scripts/validate_formats.py <project_dir> --compile
+       - main .tex -> compile_latex.sh (BLOCKING on failure) + check_figures (WARNING)
+       - .docx     -> docx office/validate.py (BLOCKING on schema-invalid)
+     -> writes review/format-validation-report.md
+   - BLOCKING: 0 format findings before finalization
+
 ## Error Handling
 
 | Error | Common Cause | Action |
@@ -81,12 +95,14 @@ Output Path: All final deliverables MUST be stored in the output/ subfolder.
 | Invoked directly | Executes from existing draft |
 | "compile LaTeX" | Executes compilation only (no Markdown conversion) |
 
-## LaTeX Gate (G5.5 -- Non-Negotiable)
+## Output Format Gate (Non-Negotiable; always runs)
 
+Covers all produced formats (Markdown, LaTeX, Word) via academic-format-validator:
 - pdflatex exit code must be 0
 - output/paper.pdf exists and size > 0
 - 0 critical errors in compilation log
 - 0 unresolved citations or cross-references
+- python .agents/skills/academic-format-validator/scripts/validate_formats.py <project_dir> --compile  (exit 0)
 
 ## Outputs
 
@@ -94,4 +110,5 @@ Output Path: All final deliverables MUST be stored in the output/ subfolder.
 - output/paper.pdf -- final PDF
 - output/paper.docx -- Word (optional)
 - output/compilation-log.txt -- compilation log
+- review/format-validation-report.md -- Output Format Gate report
 """

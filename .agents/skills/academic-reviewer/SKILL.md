@@ -1,7 +1,7 @@
 ---
 name: academic-reviewer
 description: >
-  Full academic review of the article in 5 dimensions with multiple perspectives.
+  Full academic review of the article in 6 dimensions with multiple perspectives.
   Supports full review, re-review (post-revision verification), quick assessment, and
   focused review. Simulates a reviewer panel with Editor-in-Chief + 3 reviewers + Devil's Advocate.
   Trigger: /academic-reviewer, "review article", "peer review", "evaluate paper",
@@ -68,19 +68,50 @@ Multi-perspective academic review simulating a full peer review process. Consoli
    - **R3 (Perspective)**: interdisciplinary connections, practical impact
    - **Devil's Advocate**: counter-arguments, fallacies, confirmation bias
 
-### Phase 1: Parallel 5-D Review
+### Phase 1: Parallel 6-D Review
 
-Each reviewer evaluates independently (without cross-referencing):
+Each reviewer evaluates independently (without cross-referencing).
 
-#### 5 Assessment Dimensions
+#### 6 Assessment Dimensions (canonical — single 0-100 scale)
+
+> This table is the **single source of truth** for dimensions and weights. The
+> rubrics in `references/quality_rubrics.md` and `references/review_criteria_framework.md`
+> use exactly these six dimensions and weights. Weights sum to 100.
 
 | # | Dimension | Weight | Primary Evaluator |
 |---|----------|------|-------------------|
-| 1 | Scientific Rigor | 25% | R1 (Methodology) |
-| 2 | Argumentative Coherence | 20% | R2 (Domain) + Devil's Advocate |
-| 3 | Bibliographic Integrity | 20% | R2 (Domain) |
-| 4 | Writing Quality | 20% | EIC + R3 |
-| 5 | Format Compliance | 15% | EIC |
+| 1 | Scientific Rigor & Methodology | 25% | R1 (Methodology) |
+| 2 | **Data & Results Integrity** | 20% | R1 (Methodology) + Devil's Advocate |
+| 3 | Originality & Contribution | 15% | EIC + R2 (Domain) |
+| 4 | Argument & Evidence Coherence | 15% | R2 (Domain) + Devil's Advocate |
+| 5 | Writing Quality | 15% | EIC + R3 |
+| 6 | Format & Bibliographic Compliance | 10% | EIC |
+
+#### Dimension 2 — Data & Results Integrity (mandatory checklist)
+
+This dimension is **new and mandatory**. Every reviewer pass MUST run the
+deterministic **Data Integrity Gate (G4.5)** via the `academic-data-validator`
+skill, then score the dimension qualitatively. Verify, item by item:
+
+- [ ] **Text ↔ table/figure congruence**: every numeric value stated in the prose
+      (abstract, results, discussion, conclusion) matches the value shown in the
+      table/figure it refers to.
+- [ ] **Internal numeric consistency**: sample sizes (N), totals, sub-totals and
+      percentages are consistent across sections; percentages sum to ~100; ratios
+      (e.g., `442/450`) are arithmetically valid (numerator ≤ denominator).
+- [ ] **Float integrity (two-way)**: every Table/Figure is both defined and
+      referenced in the text; no orphan floats, no dangling references.
+- [ ] **Caption accuracy**: each table/figure caption matches the content it labels.
+- [ ] **Claim → evidence traceability**: each quantitative or comparative claim
+      ("improved", "outperforms", "increased") is traceable to a shown data point,
+      table cell, figure, or cited source — and the stated direction matches the data.
+- [ ] **Figure data verifiability**: where a figure carries numbers, a source-data
+      sidecar (`figures/<stem>.{csv,json}` or the generating script) exists; if
+      absent, flag `manual-verify` — never assume congruence silently.
+
+**Gate linkage**: if the Data Integrity Gate (G4.5) returns a BLOCKING failure,
+Dimension 2 is capped at ≤ 50 and the pipeline is blocked until corrected. A
+PASS-with-warnings leaves the score to qualitative judgement on residual issues.
 
 #### Scoring Scale (0-100)
 
@@ -147,18 +178,50 @@ Output: Verification Report + New Decision
 
 ```markdown
 ### Review Report
-- **Overall Score**: N/100
-- **Dimension Scores**: [Rigor: N | Coherence: N | Bibliography: N | Writing: N | Format: N]
+- **Overall Score**: N/100  (weighted: Rigor×0.25 + Data×0.20 + Originality×0.15 + Coherence×0.15 + Writing×0.15 + Format×0.10)
+- **Dimension Scores**: [Rigor: N | Data Integrity: N | Originality: N | Coherence: N | Writing: N | Format: N]
+- **Gate Results**: [Citation↔Bib (G4): PASS/FAIL | Data Integrity (G4.5): PASS/WARN/FAIL]
 - **Verdict**: Accept | Minor Revision | Major Revision | Reject
 - **Critical Issues**: N items
+- **Data Integrity Findings**: N blocking, N warnings (see review/data-congruence-report.md)
 - **Revision Roadmap**:
   - Priority 1 (Required): items
   - Priority 2 (Suggested): items
   - Priority 3 (Nice-to-fix): items
 ```
 
+## Automated Checks (optional, rule-based backstop)
+
+Rule-based analyzers run on the Markdown drafts (or `.tex`/`.typ` if present) to
+surface coherence, methodology, experiment and writing issues before the
+qualitative pass. They require `scripts/parsers.py` (which now includes a
+`MarkdownParser`). Run them from the project root with the venv active:
+
+```bash
+source .venv/bin/activate
+SKILL=.claude/skills/academic-reviewer/scripts
+for f in draft/*.md; do
+  python "$SKILL/analyze_logic.py"      "$f" --cross-section
+  python "$SKILL/analyze_experiment.py" "$f"
+  python "$SKILL/analyze_grammar.py"    "$f"
+  python "$SKILL/analyze_sentences.py"  "$f"
+done
+```
+
+These checks are advisory and feed the qualitative dimensions; they do not
+replace the deterministic gates (Citation↔Bib G4, Data Integrity G4.5).
+
 ## References
 
-- `references/review-criteria.md` — framework of criteria by paper type
-- `references/scoring-rubrics.md` — 0-100 rubrics with descriptors
+- `references/review_criteria_framework.md` — framework of criteria by paper type (0-100 scale)
+- `references/quality_rubrics.md` — 0-100 rubrics with descriptors for the 6 canonical dimensions
+- `references/editorial_decision_standards.md` — Accept/Minor/Major/Reject criteria + decision matrix
 - `references/devils-advocate.md` — Devil's Advocate protocol
+- `references/rubric_scientific_manuscript.json` — meta-rubric for the *quality of the review itself* (1-5 scale, threshold 3.5; orthogonal to the manuscript rubric — do not merge)
+
+## Related Validators
+
+- **`academic-data-validator`** — deterministic Data Integrity Gate (G4.5): text↔table/figure
+  congruence, internal numeric consistency, float integrity. Feeds Dimension 2.
+- **`academic-citation-manager`** + **`academic-bibliography-manager`** — Citation↔Bibliography Gate (G4). Feeds Dimension 6.
+- **`academic-format-validator`** — Output Format Gate: Markdown/LaTeX/DOCX formatting. Feeds Dimension 6.

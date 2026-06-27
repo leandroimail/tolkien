@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^(Bash|apply_patch)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .agents/skills/academic-format-validator/scripts/hook_format_check.sh --enforce",
+            "timeout": 120,
+            "statusMessage": "tolkien: enforcing format/data validation"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .agents/skills/academic-format-validator/scripts/hook_format_check.sh",
+            "timeout": 120,
+            "statusMessage": "tolkien: final format validation (advisory)"
+          }
+        ]
+      }
+    ]
+  }
+}

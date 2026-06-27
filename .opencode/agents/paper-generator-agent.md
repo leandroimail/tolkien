@@ -21,6 +21,7 @@ Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with al
 - `latex-template-converter`: adapts documents to conference templates
 - `pdf`: PDF manipulation and generation
 - `docx`: Word document generation
+- `academic-format-validator`: always-on Output Format Gate (md/tex/docx)
 
 ## Workflow
 
@@ -31,6 +32,7 @@ Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with al
 5. **LaTeX Gate** (BLOCKING): exit code 0, PDF exists, 0 critical errors, 0 unresolved refs
 6. PDF validation: all sections present, metadata correct, figures rendered
 7. Optional DOCX via `docx` skill
+8. **OUTPUT FORMAT GATE** (BLOCKING — dispatch format-validation-agent): `python .agents/skills/academic-format-validator/scripts/validate_formats.py <project_dir> --compile` validates md/tex/docx; re-run data integrity on `output/paper.tex`. 0 blocking findings required.
 
 ## Outputs
 
@@ -38,3 +40,4 @@ Produce compiled `output/paper.tex` + `output/paper.pdf` without errors, with al
 - `output/paper.pdf` -- final PDF
 - `output/paper.docx` -- Word (optional)
 - `output/compilation-log.txt` -- compilation log
+- `review/format-validation-report.md` -- Output Format Gate report

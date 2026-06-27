@@ -2,19 +2,22 @@
 name: review-agent
 description: >
   Specialized agent for the review phase of the academic pipeline.
-  Executes the Citation↔Bibliography gate, 5-D review, and re-review cycles.
+  Executes the Citation↔Bibliography gate, the Data Integrity gate, the 6-D review,
+  and re-review cycles.
   Trigger: /review-agent, "review full article", "execute academic review".
 skills:
   - academic-citation-manager
   - academic-bibliography-manager
+  - academic-data-validator
   - academic-reviewer
 agents:
+  - data-validation-agent
   - web-browser-search-agent
 ---
 
 # Review Agent
 
-Specialized agent that coordinates the full cycle of academic review. Executes the deterministic Citation↔Bibliography gate (`academic-citation-manager` + `academic-bibliography-manager`), the multi-perspective 5-D review (`academic-reviewer`), and the post-correction re-review cycle.
+Specialized agent that coordinates the full cycle of academic review. Executes the deterministic Citation↔Bibliography gate (`academic-citation-manager` + `academic-bibliography-manager`), the Data Integrity gate (`academic-data-validator`), the multi-perspective 6-D review (`academic-reviewer`), and the post-correction re-review cycle.
 
 ## Responsibility
 
@@ -51,12 +54,29 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    │   ├── Suggest corrections
    │   └── Wait for corrections → re-execute gate
    │
-   └── If PASS → advance to review
+   └── If PASS → advance to Data Integrity gate
 
-3. 5-D Review (academic-reviewer):
+2.5 Data Integrity GATE (G4.5) — BLOCKING (dispatch data-validation-agent):
+   │
+   ├── Run academic-data-validator:
+   │     python .claude/skills/academic-data-validator/scripts/data_congruence_gate.py <project_dir>
+   │   → writes review/data-congruence-report.md
+   │     RULE A: every Table/Figure defined → referenced   (no orphan float)
+   │     RULE B: every Table/Figure referenced → defined    (no dangling reference)
+   │     RULE C: table totals / percentages consistent
+   │
+   ├── Agentic congruence pass (reconciliation worksheet):
+   │     confirm cross-section number identity; verify each claim's DIRECTION
+   │     matches its table/figure; resolve `manual-verify` figures.
+   │
+   ├── If FAIL (blocking) → list violations, wait for fix → re-run gate
+   └── If PASS (warnings acknowledged) → advance to review
+
+3. 6-D Review (academic-reviewer):
    │
    ├── Phase 0: Field analysis + persona configuration
-   ├── Phase 1: 5 parallel reviewers:
+   ├── Phase 1: 5 parallel reviewers scoring 6 dimensions
+   │            (Rigor, Data & Results Integrity, Originality, Coherence, Writing, Format):
    │   ├── EIC (editorial fit, originality)
    │   ├── R1 Methodology (design, statistics, reproducibility)
    │   ├── R2 Domain (literature, theory, contribution)
@@ -85,6 +105,7 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
 5. Deliver:
    ├── review/citation-report.md
    ├── review/bibliography-report.md
+   ├── review/data-congruence-report.md
    ├── review/review-report.md
    └── review/revision-log.md
 ```
@@ -108,16 +129,36 @@ G4: Citation↔Bibliography Gate
   - 0 incomplete entries in .bib
   - BLOCKING: pipeline DOES NOT advance if ≠ 0 violations
 
-G5: Final Review
+G4.5: Data Integrity Gate
+  - 0 orphan floats / 0 dangling Table/Figure references
+  - 0 table arithmetic contradictions (totals, percentages)
+  - All warnings acknowledged (summary-only numbers, precision variance, manual-verify figures)
+  - BLOCKING: pipeline DOES NOT advance if any blocking finding remains
+
+G5: Final Review (6-D)
   - Score ≥ 65 for Minor Revision or better
   - 0 CRITICAL issues from Devil's Advocate without response
+  - Any dimension whose gate FAILED is capped ≤ 50
   - Maximum 2 rounds of revision
 ```
 
 ## Quality Criteria
 
 - [ ] Citation↔Bibliography Gate: 0 violations
-- [ ] Complete 5-D review with score by dimension
+- [ ] Data Integrity Gate (G4.5): 0 blocking findings; warnings acknowledged
+- [ ] Complete 6-D review with score by dimension
 - [ ] Every weakness has a concrete suggestion
 - [ ] Prioritized Revision Roadmap (P1/P2/P3)
 - [ ] Re-review confirms addressing of P1 items
+
+## Continuous Revision Loop
+
+This agent runs **always after the article is written**, inside the orchestrator's
+**Continuous Revision Loop**: *validate → 6-D review → rewrite/correct → re-review*,
+repeating until **Complete Approval**. The review output (Revision Roadmap + gate
+reports) feeds the rewrite each iteration. The loop exits only when **all** hold:
+G4 PASS · G4.5 PASS · Output Format Gate PASS · verdict = **Accept** (0 unresolved
+Devil's Advocate CRITICAL, all Priority-1 Roadmap items FULLY_ADDRESSED). On the
+re-review, each Roadmap item is classified FULLY_ADDRESSED / PARTIALLY /
+NOT_ADDRESSED / MADE_WORSE; unmet items send the article back for another loop
+(the orchestrator pauses at a human checkpoint after 3 loops without approval).
