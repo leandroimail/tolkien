@@ -16,3 +16,5 @@ papers/
 .kilo/
 
 .venv/*
+
+graphify-out/
