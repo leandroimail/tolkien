@@ -1,5 +1,7 @@
 # Tolkien — Tutorial
 
+> **Language / Idioma:** English | [Versão em Português](pt-BR/TUTORIAL.md)
+
 Step-by-step guide for setting up and using the Academic Article Production Multi-Agent System.
 
 ---
@@ -10,10 +12,10 @@ Before you start, make sure you have the following installed on your system:
 
 | Requirement | Minimum Version | Notes |
 |------------|----------------|-------|
-| **Python** | 3.8+ | Check with `python3 --version` |
-| **Node.js** | 16+ | Check with `node --version` |
+| **Python** | 3.10+ | Check with `python3 --version` |
+| **Node.js** | 18+ | Check with `node --version` |
 | **git** | Any | For cloning the repository |
-| **Claude Code CLI** or **OpenCode** | Latest | Install one of these AI coding tools |
+| **AI Harness / CLI** | Latest | **Claude Code**, **OpenCode**, **OpenAI Codex**, or **Google Antigravity** |
 | **Homebrew** (macOS) or **apt-get** (Linux) | — | Used by the install script to set up system deps |
 
 ---
@@ -53,7 +55,7 @@ The script creates a Python virtual environment at `.venv/` in the project root.
 source .venv/bin/activate
 ```
 
-Your prompt will change to indicate the environment is active. You must activate it every time you open a new terminal session and want to run Python-based skills manually.
+Your prompt will indicate the environment is active. You must activate it every time you run Python-based skills or validation scripts manually.
 
 To deactivate later:
 
@@ -61,186 +63,65 @@ To deactivate later:
 deactivate
 ```
 
-> **Note:** When you invoke skills through Claude Code or OpenCode, the tools manage the environment automatically. Manual activation is only needed if you run Python scripts directly.
-
 ---
 
-## Available Templates
+## Available Templates & Paper Governance
 
-The `templates/` directory provides ready-made starting points you can use before or alongside the pipeline:
+The `templates/` directory provides ready-made starting points:
 
 | File | Purpose |
 |------|---------|
-| `templates/research_request_form.md` | A structured form that maps to all fields collected by the `academic-prd` interview. Fill it out offline before starting the pipeline to have your answers ready. Covers: paper type, research questions, target venue, citation style, inclusion/exclusion criteria, and expected structure. |
-| `templates/systematic_review_protocol.yaml` | A PRISMA-aligned protocol template for systematic literature reviews. Pre-populates the structure required by `academic-researcher` for systematic review papers. |
+| `templates/research_request_form.md` | A structured form matching all fields collected by the `academic-prd` interview. Fill it out offline before starting the pipeline. |
+| `templates/systematic_review_protocol.yaml` | A PRISMA-aligned protocol template for systematic literature reviews used by `academic-researcher`. |
+| `templates/paper/style-guide.md.template` | Authorial voice, tone, and CEI paragraph discipline guide. |
+| `templates/paper/anti-style-guide.md.template` | Catalog of banned AI markers, scope drift, and master's tone flaws. |
+| `templates/paper/human-decisions.md.template` | Template to document author-driven methodological decisions. |
 
-### Using Templates
+### Paper Governance Directory (`resources/`)
 
-#### Research Request Form (research_request_form.md)
+In any paper project (`papers/paper-{slug}/`), you can optionally create a `resources/` folder containing:
+- `resources/style-guide.md`: Author voice, terminology, register.
+- `resources/anti-style-guide.md`: Prohibited clichés and AI tropes.
+- `resources/human-decisions.md`: Key research decisions preserving authentic human authorship.
 
-Use this form to prepare your answers before the PRD interview:
-
-```bash
-# View the form
-cat templates/research_request_form.md
-
-# Copy to your project for offline preparation
-cp templates/research_request_form.md papers/paper-my-topic/research-request-form.md
-```
-
-**Example: Pre-filled research request form**
-```markdown
-* **Provisional Title:** Benchmarking Vector Databases for RAG Applications
-* **Paper Type:** Research Article (Benchmark Study)
-* **Field/Discipline:** Computer Science / Information Retrieval
-* **Target Language(s):** English
-* **Blind Review:** Yes
-* **General Objective:** Compare vector databases under RAG workloads
-* **Primary Research Question (RQ1):** Which vector DB offers best recall-latency tradeoff?
-* **Citation Style:** IEEE
-* **Final Output Format:** LaTeX → PDF
-* **Target Venue:** SIGMOD 2026
-* **Keywords:** vector database, RAG, benchmarking, retrieval
-* **Paper Structure:** IMRaD
-```
-
-#### Systematic Review Protocol (systematic_review_protocol.yaml)
-
-For systematic literature reviews, copy and fill the protocol:
-
-```bash
-# Copy the protocol template to your project
-cp templates/systematic_review_protocol.yaml papers/paper-my-systematic-review/research_protocol.yaml
-```
-
-**Example: Key sections to fill**
-```yaml
-metadata:
-  title: "A Systematic Review of Multi-Agent LLM Systems"
-  slug: "multi-agent-llm-review"
-
-research_questions:
-  principal_question: "What are the main coordination mechanisms in multi-agent LLM systems?"
-  additional_questions:
-    - id: "arq1"
-      question: "How do agents share context and memory?"
-    - id: "arq2"
-      question: "What evaluation metrics are used?"
-
-selection_criteria:
-  inclusion:
-    - ic1: "The paper discusses multi-agent LLM systems"
-    - ic2: "Published between 2023-2025"
-    - ic3: "Peer-reviewed conference or journal papers"
-  exclusion:
-    - ec1: "Single-agent systems only"
-    - ec2: "Non-LLM based systems"
-```
-
-### Resources Directory (resources/)
-
-The `resources/` directory contains installation and dependency management files:
-
-| File | Purpose |
-|------|---------|
-| `resources/install_skills_deps.sh` | Main installation script — installs system packages, Python packages, Node.js packages, and Playwright |
-| `resources/requirements_skills.txt` | Python package list used by the install script |
-
-**Always run the install script first:**
-```bash
-bash resources/install_skills_deps.sh
-```
+The `writing-agent` and `academic-writer` automatically check for and obey these files when drafting.
 
 ---
 
-## Using tolkien with Claude Code
+## Platform Support
 
-### Starting a New Paper Project
+tolkien works identically across the major AI coding platforms:
 
-Open Claude Code in the tolkien directory and invoke the orchestrator:
-
-```
-/academic-orchestrator "Start a new research article about multi-agent systems in healthcare"
-```
-
-The orchestrator will:
-1. Invoke `academic-prd` to run a structured PRD interview
-2. Ask you ~10 questions to define the paper's requirements
-3. Pause at **Gate G1** for your review of `prd.md`
-4. After approval, generate `plan.md` and pause at **Gate G2**
-5. Continue automatically through each phase, pausing at each gate
-
-### Invoking Individual Agents
-
-You can invoke any agent directly by trigger phrase if you want to run a specific phase:
-
-```
-# Run only the literature research phase
-/research-agent "Search for papers about retrieval-augmented generation"
-
-# Write or revise sections
-/writing-agent "Draft the methodology section"
-
-# Run peer review
-/review-agent "Review the full article"
-
-# Compile the final PDF
-/paper-generator "Generate final paper"
-```
-
-### Invoking Individual Skills
-
-For fine-grained control, use skills directly:
-
+### 1. Claude Code (CLI)
+Uses `CLAUDE.md` and reads skills/agents from `.claude/`:
 ```bash
-# Generate only the PRD (no full pipeline)
-/academic-prd
-
-# Validate citations against the bibliography
-/academic-citation-manager
-
-# Compile LaTeX manually
-/latex
-
-# Search OpenAlex for papers
-/academic-researcher
+/academic-orchestrator "Start a new paper about [topic]"
 ```
 
----
-
-## Using tolkien with OpenCode
-
-The workflow is identical to Claude Code. tolkien stores its OpenCode configuration under `.agents/` (instead of `.claude/`), which OpenCode reads automatically.
-
-### Starting a New Paper Project (OpenCode)
-
-Open OpenCode in the tolkien directory:
-
-```
-@academic-orchestrator Start a new research article about federated learning in IoT
+### 2. OpenAI Codex CLI & IDE
+Uses `AGENTS.md` and natively discovers skills in `.agents/skills/`. Subagent descriptors live in `.codex/agents/*.toml`:
+```bash
+$academic-orchestrator "Start a new paper about [topic]"
 ```
 
-Or use the natural language triggers:
+### 3. OpenCode
+Uses `AGENTS.md` and natively reads `.agents/skills/` and `.opencode/agents/*.md`:
+```bash
+@academic-orchestrator "Start a new paper about [topic]"
+```
 
+### 4. Google Antigravity / Gemini CLI
+Natively discovers workspace rules in `AGENTS.md` and discovers all 24 skills under `.agents/skills/` via progressive disclosure. Canonical agents are orchestrated from `.agents/agents/*.md`:
+```bash
+/academic-orchestrator "Start a new paper about [topic]"
 ```
-start academic pipeline for a paper about federated learning in IoT
-write full article on transformer-based summarization
-```
-
-### Invoking Individual Agents (OpenCode)
-
-```
-@research-agent search literature on knowledge graph embeddings
-@writing-agent draft the results section
-@review-agent review full article
-@paper-generator generate final paper
-```
+You can also invoke any specialized agent or atomic skill directly using standard slash triggers (e.g., `/research-agent`, `/writing-agent`, `/review-agent`, `/academic-prd`, `/academic-plan`, `/academic-data-validator`, `/academic-format-validator`).
 
 ---
 
 ## Example: Creating a New Paper End-to-End
 
-This example walks you through the complete pipeline for a hypothetical paper on vector database benchmarking.
+This walkthrough illustrates the full pipeline execution for an empirical paper.
 
 ### 1. Start the Orchestrator
 
@@ -250,99 +131,68 @@ This example walks you through the complete pipeline for a hypothetical paper on
 
 ### 2. Answer the PRD Interview (Gate G1)
 
-The `academic-prd` skill asks structured questions. Example answers:
-
-| Question | Example Answer |
-|---------|---------------|
-| Paper type | Experimental research / benchmark study |
-| Target venue | SIGMOD 2026 |
-| Language | English |
-| Research question | Which vector database delivers the best recall-latency tradeoff for RAG workloads? |
-| Citation style | IEEE |
-| Structure | IMRaD |
-
-After completing the interview, review `papers/paper-vector-rag/prd.md` and approve to pass Gate G1.
+`academic-prd` conducts an interview to establish the paper's foundation: title, research questions, target venue, citation style, and methodology.
+After completing, review `papers/paper-vector-rag/prd.md` to clear **Gate G1**.
 
 ### 3. Review the Implementation Plan (Gate G2)
 
-The orchestrator generates `plan.md` automatically. Review the 9-phase plan and approve to pass Gate G2.
+The orchestrator invokes `academic-plan` to generate `plan.md`. Review deliverables and acceptance criteria to clear **Gate G2**.
 
 ### 4. Literature Research (Phase 2)
 
-The orchestrator invokes `research-agent`, which runs `academic-researcher` against the OpenAlex API using your PRD keywords. The output lands in:
-
-```
-papers/paper-vector-rag/research/literature.md
-papers/paper-vector-rag/research/references.bib
-```
+`research-agent` runs `academic-researcher` against OpenAlex API, extracting relevant works into:
+- `papers/paper-vector-rag/research/literature.md`
+- `papers/paper-vector-rag/research/references.bib`
 
 ### 5. Outline Approval (Phase 3 → Gate G3)
 
-The `academic-writer` skill (outline mode) generates `draft/outline.md` with section headers and word allocations. Review and approve to pass Gate G3.
+`writing-agent` runs `academic-writer` (outline mode) to create `draft/outline.md` with section allocation, primary themes, and draft Scope Cards. Approve to clear **Gate G3**.
 
-### 6. Full-text Drafting (Phase 4)
+### 6. Full-Text Drafting with Scope Cards & CEI (Phase 4)
 
-The `writing-agent` drafts each section sequentially. Figures and plots are generated by `academic-media` and saved to `output/figures/`. This is the longest phase.
+`writing-agent` drafts each section sequentially:
+1. **Scope Cards**: Every section begins with a mandatory `<!-- SCOPE_CARD ... -->` setting the strict Level of Analysis.
+2. **Motivation Triggers & CEI**: Every paragraph follows the Claim → Evidence → Interpretation pattern and justifies design choices using the 6 Motivation Triggers.
+3. **Figures & EDA**: `academic-media` generates publication-quality visual elements in `output/figures/`.
 
-### 7. Citation Validation (Phase 5 → Gate G4)
+### 7. Citation & Data Integrity Gates (Phases 5 & 5.5 → Gates G4 & G4.5)
 
-`review-agent` runs `academic-citation-manager` and `academic-bibliography-manager`. These tools check that:
-- Every `\cite{key}` in the draft has a matching entry in `references.bib`
-- Every entry in `references.bib` is cited at least once
-- Every BibTeX entry has all mandatory fields
+- **Gate G4 (Citation↔Bibliography)**: `review-agent` runs `academic-citation-manager` and `academic-bibliography-manager`. Confirms 0 orphan citations and 0 phantom entries in `review/citation-report.md`.
+- **Gate G4.5 (Data Integrity Gate)**: `data-validation-agent` runs `academic-data-validator` (`data_congruence_gate.py`). Verifies float two-way integrity (Table/Figure defined vs referenced), table arithmetic, and text-data congruence in `review/data-congruence-report.md`.
 
-A violation report is written to `review/citation-report.md`. Fix any violations before Gate G4 clears.
+### 8. Humanization & Writing Quality Audit (Phase 6)
 
-### 8. Humanization (Phase 6)
+- `academic-humanizer` performs local per-section passes and a transversal global pass.
+- `academic-writing-reviewer` executes a deterministic audit:
+  ```bash
+  python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py \
+    papers/paper-vector-rag/draft \
+    --output papers/paper-vector-rag/review/writing-review-report.md
+  ```
+  Audits AI markers (`AIM`), repetitions (`REP`), metric tensions (`NUM`), and unglossed jargon (`JAR-01`).
 
-`academic-humanizer` adjusts the register of the draft — removing AI-writing markers while preserving academic rigor and field-specific vocabulary.
+### 9. 6-D Peer Review & Continuous Revision Loop (Phase 7 → Gate G5)
 
-### 9. Peer Review (Phase 7 → Gate G5)
+`review-agent` runs `academic-reviewer`, simulating a 5-persona panel (EIC + 3 reviewers + Devil's Advocate).
+Dimension 5 directly incorporates findings from `writing-review-report.md`.
+- **Loop**: If any gate fails or review score < 65, the Continuous Revision Loop rewrites affected sections with `writing-agent` and re-audits until **Complete Approval**.
 
-`academic-reviewer` simulates a panel of 5 reviewers. The review report lands in `review/review-report.md`. The composite score must be ≥ 65/100 with no CRITICAL issues to pass Gate G5. If the score is below threshold, the orchestrator loops back to the writing phase for revisions.
+### 10. Output Format Gate & Document Export (Phase 8)
 
-### 10. Output Generation (Phase 8 → Gate G5.5)
-
-`paper-generator-agent` compiles the LaTeX document and exports PDF and DOCX. All files land in `output/`:
-
-```
-papers/paper-vector-rag/output/paper.tex
-papers/paper-vector-rag/output/paper.pdf
-papers/paper-vector-rag/output/paper.docx
-```
-
-Gate G5.5 verifies that `pdflatex` exits with code 0 and all references resolve.
+`format-validation-agent` executes `academic-format-validator` (`validate_formats.py`) ensuring zero markdown syntax errors, clean LaTeX compilation, and valid Word (.docx) schemas.
+`paper-generator-agent` produces the deliverables in `output/`:
+- `output/paper.tex` / `output/paper.pdf`
+- `output/paper.docx`
 
 ### 11. Process Documentation (Phase 9)
 
-The orchestrator writes `process-record.md` — a log of every decision, gate outcome, and revision in the pipeline run.
+The orchestrator compiles `process-record.md`, logging all human checkpoints, gate results, and revision history.
 
 ---
 
 ## Troubleshooting
 
-### `pdflatex: command not found`
-
-TinyTeX was not installed or its bin directory is not in `PATH`. Re-run the install script:
-
-```bash
-bash resources/install_skills_deps.sh
-```
-
-Or add TinyTeX manually to your shell profile:
-
-```bash
-# macOS (Apple Silicon)
-export PATH="$HOME/Library/TinyTeX/bin/universal-darwin:$PATH"
-
-# macOS (Intel)
-export PATH="$HOME/.TinyTeX/bin/x86_64-darwin:$PATH"
-
-# Linux (x86_64)
-export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
-```
-
-### `ModuleNotFoundError` when a Python skill runs
+### `ModuleNotFoundError` when a Python script runs
 
 The virtual environment is not active. Run:
 
@@ -350,37 +200,33 @@ The virtual environment is not active. Run:
 source .venv/bin/activate
 ```
 
-If the `.venv/` directory does not exist, re-run:
+### Citation Gate fails with orphan or phantom citations
+
+Run the standalone gate check:
 
 ```bash
-bash resources/install_skills_deps.sh
+python .agents/skills/academic-citation-manager/scripts/citation_gate.py \
+  papers/paper-{slug}/draft papers/paper-{slug}/research/references.bib
 ```
 
-### `academic-researcher` returns no results
+Ensure all citations in draft match BibTeX keys, and all keys in `.bib` are cited.
 
-The OpenAlex API is a public API with rate limits. If you get empty results:
-- Wait a few seconds and retry
-- Narrow your search keywords in `prd.md`
-- OpenAlex does not require an API key, but sending a polite email header is recommended for high-volume use
+### Data Congruence Gate reports orphan or dangling floats
 
-### Gate is not clearing despite fixing violations
+Run:
 
-Re-invoke the relevant agent explicitly to re-run the validation:
-
-```
-/review-agent "execute academic review"
+```bash
+python .agents/skills/academic-data-validator/scripts/check_float_integrity.py papers/paper-{slug}/draft
 ```
 
-The orchestrator checks gate state based on the latest report file, not a cache.
+Ensure every Table and Figure defined in `07-tables.md` or `08-figure-legends.md` is referenced in the text, and every mention in prose matches a defined float.
 
-### LaTeX compilation fails with undefined references
+### Output Format Gate reports errors
 
-Make sure `references.bib` is in the correct location (`research/references.bib`) and that the LaTeX template includes `\bibliography{../research/references}`. The `latex` skill can diagnose most compilation errors automatically.
+Run:
 
-### Skills are not recognized in OpenCode
-
-Confirm that `.agents/skills/` and `.agents/agents/` directories exist and contain the skill definitions. Use the `multi-ide-artifacts` skill to re-sync if needed:
-
+```bash
+python .agents/skills/academic-format-validator/scripts/validate_formats.py papers/paper-{slug}
 ```
-/multi-ide-artifacts sync claude-to-opencode
-```
+
+Examine `review/format-validation-report.md` for specific formatting or compilation errors.

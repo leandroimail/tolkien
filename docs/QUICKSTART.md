@@ -1,8 +1,10 @@
-# Quick Start / Início Rápido
+# Quick Start — tolkien in 5 Minutes
+
+> **Language / Idioma:** English | [Versão em Português](pt-BR/QUICKSTART.md)
 
 ---
 
-## English — 5-Minute Crash Course
+## 5-Minute Crash Course
 
 ### 1. Install
 
@@ -13,7 +15,7 @@ bash resources/install_skills_deps.sh
 source .venv/bin/activate
 ```
 
-That's it — the script installs all system packages (Tesseract, Poppler, TinyTeX, LibreOffice), Node.js packages, and Python dependencies.
+The script installs all system packages (Tesseract, Poppler, TinyTeX, LibreOffice), Node.js packages, Playwright Chromium, and Python dependencies.
 
 The `resources/` directory contains:
 - `install_skills_deps.sh` — main installer script
@@ -23,26 +25,27 @@ The `resources/` directory contains:
 
 ### 2. Start a New Paper
 
-In Claude Code or OpenCode, run:
+In Claude Code, OpenCode, Codex, or Antigravity, run:
 
 ```
 /academic-orchestrator "Start a new paper about [your topic]"
 ```
 
-The orchestrator will interview you for ~10 minutes to build `prd.md`, then run the pipeline automatically.
+The orchestrator will interview you for ~10 minutes to build `prd.md`, then guide the execution of the pipeline.
 
 ### 3. Work Through the Gates
 
-The pipeline pauses at 6 checkpoints. Your job at each one:
+The pipeline enforces mandatory quality checkpoints (Gates) and runs an automated **Continuous Revision Loop** for Phases 5–7:
 
-| Gate | What to do |
-|------|-----------|
-| G1 — After PRD | Review `prd.md`. Confirm all 10 fields are correct. |
-| G2 — After Plan | Review `plan.md`. Confirm the 9-phase roadmap matches your intent. |
-| G3 — After Outline | Review `draft/outline.md`. Confirm section structure and word budgets. |
-| G4 — After Citations | Review `review/citation-report.md`. Fix any violations, then re-run `/review-agent "verify citations"`. |
-| G5 — After Review | Review `review/review-report.md`. If score < 65, revise with `/writing-agent` and re-run `/review-agent`. |
-| G5.5 — After LaTeX | Confirm `output/paper.pdf` opens and renders correctly. |
+| Gate | Stage | What to do |
+|------|-------|-----------|
+| **G1** | After PRD | Review `prd.md`. Confirm all 10 mandatory fields are correct. |
+| **G2** | After Plan | Review `plan.md`. Confirm the 9-phase roadmap matches your intent. |
+| **G3** | After Outline | Review `draft/outline.md`. Confirm section structure, word budgets, and Scope Cards. |
+| **G4** | After Citations | Review `review/citation-report.md`. Ensure 0 orphan citations and 0 phantom entries. |
+| **G4.5** | After Data Integrity | Review `review/data-congruence-report.md`. Verify text numbers match tables/figures, float two-way references, and table arithmetic. |
+| **G5** | After Peer Review | Review `review/review-report.md`. If score < 65 or Devil's Advocate flags CRITICAL issues, the Continuous Revision Loop rewrites affected sections and re-reviews until complete approval. |
+| **Output Format Gate** | After Deliverables | Review `review/format-validation-report.md`. Confirm Markdown, LaTeX, and Word (.docx) compile without errors. |
 
 ### 4. Find Your Output
 
@@ -52,118 +55,42 @@ All deliverables land in `output/`:
 papers/paper-{slug}/output/
 ├── paper.pdf      # Final compiled PDF
 ├── paper.tex      # LaTeX source
-└── paper.docx     # Word document
+├── paper.docx     # Word document
+└── figures/       # Generated figures and diagrams
 ```
 
 ### Common Pitfalls
 
 - **Forgetting to activate `.venv`** — Python skills will fail. Run `source .venv/bin/activate` first.
-- **Skipping gate review** — The gates exist to catch problems early. Do not approve a gate without reading its output file.
-- **Wrong project root** — Paper projects must be under `projects/`, `papers/`, `.projects/`, or `.papers/`. Projects outside these directories may not be recognized.
+- **Skipping gate review** — Gates catch problems early. Read each report in `review/` before approving.
+- **Wrong project root** — Paper projects must reside in `projects/`, `papers/`, `.projects/`, or `.papers/`.
 - **Stale `references.bib`** — If you add citations to the draft manually, re-run `/academic-bibliography-manager` to enrich and validate the new entries.
 
 ### Key Commands at a Glance
 
 ```bash
-# Full pipeline (recommended)
+# Full pipeline coordinator (recommended)
 /academic-orchestrator "topic"
 
-# Individual agents
-/research-agent       # literature search
-/writing-agent        # drafting + humanization
-/review-agent         # citation check + peer review
-/paper-generator      # compile PDF/DOCX
+# Specialized agents
+/research-agent          # Literature search, triage & bib synthesis
+/writing-agent           # Section drafting (Scope Cards + CEI), humanization & audit
+/review-agent            # Citation gate, data integrity gate & 6-D review
+/data-validation-agent   # Data Integrity Gate (G4.5)
+/format-validation-agent # Always-on Output Format Gate (md/tex/docx)
+/paper-generator         # Final LaTeX/PDF/DOCX compilation
 
-# Individual skills
+# Specialized skills
 /academic-prd                    # PRD interview only
-/academic-researcher             # OpenAlex search only
-/academic-citation-manager       # citation audit only
-/academic-bibliography-manager   # bibliography validation only
-/academic-reviewer               # peer review only
-/latex                           # LaTeX compile only
-```
-
----
-
----
-
-## Português — Início Rápido em 5 Minutos
-
-### 1. Instalação
-
-Execute na raiz do repositório tolkien:
-
-```bash
-bash resources/install_skills_deps.sh
-source .venv/bin/activate
-```
-
-Pronto — o script instala todos os pacotes do sistema (Tesseract, Poppler, TinyTeX, LibreOffice), pacotes Node.js e dependências Python.
-
-O diretório `resources/` contém:
-- `install_skills_deps.sh` — script principal de instalação
-- `requirements_skills.txt` — lista de pacotes Python
-
-**Templates:** Antes de começar, você pode copiar `templates/research_request_form.md` para preparar os requisitos do seu artigo offline.
-
-### 2. Iniciar um Novo Artigo
-
-No Claude Code ou OpenCode, execute:
-
-```
-/academic-orchestrator "Iniciar um novo artigo sobre [seu tema]"
-```
-
-O orquestrador vai conduzi-lo por uma entrevista de ~10 minutos para construir o `prd.md` e depois executar o pipeline automaticamente.
-
-### 3. Passar pelos Gates
-
-O pipeline pausa em 6 checkpoints. O que fazer em cada um:
-
-| Gate | O que fazer |
-|------|------------|
-| G1 — Após o PRD | Revise `prd.md`. Confirme que todos os 10 campos estão corretos. |
-| G2 — Após o Plano | Revise `plan.md`. Confirme que o roteiro de 9 fases corresponde à sua intenção. |
-| G3 — Após o Outline | Revise `draft/outline.md`. Confirme a estrutura de seções e as alocações de palavras. |
-| G4 — Após Citações | Revise `review/citation-report.md`. Corrija as violações e re-execute `/review-agent "verificar citações"`. |
-| G5 — Após Revisão | Revise `review/review-report.md`. Se a pontuação < 65, revise com `/writing-agent` e re-execute `/review-agent`. |
-| G5.5 — Após LaTeX | Confirme que `output/paper.pdf` abre e renderiza corretamente. |
-
-### 4. Encontrar os Resultados
-
-Todos os entregáveis vão para `output/`:
-
-```
-papers/paper-{slug}/output/
-├── paper.pdf      # PDF compilado final
-├── paper.tex      # Código-fonte LaTeX
-└── paper.docx     # Documento Word
-```
-
-### Armadilhas Comuns
-
-- **Esquecer de ativar o `.venv`** — Skills Python vão falhar. Execute `source .venv/bin/activate` antes.
-- **Pular a revisão de gate** — Os gates existem para detectar problemas cedo. Não aprove um gate sem ler o arquivo de saída correspondente.
-- **Diretório raiz errado** — Projetos de artigos devem estar em `projects/`, `papers/`, `.projects/` ou `.papers/`. Projetos fora desses diretórios podem não ser reconhecidos.
-- **`references.bib` desatualizado** — Se você adicionar citações ao rascunho manualmente, re-execute `/academic-bibliography-manager` para enriquecer e validar as novas entradas.
-
-### Comandos Principais em Resumo
-
-```bash
-# Pipeline completo (recomendado)
-/academic-orchestrator "tema"
-
-# Agentes individuais
-/research-agent       # busca bibliográfica
-/writing-agent        # redação + humanização
-/review-agent         # verificação de citações + revisão por pares
-/paper-generator      # compilar PDF/DOCX
-
-# Skills individuais
-/academic-prd                    # apenas entrevista do PRD
-/academic-researcher             # apenas busca no OpenAlex
-/academic-citation-manager       # apenas auditoria de citações
-/academic-bibliography-manager   # apenas validação da bibliografia
-/academic-reviewer               # apenas revisão por pares
-/latex                           # apenas compilação LaTeX
+/academic-plan                   # Implementation plan generation
+/academic-researcher             # OpenAlex literature search
+/academic-writer                 # Drafting sections with CEI architecture
+/academic-citation-manager       # Citation audit (Gate G4)
+/academic-bibliography-manager   # BibTeX validation & enrichment
+/academic-data-validator         # Data congruence & float integrity (Gate G4.5)
+/academic-writing-reviewer       # Writing quality audit (AIM, REP, NUM, JAR)
+/academic-humanizer              # Two-pass AI marker removal
+/academic-reviewer               # 6-D peer review panel simulation
+/academic-format-validator       # Format validation gate
+/latex                           # LaTeX compile & debug
 ```

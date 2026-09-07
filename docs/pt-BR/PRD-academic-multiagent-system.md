@@ -1,8 +1,14 @@
 # PRD Técnico: Sistema Multi-Agente para Produção de Artigos Científicos (tolkien)
 
-**Versão:** 1.0
-**Data:** 2026-03-29
-**Status:** Rascunho para revisão
+**Versão:** 2.0 (Evolução & Estado Atual da Arquitetura)  
+**Data:** 2026-03-29 (Atualizado: Setembro de 2026)  
+**Status:** Aprovado & Implementado (Sistema Operacional)
+
+> **Idioma / Language:** Português | [English Version](../PRD-academic-multiagent-system.md)
+
+> [!NOTE]
+> **Evolução da Arquitetura do Sistema (v2.0)**
+> Esta especificação documenta tanto a linha de base de engenharia fundacional (v1.0) quanto o sistema em produção operacional (**v2.0** detalhado na **Seção 17**). O sistema ativo opera com **8 agentes especializados**, **24 skills atômicas** (12 skills de pipeline + 12 skills de ferramenta), **7 gates de qualidade** (incluindo o Gate G4.5 *Gate de Integridade de Dados* e o *Gate de Formato de Saída*), o **Loop de Revisão Contínua** (Fases 5–7), **Scope Cards**, **Arquitetura CEI**, e integração nativa multi-IDE no **Claude Code**, **OpenAI Codex**, **OpenCode** e **Google Antigravity**.
 
 ---
 
@@ -1032,12 +1038,144 @@ Para implementação de cada skill, consultar as seguintes skills legadas em `.a
 
 | Termo | Definição |
 |---|---|
-| **Academic PRD** | Documento de requisitos do artigo (equivalente ao spec.md no SDD) |
+| **Academic PRD** | Documento de requisitos do artigo (`prd.md`, equivalente ao spec.md no SDD) |
 | **SDD** | Spec-Driven Development — abordagem de desenvolvimento guiado por especificação |
 | **Gate** | Validação bloqueante que impede avanço do pipeline se critérios não forem atendidos |
 | **Checkpoint** | Ponto de confirmação humana obrigatória ou opcional |
-| **Self-review determinístico** | Verificação automatizada com resultado binário (script/contagem) |
+| **Self-review determinístico** | Verificação automatizada com resultado binário (script/contagem/lint) |
 | **Self-review agêntico** | Avaliação qualitativa do próprio output pelo agente |
-| **Citation↔Bibliography Gate** | Validação cruzada entre citações in-text e entradas no .bib |
+| **Gate Citação↔Bibliografia (G4)** | Validação cruzada determinística entre citações in-text e entradas no .bib |
+| **Gate de Integridade de Dados (G4.5)** | Validação determinística de congruência entre números da prosa e tabelas/figuras, cálculos internos e referências cruzadas bidirecionais |
+| **Gate de Formato de Saída (Output Format Gate)** | Validação estrutural contínua e não-bypasável em Markdown, LaTeX e Word (.docx) |
+| **Loop de Revisão Contínua** | Ciclo iterativo automatizado entre as Fases 5–7 (escrita → validação → revisão 6-D → reescrita → re-revisão) até Aprovação Completa |
+| **Scope Card** | Especificação YAML explícita no início de cada seção declarando Tese Central, Citações Obrigatórias, Tópicos Excluídos e Conexão |
+| **Arquitetura CEI** | Estruturação de parágrafos substantivos em Contexto/Afirmação (Claim), Evidência (Evidence) e Interpretação (Interpretation) |
+| **6 Gatilhos de Motivação** | Heurísticas causais rígidas que determinam quando uma afirmação exige ancoragem na literatura |
 | **Mid-entry** | Entrada no pipeline em uma fase que não a inicial |
 | **tolkien** | Academic Article Production Multi-Agent System — nome do sistema |
+
+---
+
+## 17. Evolução da Arquitetura & Estado Operacional (v2.0)
+
+### 17.1 Visão Geral da Evolução
+
+Desde a especificação conceitual inicial v1.0, a plataforma **tolkien** evoluiu de um modelo de 5 agentes para um sistema de produção científica de padrão industrial com 8 agentes operacionais, 24 skills atômicas e 7 gates de qualidade. A evolução introduziu a verificação determinística de congruência numérica (Gate G4.5), auditoria contínua de formato para múltiplos artefatos (Output Format Gate), auditoria de prosa contra vícios de IA (`academic-writing-reviewer`) e um loop iterativo auto-corretivo de revisão contínua.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ARQUITETURA DO SISTEMA TOLKIEN v2.0                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  L1: 8 AGENTES                                                              │
+│  academic-orchestrator · research-agent · writing-agent · review-agent      │
+│  data-validation-agent · format-validation-agent · paper-generator-agent   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  L2: 12 SKILLS DE PIPELINE                                                  │
+│  academic-prd · academic-plan · academic-researcher · academic-writer      │
+│  academic-citation-manager · academic-bibliography-manager                │
+│  academic-data-validator · academic-format-validator                       │
+│  academic-writing-reviewer · academic-reviewer · academic-humanizer        │
+│  academic-media                                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  L3: 12 SKILLS DE FERRAMENTA                                                │
+│  docx · xlsx · pdf · latex · latex-template-converter                      │
+│  agent-browser · playwright-cli · duckducksearch · web-search              │
+│  web-browser-search · multi-ide-artifacts · creating-skills                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 17.2 Os 8 Agentes Operacionais
+
+| Agente | Responsabilidade | Skills Principais Despachadas |
+|---|---|---|
+| **`academic-orchestrator`** | Coordenador mestre do pipeline; gerencia Fases 0–9, Gates G1–G5 e o Loop de Revisão Contínua | Todas as skills e subagentes |
+| **`research-agent`** | Triagem de literatura, busca sistemática via OpenAlex, curadoria e manutenção de bibliografia | `academic-researcher`, `academic-bibliography-manager`, skills de busca |
+| **`writing-agent`** | Redação de seções com Scope Cards e CEI, mídia visual, humanização localizada, reescrita | `academic-writer`, `academic-media`, `academic-humanizer` |
+| **`review-agent`** | Painel de revisão por pares em 6 dimensões (EiC, 3 Revisores, Advogado do Diabo), auditoria de citações | `academic-reviewer`, `academic-citation-manager`, `academic-writing-reviewer` |
+| **`data-validation-agent`** | Verificação de congruência numérica (prosa vs tabelas/figuras, totais, percentuais, floats, referências cruzadas); opera o Gate G4.5 | `academic-data-validator` |
+| **`format-validation-agent`** | Validação estrutural não-bypasável em Markdown, LaTeX e Word (.docx); opera o Output Format Gate | `academic-format-validator`, `docx`, `latex` |
+| **`paper-generator-agent`** | Compilação e exportação para LaTeX/PDF pronto para publicação e DOCX estilizado | `latex`, `latex-template-converter`, `pdf`, `docx` |
+
+### 17.3 Inventário das 24 Skills
+
+O sistema opera 24 skills modulares divididas entre Skills de Pipeline (fluxo científico) e Skills de Ferramenta (manipulação de formatos e web):
+
+1. **Skills de Pipeline (12)**:
+   - `academic-prd`: Entrevista socrática de requisitos e síntese do `prd.md`.
+   - `academic-plan`: Tradução do PRD em `plan.md` operacional com gates.
+   - `academic-researcher`: Busca na OpenAlex e triagem sistemática de literatura.
+   - `academic-writer`: Redação de seções com Scope Cards e arquitetura de parágrafos CEI.
+   - `academic-citation-manager`: Validação sintática e cruzamento de citações (Gate G4).
+   - `academic-bibliography-manager`: Formatação BibTeX, enriquecimento via OpenAlex, desduplicação.
+   - `academic-data-validator`: Auditoria determinística de congruência texto-dados (Gate G4.5).
+   - `academic-format-validator`: Linter estrutural multiformato para Markdown, LaTeX e DOCX.
+   - `academic-writing-reviewer`: Auditoria de qualidade de prosa (vícios de IA, drift, repetição).
+   - `academic-reviewer`: Simulação de painel de revisão por pares em 6 dimensões com Advogado do Diabo.
+   - `academic-humanizer`: Calibração de tom e eliminação de marcadores típicos de IA.
+   - `academic-media`: Diagramas conceituais, figuras e visualizações de dados para publicação.
+
+2. **Skills de Ferramenta (12)**:
+   - `docx`: Manipulação, estilização e inspeção de arquivos Word.
+   - `xlsx`: Análise de planilhas, extração de dados e recálculo.
+   - `pdf`: Inspeção de PDFs, divisão de páginas, OCR e extração de texto.
+   - `latex`: Compilação (pdflatex, xelatex, latexmk) e resolução de erros.
+   - `latex-template-converter`: Adaptação a templates de conferência (IEEE, ACM, Springer, NeurIPS).
+   - `agent-browser`: Automação programática de navegador headless.
+   - `playwright-cli`: Testes de navegador e captura de snapshots.
+   - `duckducksearch`: Consultas web com filtros de privacidade e data.
+   - `web-search`: Busca web rápida.
+   - `web-browser-search`: Busca híbrida e extração de conteúdo de páginas.
+   - `multi-ide-artifacts`: Tradução e desduplicação de artefatos entre IDEs.
+   - `creating-skills`: Geração de novas skills e validação de esquemas.
+
+### 17.4 Os 7 Gates de Qualidade & Loop de Revisão Contínua
+
+```
+  Fase 0-1 (Mapa)       Fase 2-3 (Fundação)      Fase 4-5 (Rascunho & Dados) Fase 6-7 (Qualidade)       Fase 8-9 (Saída)
+  ┌─────────────┐       ┌────────────────────┐   ┌─────────────────────────┐ ┌───────────────────────┐  ┌──────────────────┐
+  │ [G1] PRD    │  ──►  │ [G3] Aprovação da  │ ─►│ [G4] Citações/Bib       │─►│ [G5] Revisão 6-D     │─►│ Gate Formato de  │
+  │ [G2] Plano  │       │      Estrutura     │   │ [G4.5] Integridade Dados│  │      (Nota >= 7.0)   │  │ Saída (LaTeX/DOC)│
+  └─────────────┘       └────────────────────┘   └─────────────────────────┘ └───────────┬───────────┘  └──────────────────┘
+                                                            ▲                             │
+                                                            │    Loop de Revisão          │
+                                                            └─── Contínua (Fases 5-7) ◄───┘
+                                                                (Até Aprovação Completa)
+```
+
+O sistema impõe 7 gates não-negociáveis:
+- **G1 (Aprovação do PRD)**: Validação humana do `prd.md`.
+- **G2 (Aprovação do Plano)**: Validação humana do `plan.md`.
+- **G3 (Aprovação de Estrutura e Arquitetura)**: Validação humana da estrutura de seções e Scope Cards.
+- **G4 (Gate Citação↔Bibliografia)**: Zero citações órfãs, zero entradas faltantes no .bib.
+- **G4.5 (Gate de Integridade de Dados)**: 100% de congruência entre números da prosa e tabelas/figuras, Ns/percentuais verificados, referências cruzadas bidirecionais válidas.
+- **G5 (Gate de Revisão por Pares)**: Nota composta ≥ 7.0/10, zero itens CRITICAL pendentes do Advogado do Diabo, todos os itens de Prioridade 1 resolvidos.
+- **Gate de Formato de Saída**: Validação contínua em Markdown, LaTeX e Word (.docx) com zero erros fatais de sintaxe ou compilação.
+
+#### Especificação do Loop de Revisão Contínua
+As Fases 5–7 operam como um ciclo auto-corretivo automatizado:
+1. `writing-agent` redige ou revisa as seções do manuscrito.
+2. `data-validation-agent` executa o Gate G4.5; `academic-citation-manager` verifica o Gate G4.
+3. `review-agent` e `academic-writing-reviewer` realizam a avaliação em 6 dimensões e a auditoria de prosa (G5).
+4. Se qualquer gate falhar ou o veredito não for "Accept", as pendências são consolidadas em um plano de ação.
+5. `writing-agent` executa reescritas direcionadas focando nos itens de Prioridade 1.
+6. O ciclo se repete até a **Aprovação Completa** (G4 PASS + G4.5 PASS + G5 PASS + Format Gate PASS). Um teto de segurança pausa o loop após 3 iterações para consulta humana se o consenso não for atingido.
+
+### 17.5 Arquitetura de Redação: Scope Cards, CEI & Rigor Causal
+
+Para eliminar divagações, redundâncias e marcas típicas de redação por IA, o tolkien aplica três restrições estruturais:
+- **Scope Cards**: Toda seção inicia com um contrato explícito definindo:
+  - *Tese Central*: A afirmação única que a seção comprova.
+  - *Citações Obrigatórias*: Referências-chave que devem ser contextualizadas.
+  - *Tópicos Excluídos*: Conteúdos estritamente proibidos na seção para evitar deriva de escopo.
+  - *Conexão*: Pontes narrativas explícitas com as seções anterior e seguinte.
+- **Arquitetura CEI (Afirmação-Evidência-Interpretação)**: Cada parágrafo substantivo inicia com uma afirmação assertiva, fornece evidência empírica ou bibliográfica e finaliza com a interpretação analítica conectando o argumento à tese central.
+- **6 Gatilhos de Motivação**: Uma citação é obrigatória sempre que o texto introduzir: (1) dados empíricos/estatísticas, (2) definições teóricas, (3) assertivas históricas, (4) consensos ou debates na área, (5) frameworks metodológicos, ou (6) comparações de desempenho.
+
+### 17.6 Arquitetura Multi-IDE Nativa
+
+O repositório adota o modelo canônico prioritário entre os principais ambientes de agentes:
+- **`.agents/`**: Especificações canônicas para skills (`.agents/skills/`) e agentes (`.agents/agents/`), consumidos nativamente por OpenAI Codex, OpenCode e Google Antigravity.
+- **`.claude/`**: Espelhamento de skills (`.claude/skills/`), subagentes (`.claude/agents/`) e configurações (`.claude/settings.json`) para o Claude Code CLI.
+- **`.codex/`**: Configurações de agentes (`.codex/agents/*.toml`) e hooks determinísticos (`.codex/hooks.json`).
+- **`.opencode/`**: Configurações de agentes (`.opencode/agents/*.md`) e plugins de ciclo de vida (`.opencode/plugins/format-validator.js`).
+

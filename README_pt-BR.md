@@ -1,7 +1,8 @@
 # tolkien
 
-**Sistema Multi-Agente de Produção de Artigos Acadêmicos** — um framework para produzir artigos científicos completos e prontos para publicação, desde o primeiro prompt até o PDF final, utilizando agentes e skills especializados dentro do Claude Code, OpenCode e OpenAI Codex.
+**Sistema Multi-Agente de Produção de Artigos Acadêmicos** — um framework para produzir artigos científicos completos e prontos para publicação, desde o primeiro prompt até o PDF final, utilizando agentes e skills especializados dentro do Google Antigravity, Claude Code, OpenCode e OpenAI Codex.
 
+![Compatível com Google Antigravity](https://img.shields.io/badge/Google%20Antigravity-compatível-purple)
 ![Compatível com Claude Code](https://img.shields.io/badge/Claude%20Code-compatível-blue)
 ![Compatível com OpenCode](https://img.shields.io/badge/OpenCode-compatível-green)
 ![Compatível com OpenAI Codex](https://img.shields.io/badge/OpenAI%20Codex-compatível-orange)
@@ -20,10 +21,10 @@ Para o texto completo da licença, consulte o arquivo [LICENSE](LICENSE).
 
 ## Funcionalidades
 
-- **Pipeline sequencial de 10 fases** com 6 gates obrigatórios de qualidade (G1–G5.5) — desde a pergunta de pesquisa até o PDF compilado
-- **6 agentes especializados**: orquestrador, pesquisa, escrita, revisão, gerador de artigo e busca web
-- **21 skills atômicas**: busca bibliográfica (OpenAlex), compilação LaTeX, revisão por pares em 5 dimensões, humanização, validação de citações e mais
-- **Compatibilidade multi-IDE** — suporte nativo para Claude Code (`.claude/`), OpenCode (`.opencode/`) e OpenAI Codex (`.codex/`) com agentes em formatos específicos para cada IDE
+- **Pipeline sequencial de 10 fases** com 7 gates de qualidade (G1–G5, G4.5 Gate de Integridade de Dados e Gate de Formato de Saída) — desde a pergunta de pesquisa até o PDF compilado
+- **8 agentes especializados**: orquestrador, pesquisa, escrita, revisão, integridade de dados, validação de formato, gerador de artigo e busca web
+- **24 skills atômicas**: busca bibliográfica (OpenAlex), compilação LaTeX, revisão por pares em 6 dimensões, humanização, validação de citações, congruência de dados e mais
+- **Compatibilidade multi-IDE / multi-harness** — suporte nativo para Google Antigravity (`.agents/`, `AGENTS.md`), Claude Code (`.claude/`), OpenCode (`.opencode/`) e OpenAI Codex (`.codex/`) com formatos otimizados para cada ambiente
 - **Desenvolvimento guiado por especificação (Academic SDD)** — todo artigo começa com um PRD validado e um plano de implementação
 
 ---
@@ -41,7 +42,7 @@ bash resources/install_skills_deps.sh
 # 3. Ative o ambiente virtual Python
 source .venv/bin/activate
 
-# 4. Inicie um novo projeto de artigo (Claude Code)
+# 4. Inicie um novo projeto de artigo (Antigravity, Claude Code, OpenCode ou Codex)
 /academic-orchestrator "Iniciar um novo artigo sobre arquiteturas transformer"
 ```
 
@@ -53,20 +54,24 @@ O orquestrador vai guiá-lo por uma entrevista estruturada de PRD e, em seguida,
 
 | Documento | Descrição |
 |-----------|-----------|
-| [Arquitetura](docs/ARCHITECTURE.md) | Diagrama do sistema, modelo em 3 camadas, pipeline de 10 fases, critérios dos gates, fluxo de dados |
-| [Definições](docs/DEFINITIONS.md) | Glossário, inventário de agentes, catálogo de skills, especificação de diretórios |
-| [Tutorial](docs/TUTORIAL_pt-BR.md) | Guia passo a passo: instalação, uso com Claude Code, uso com OpenCode, exemplo completo, solução de problemas |
-| [Início Rápido](docs/QUICKSTART.md) | Crash course de 5 minutos com comandos prontos para copiar (EN + pt-BR) |
-| [PRD do Sistema](docs/PRD-academic-multiagent-system_pt-BR.md) | Especificação técnica completa do próprio sistema tolkien |
+| [Central de Documentação](docs/pt-BR/README.md) | Mapa de navegação central, estrutura Diataxis e índice de documentos |
+| [Arquitetura](docs/pt-BR/ARCHITECTURE.md) | Diagrama do sistema, modelo em 3 camadas, pipeline de 10 fases, critérios dos gates, fluxo de dados |
+| [Definições](docs/pt-BR/DEFINITIONS.md) | Glossário, inventário de agentes, catálogo de skills, especificação de diretórios |
+| [Tutorial](docs/pt-BR/TUTORIAL.md) | Guia passo a passo: instalação, uso com Antigravity, uso com Claude Code, uso com OpenCode, exemplo completo, solução de problemas |
+| [Início Rápido](docs/pt-BR/QUICKSTART.md) | Guia rápido em 5 minutos com comandos prontos para copiar |
+| [PRD do Sistema](docs/pt-BR/PRD-academic-multiagent-system.md) | Especificação técnica completa do próprio sistema tolkien |
+| [Arquitetura Técnica](docs/pt-BR/tecnica/arquitetura.md) | Imersão técnica na arquitetura interna, fluxo de dados e invariantes |
+| [Tutorial do Zero](docs/pt-BR/tutoriais/produzindo-artigo-do-zero.md) | Passo a passo prático de ponta a ponta para produção de um artigo científico |
 
 ---
 
 ## Compatibilidade
 
-O tolkien é compatível com três IDEs/agentes de IA, cada um com seu diretório de configuração nativo:
+O tolkien é compatível com quatro IDEs e harnesses de IA, cada um com seu diretório de configuração nativo:
 
-| Diretório | Ferramenta | Formato dos Agentes | Formato das Skills |
-|-----------|------------|---------------------|-------------------|
+| Diretório | Ferramenta / Harness | Formato dos Agentes | Formato das Skills |
+|-----------|----------------------|---------------------|-------------------|
+| `.agents/` | [Google Antigravity](https://antigravity.google) | Markdown (`.md`) | `SKILL.md` (Agent Skills) |
 | `.claude/` | [Claude Code](https://claude.ai/code) | Markdown (`.md`) | `SKILL.md` |
 | `.agents/` | [OpenCode](https://opencode.ai) & [OpenAI Codex](https://openai.com/codex) | Markdown (`.md`) | `SKILL.md` |
 | `.codex/` | [OpenAI Codex](https://openai.com/codex) | TOML (`.toml`) | `SKILL.md` |
@@ -74,21 +79,24 @@ O tolkien é compatível com três IDEs/agentes de IA, cada um com seu diretóri
 
 ### Como funciona
 
-- **Skills**: Todos os IDEs compartilham as mesmas skills em `.agents/skills/` (padrão Agent Skills open standard). Não é necessária nenhuma conversão.
+- **Skills**: Todos os ambientes compartilham as mesmas skills em `.agents/skills/` (padrão Agent Skills open standard). Não é necessária nenhuma conversão.
+- **Agentes (Google Antigravity)**: Descobre regras automaticamente em `AGENTS.md` e carrega skills de `.agents/skills/` via *progressive disclosure*. Executa agentes canônicos a partir de `.agents/agents/`.
 - **Agentes (Claude Code)**: Lidos de `.claude/agents/` — formato Markdown com YAML frontmatter.
 - **Agentes (OpenCode)**: Lidos de `.opencode/agents/` — formato Markdown com YAML frontmatter (frontmatter: `description`, `mode`, `permission`).
 - **Agentes (Codex)**: Lidos de `.codex/agents/` — formato TOML com campos obrigatórios `name`, `description` e `developer_instructions`. O campo `model` é opcional e herda da sessão pai.
 
-### Subagentes disponíveis
+### Agentes disponíveis
 
-| Agente | Função | Modo OpenCode |
-|--------|--------|---------------|
-| `academic-orchestrator` | Coordenador mestre do pipeline de 10 fases | `primary` |
-| `research-agent` | Pesquisa bibliográfica sistemática + validação | `subagent` |
-| `writing-agent` | Redação, geração de mídia e humanização | `subagent` |
-| `review-agent` | Gate de citações + revisão por pares 5-D | `subagent` |
-| `paper-generator-agent` | Geração LaTeX/PDF/DOCX final | `subagent` |
-| `web-browser-search-agent` | Busca web e automação de navegador | `subagent` |
+| Agente | Função | Triggers Principais |
+|--------|--------|---------------------|
+| `academic-orchestrator` | Coordenador mestre do pipeline de 10 fases e gates | `/academic-orchestrator`, `"start academic pipeline"` |
+| `research-agent` | Pesquisa bibliográfica sistemática + validação | `/research-agent`, `"search literature"` |
+| `writing-agent` | Redação integral, geração de mídia e humanização | `/writing-agent`, `"write section"`, `"draft article"` |
+| `review-agent` | Validação de citações + painel de revisão por pares 6-D | `/review-agent`, `"review article"`, `"peer review"` |
+| `data-validation-agent` | Congruência numérica texto ↔ dados (Gate G4.5) | `/data-validation-agent`, `"validate data congruence"` |
+| `format-validation-agent` | Validação multi-formato contínua (Gate de Formato de Saída) | `/format-validation-agent`, `"validate formatting"` |
+| `paper-generator-agent` | Geração LaTeX/PDF/DOCX e exportação final | `/paper-generator`, `"generate final paper"` |
+| `web-browser-search-agent` | Busca web e automação de navegador | `/web-browser-search`, `"search the web"` |
 
 ---
 
@@ -98,11 +106,19 @@ O tolkien é compatível com três IDEs/agentes de IA, cada um com seu diretóri
 
 ```
 tolkien/
-├── .agents/                    ← Skills compartilhadas (padrão Agent Skills)
-├── .agents/agents/             ← Agentes (formato original tolkien)
-├── .claude/                    ← Configuração do Claude Code
-├── .codex/agents/              ← Agentes para OpenAI Codex (TOML)
-├── .opencode/agents/           ← Agentes para OpenCode (Markdown)
+├── .agents/                    ← Raiz canônica (Antigravity, Codex, OpenCode)
+│   ├── agents/                 ← Descritores canônicos de agentes (.md)
+│   └── skills/                 ← 24 skills atômicas (SKILL.md, scripts)
+├── .claude/                    ← Espelho de configuração do Claude Code
+│   ├── agents/                 ← Subagentes Claude (.md)
+│   ├── skills/                 ← Espelho de skills Claude
+│   └── settings.json           ← Hooks do Claude Code
+├── .codex/                     ← Configuração do OpenAI Codex
+│   ├── agents/                 ← Descritores de subagentes Codex (.toml)
+│   └── hooks.json              ← Hooks de ciclo de vida Codex
+├── .opencode/                  ← Configuração do OpenCode
+│   ├── agents/                 ← Descritores de subagentes OpenCode (.md)
+│   └── plugins/                ← Plugins de validação OpenCode
 ├── resources/                  ← Scripts de instalação e dependências
 │   ├── install_skills_deps.sh  ← Script principal de instalação
 │   └── requirements_skills.txt ← Lista de pacotes Python
@@ -113,7 +129,8 @@ tolkien/
 ├── docs/                       ← Documentação do sistema
 ├── papers/                     ← Projetos de artigos
 ├── projects/                   ← Diretório raiz alternativo
-└── AGENTS.md                   ← Este arquivo
+├── AGENTS.md                   ← Regras canônicas e documentação do sistema
+└── CLAUDE.md                   ← Instruções raiz para Claude Code
 ```
 
 ### Estrutura de Projetos de Artigos
@@ -154,7 +171,7 @@ flowchart LR
     p8 -->|G5.5| p9["Fase 9\nDocumentação do Processo"]
 ```
 
-Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o diagrama completo do pipeline com critérios dos gates.
+Consulte [docs/pt-BR/ARCHITECTURE.md](docs/pt-BR/ARCHITECTURE.md) para o diagrama completo do pipeline com critérios dos gates.
 
 ---
 
@@ -163,7 +180,7 @@ Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o diagrama completo d
 - macOS ou Linux
 - Python 3.8+
 - Node.js 16+
-- [Claude Code CLI](https://claude.ai/code), [OpenCode](https://opencode.ai) ou [OpenAI Codex](https://openai.com/codex)
+- [Google Antigravity](https://antigravity.google), [Claude Code CLI](https://claude.ai/code), [OpenCode](https://opencode.ai) ou [OpenAI Codex](https://openai.com/codex)
 - Homebrew (macOS) ou apt-get (Linux) para dependências do sistema
 
 Execute `bash resources/install_skills_deps.sh` para instalar todas as dependências restantes automaticamente.
