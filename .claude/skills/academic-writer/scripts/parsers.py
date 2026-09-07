@@ -1,6 +1,12 @@
 """
-Document Parsers for Academic Writing Skills
-Support for LaTeX and Typst document parsing.
+Document Parsers for Academic Review Skills
+Support for LaTeX, Typst and Markdown document parsing.
+
+This is the academic-reviewer copy of the shared parser module. It extends the
+academic-writer version with a MarkdownParser so the rule-based analyzers
+(analyze_logic.py, analyze_experiment.py, analyze_grammar.py, analyze_sentences.py)
+run on the Markdown drafts produced by the pipeline (draft/*.md), not only on
+.tex/.typ sources.
 """
 
 import re
@@ -302,11 +308,146 @@ class TypstParser(DocumentParser):
         return content.strip()
 
 
+class MarkdownParser(DocumentParser):
+    """Parser for Markdown drafts (draft/*.md).
+
+    Sections are detected from ATX headings (``#`` .. ``######``). Inline LaTeX
+    commands frequently embedded in academic Markdown (e.g. ``\\cite{key}``,
+    ``$..$`` math) are preserved during visible-text extraction so the analyzers
+    behave consistently across formats.
+    """
+
+    SECTION_PATTERNS = {
+        "abstract": r"^#{1,6}\s+.*abstract",
+        "introduction": r"^#{1,6}\s+.*introduction",
+        "related": r"^#{1,6}\s+.*(?:related\s+work|literature\s+review|background|state\s+of\s+the\s+art)",
+        "method": r"^#{1,6}\s+.*(?:method|methodology|approach|materials|procedure)",
+        "experiment": r"^#{1,6}\s+.*(?:experiment|evaluation|implementation|setup|study\s+design)",
+        "result": r"^#{1,6}\s+.*(?:result|performance|finding)",
+        "discussion": r"^#{1,6}\s+.*(?:discussion|analysis)",
+        "conclusion": r"^#{1,6}\s+.*(?:conclusion|concluding|final\s+remarks)",
+    }
+
+    # Inline markup to preserve as opaque tokens during visible-text extraction.
+    PRESERVE_PATTERNS = [
+        r"\\(?:cite\w*|nocite)\*?(?:\[[^\]]*\]\s*)*\{[^}]*\}",  # LaTeX citations
+        r"\[@[^\]]+\]",  # Pandoc citations [@key]
+        r"\$\$[^$]*\$\$",  # Display math
+        r"\$[^$]+\$",  # Inline math
+        r"`[^`]+`",  # Inline code
+        r"!\[[^\]]*\]\([^)]*\)",  # Images
+        r"\[[^\]]*\]\([^)]*\)",  # Links
+    ]
+
+    def get_comment_prefix(self) -> str:
+        # Markdown has no native line comment; HTML comments are the convention.
+        return "<!--"
+
+    def split_sections(self, content: str) -> dict[str, tuple[int, int]]:
+        lines = content.split("\n")
+        sections: dict[str, tuple[int, int]] = {}
+        current_section = "preamble"
+        start_line = 0
+        in_code_fence = False
+
+        for i, line in enumerate(lines, 1):
+            stripped = line.strip()
+            # Track fenced code blocks so ``# comment`` lines inside code are ignored.
+            if stripped.startswith("```") or stripped.startswith("~~~"):
+                in_code_fence = not in_code_fence
+                continue
+            if in_code_fence or not stripped.startswith("#"):
+                continue
+
+            for section_name, pattern in self.SECTION_PATTERNS.items():
+                if re.search(pattern, stripped, re.IGNORECASE):
+                    if current_section != "preamble":
+                        sections[current_section] = (start_line, i - 1)
+                    current_section = section_name
+                    start_line = i
+                    break
+
+        if current_section != "preamble":
+            sections[current_section] = (start_line, len(lines))
+
+        return sections
+
+    def extract_visible_text(self, line: str) -> str:
+        temp_line = line
+
+        # Drop HTML comments outright.
+        temp_line = re.sub(r"<!--.*?-->", " ", temp_line)
+
+        # Strip leading block markers (heading hashes, blockquote, list bullets).
+        temp_line = re.sub(r"^\s{0,3}#{1,6}\s+", "", temp_line)
+        temp_line = re.sub(r"^\s{0,3}>\s?", "", temp_line)
+        temp_line = re.sub(r"^\s{0,3}(?:[-*+]|\d+\.)\s+", "", temp_line)
+        # Table cell pipes → spaces.
+        temp_line = temp_line.replace("|", " ")
+
+        preserved = []
+        for pattern in self.PRESERVE_PATTERNS:
+            matches = list(re.finditer(pattern, temp_line, re.DOTALL))
+            for match in reversed(matches):
+                preserved.append(
+                    {"start": match.start(), "end": match.end(), "text": match.group()}
+                )
+                placeholder = " " * (match.end() - match.start())
+                temp_line = temp_line[: match.start()] + placeholder + temp_line[match.end() :]
+
+        preserved.sort(key=lambda x: x["start"])
+        visible_parts = []
+        last_end = 0
+        for item in preserved:
+            if item["start"] > last_end:
+                visible_parts.append(temp_line[last_end : item["start"]])
+            last_end = item["end"]
+        if last_end < len(temp_line):
+            visible_parts.append(temp_line[last_end:])
+
+        visible = " ".join(visible_parts)
+        # Remove emphasis markers but keep the words.
+        visible = re.sub(r"(\*\*|\*|__|_|~~)", "", visible)
+        return re.sub(r"\s+", " ", visible).strip()
+
+    def clean_text(self, content: str, keep_structure: bool = False) -> str:
+        # Remove HTML comments and fenced code blocks.
+        content = re.sub(r"<!--.*?-->", "", content, flags=re.DOTALL)
+        content = re.sub(r"(```|~~~).*?\1", "", content, flags=re.DOTALL)
+
+        # Remove math.
+        content = re.sub(r"\$\$[^$]*\$\$", "", content, flags=re.DOTALL)
+        content = re.sub(r"\$[^$]+\$", "", content)
+
+        # Headings.
+        if keep_structure:
+            content = re.sub(r"^\s{0,3}(#{1,6})\s+(.+)$", r"\n\n\1 \2\n\n", content, flags=re.MULTILINE)
+        else:
+            content = re.sub(r"^\s{0,3}#{1,6}\s+.+$", "", content, flags=re.MULTILINE)
+
+        # Links/images → keep link text only.
+        content = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", content)
+        content = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", content)
+
+        # Inline code, emphasis, table pipes.
+        content = re.sub(r"`[^`]+`", "", content)
+        content = re.sub(r"(\*\*|\*|__|_|~~)", "", content)
+        content = content.replace("|", " ")
+
+        # Cleanup.
+        content = re.sub(r"\n+", "\n", content)
+        content = re.sub(r" +", " ", content)
+        content = re.sub(r"\.(\s*\.)+", ".", content)
+        return content.strip()
+
+
 def get_parser(file_path: Any) -> DocumentParser:
     """Factory method to get appropriate parser."""
     path_str = str(file_path).lower()
     if path_str.endswith(".typ"):
         return TypstParser()
+    if path_str.endswith((".md", ".markdown", ".mdown", ".mkd")):
+        return MarkdownParser()
     return LatexParser()
 
 
@@ -364,8 +505,21 @@ def _strip_latex_markup(text: str) -> str:
     return _normalize_whitespace(cleaned)
 
 
+def _strip_markdown_markup(text: str) -> str:
+    """Strip lightweight Markdown markup for title/abstract extraction."""
+    cleaned = text
+    cleaned = re.sub(r"<!--.*?-->", " ", cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r"^\s{0,3}#{1,6}\s+", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"\$[^$]*\$", " ", cleaned)
+    cleaned = re.sub(r"`[^`]+`", " ", cleaned)
+    cleaned = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", cleaned)
+    cleaned = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", cleaned)
+    cleaned = re.sub(r"(\*\*|\*|__|_|~~)", "", cleaned)
+    return _normalize_whitespace(cleaned)
+
+
 def extract_title(content: str) -> str:
-    """Extract document title from LaTeX/Typst source content."""
+    """Extract document title from LaTeX/Typst/Markdown source content."""
     # LaTeX: \title{...}
     latex_match = re.search(r"\\title(?:\[[^\]]*\])?\{(.+?)\}", content, re.DOTALL)
     if latex_match:
@@ -388,11 +542,21 @@ def extract_title(content: str) -> str:
         if text:
             return _strip_typst_markup(text)
 
+    # Markdown: YAML frontmatter title or first H1.
+    fm = re.match(r"^---\s*\n(.*?)\n---\s*\n", content, re.DOTALL)
+    if fm:
+        title_line = re.search(r"^title:\s*(.+)$", fm.group(1), re.MULTILINE | re.IGNORECASE)
+        if title_line:
+            return _normalize_whitespace(title_line.group(1).strip().strip("\"'"))
+    md_h1 = re.search(r"^\s{0,3}#\s+(.+)$", content, re.MULTILINE)
+    if md_h1:
+        return _strip_markdown_markup(md_h1.group(1))
+
     return ""
 
 
 def extract_abstract(content: str) -> str:
-    """Extract abstract text from LaTeX/Typst source content."""
+    """Extract abstract text from LaTeX/Typst/Markdown source content."""
     # LaTeX abstract environment
     latex_abs = re.search(r"\\begin{abstract}(.*?)\\end{abstract}", content, re.DOTALL)
     if latex_abs:
@@ -422,6 +586,15 @@ def extract_abstract(content: str) -> str:
     )
     if typst_heading_abs:
         return _strip_typst_markup(typst_heading_abs.group(1))
+
+    # Markdown: an "Abstract" heading followed by content up to the next heading.
+    md_abs = re.search(
+        r"^\s{0,3}#{1,6}\s+.*abstract.*?\n(.*?)(?=^\s{0,3}#{1,6}\s+|\Z)",
+        content,
+        re.DOTALL | re.MULTILINE | re.IGNORECASE,
+    )
+    if md_abs:
+        return _strip_markdown_markup(md_abs.group(1))
 
     return ""
 

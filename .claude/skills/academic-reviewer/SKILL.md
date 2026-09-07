@@ -113,6 +113,20 @@ skill, then score the dimension qualitatively. Verify, item by item:
 Dimension 2 is capped at ≤ 50 and the pipeline is blocked until corrected. A
 PASS-with-warnings leaves the score to qualitative judgement on residual issues.
 
+#### Dimension 5 — Writing Quality & Style (mandatory advisory audit)
+
+This dimension consumes the findings from **`academic-writing-reviewer`** (`review/writing-review-report.md`).
+The reviewers (EIC + R3) MUST inspect the advisory score and findings:
+- [ ] **AI markers & cliches**: 0 unresolved Tier 1 markers (delve, underscores, pivotal, etc.).
+- [ ] **Redundancy & repetition**: 0 unresolved cross-section duplicates (REP-01); sentence echoes addressed.
+- [ ] **Scope discipline**: strict alignment with Section Scope Cards (no conflating agent team with whole firm).
+- [ ] **Motivation & explanation**: all 6 Motivation Triggers addressed with clear causal mechanisms; no uninterpreted data dumps (CEI rule followed).
+- [ ] **Audience jargon calibration**: all specialized computing terms (latency, tokens, context window) glossed at first use for management/interdisciplinary readers.
+- [ ] **Author voice**: no "master's student" insecurity or excessive hedging; assertive scholarly stance.
+
+**Advisory linkage**: if `academic-writing-reviewer` issues `MAJOR_REVISION_RECOMMENDED` (advisory score < 70 or CRITICAL findings present), Dimension 5 is capped at ≤ 60, triggering a revision loop.
+
+
 #### Scoring Scale (0-100)
 
 | Range | Descriptor |
@@ -221,7 +235,9 @@ replace the deterministic gates (Citation↔Bib G4, Data Integrity G4.5).
 
 ## Related Validators
 
+- **`academic-writing-reviewer`** — deterministic and NYT-mode writing audit: AI markers, cross-section repetition, scope drift, unmotivated claims, unglossed jargon. Feeds Dimension 5.
 - **`academic-data-validator`** — deterministic Data Integrity Gate (G4.5): text↔table/figure
   congruence, internal numeric consistency, float integrity. Feeds Dimension 2.
 - **`academic-citation-manager`** + **`academic-bibliography-manager`** — Citation↔Bibliography Gate (G4). Feeds Dimension 6.
 - **`academic-format-validator`** — Output Format Gate: Markdown/LaTeX/DOCX formatting. Feeds Dimension 6.
+

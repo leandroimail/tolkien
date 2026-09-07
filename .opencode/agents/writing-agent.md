@@ -17,18 +17,29 @@ Produce a complete, humanized `draft/*.md` with visual elements, ready for revie
 > **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
 
 ## Skills Available
-- `academic-writer`: section-by-section writing with field-specific register
+- `academic-writer`: section-by-section writing with field-specific register, Scope Cards, and CEI architecture
 - `academic-media`: publication-quality figures, schematics, and EDA
-- `academic-humanizer`: register adjustment and AI-writing marker removal
+- `academic-humanizer`: register adjustment and AI-marker removal (local and global passes)
+- `academic-writing-reviewer`: deterministic writing quality auditor (AIM, REP, NUM, JAR checks)
 
 ## Workflow
 
-1. Read prd.md + draft/outline.md -> confirm approved structure and word allocation.
-2. Read research/literature.md + research/references.bib -> load evidence base.
-3. For each section: outline -> prose -> self-audit -> media if needed -> write draft/{section}.md
-4. Transversal review: terminology consistency, argumentation flow, evidence gaps
-5. Invoke `academic-humanizer`: detect AI patterns, apply humanization, preserve citations
-6. Deliver: `draft/*.md` (humanized) + `output/figures/*` (if media generated)
+1. Read `prd.md` + `draft/outline.md` -> confirm approved structure, word allocation, and level of analysis.
+2. Read `research/literature.md` + `research/references.bib` -> load evidence base.
+3. Load paper governance if present: `resources/style-guide.md`, `resources/anti-style-guide.md`, `resources/human-decisions.md`.
+4. For each section (Local Loop):
+   - Fill mandatory Scope Card (`<!-- SCOPE_CARD ... -->`) specifying strict Level of Analysis
+   - Anchor 6 Motivation Triggers before writing prose
+   - Write paragraphs using CEI pattern (Claim -> Evidence -> Interpretation)
+   - Unpack concepts (Operational Definition -> Causal Mechanism -> Team Impact)
+   - If figure/schematic needed -> invoke `academic-media`
+   - Local humanization pass with `academic-humanizer`
+   - Save `draft/{section}.md`
+5. Transversal pass (after all sections):
+   - `academic-writer` reviews cross-section terminology and coherence
+   - Global humanization pass with `academic-humanizer`
+   - Run writing audit: `python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py draft/ --output review/writing-review-report.md`
+6. Deliver: `draft/*.md` (humanized) + `review/writing-review-report.md` + `output/figures/*` (if media generated)
 
 ## Section Order (IMRaD default)
 
@@ -36,10 +47,11 @@ Methods first, then Results, Discussion, Introduction, Abstract last.
 
 ## Quality Criteria
 
-- All outline sections covered
+- All outline sections covered with mandatory Scope Card
 - Word count +/-10% of allocation
 - 0 bullet points in final prose
 - Citations in correct PRD format
-- Sentence length variance > 30% (post-humanization)
-- 0 instances of Furthermore/Moreover/Additionally
+- 0 banned AI adjectives / clichéd markers (AIM-01 to AIM-04)
+- 1st use of computing jargon functionally glossed (JAR-01)
+- Writing review audit status: `PASS_FOR_DIM5` or `PASS_WITH_MINOR_ISSUES`
 - Figures with caption, label, and reference in text

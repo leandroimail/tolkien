@@ -25,30 +25,41 @@ Agents are high-level coordinators that orchestrate multiple skills to achieve s
 | **`data-validation-agent`** | Validates congruence of the text with the data presented (numbers vs tables/figures); runs the Data Integrity Gate (G4.5). | `/data-validation-agent`, `"validate data congruence"`, `"check data integrity"` |
 | **`format-validation-agent`** | Always-on formatting validation across Markdown, LaTeX and Word (.docx); runs the Output Format Gate. | `/format-validation-agent`, `"validate formatting"`, `"check format"`, `"validate docx"` |
 | **`paper-generator-agent`** | Converts the reviewed draft into a finalized PDF/DOCX using LaTeX or Word. | `/paper-generator`, `"generate final paper"`, `"compile LaTeX"`, `"export paper"` |
+| **`web-browser-search-agent`** | Web search and browser automation for grey literature, full-text retrieval, and DOI checks. | `/web-browser-search`, `"search the web"`, `"browse URL"`, `"validate DOI online"` |
 
 ---
 
 ## Specialized Skills
 
-Skills are atomic capabilities that perform specific tasks within the pipeline. All skills are defined under `.claude/commands/` and invoked via `/skill-name` in Claude Code.
+Skills are atomic capabilities that perform specific tasks within the pipeline. All skills are defined under `.claude/skills/` and invoked via `/skill-name` in Claude Code.
 
 ### Pipeline Skills
 - **`academic-prd`**: Conducts a setup interview to define article requirements. (`/academic-prd`)
 - **`academic-plan`**: Generates a detailed implementation plan from a PRD. (`/academic-plan`)
 - **`academic-researcher`**: Systematic search using the OpenAlex API. (`/academic-researcher`)
-- **`academic-writer`**: Drafts sections (IMRaD or thematic) with field-specific register. (`/academic-writer`)
+- **`academic-writer`**: Drafts sections (IMRaD or thematic) with field-specific register, Scope Cards, and CEI architecture. (`/academic-writer`)
 - **`academic-citation-manager`**: Validates in-text citations against the bibliography. (`/academic-citation-manager`)
 - **`academic-bibliography-manager`**: Manages and enriches `.bib` files via OpenAlex. (`/academic-bibliography-manager`)
 - **`academic-data-validator`**: Validates congruence of text with the data presented — numbers vs tables/figures, internal consistency, float integrity (Data Integrity Gate G4.5). (`/academic-data-validator`)
 - **`academic-format-validator`**: Always-on formatting validation for Markdown, LaTeX and Word (.docx) — the Output Format Gate. (`/academic-format-validator`)
+- **`academic-writing-reviewer`**: Read-only writing quality auditor and prose critic for academic papers. Detects AI markers, cross-section repetition, scope drift, unmotivated claims, and narrative tensions; feeds Dimension 5 of the 6-D review. (`/academic-writing-reviewer`, `"audit writing"`, `"check prose quality"`)
 - **`academic-reviewer`**: Simulates a reviewer panel for deep 6-dimension artifact evaluation. (`/academic-reviewer`)
-- **`academic-humanizer`**: Adjusts tone and removes AI-writing markers. (`/academic-humanizer`)
+- **`academic-humanizer`**: Adjusts tone and removes AI-writing markers (local and global passes). (`/academic-humanizer`)
 - **`academic-media`**: Generates publication-quality figures, schematics, and EDA. (`/academic-media`)
 
 ### Tool Skills
-- **`latex`**: Full LaTeX compilation and formatting support.
-- **`latex-template-converter`**: Adapts documents to conference-specific templates.
-- **`pdf` / `docx` / `xlsx`**: Comprehensive manipulation of common document formats.
+- **`latex`**: Full LaTeX compilation, formatting, and error resolution. (`/latex`)
+- **`latex-template-converter`**: Adapts documents to conference-specific templates. (`/latex-template-converter`)
+- **`pdf`**: PDF text/table extraction, merging, splitting, watermarking, and creation. (`/pdf`)
+- **`docx`**: Word document creation, editing, and formatting. (`/docx`)
+- **`xlsx`**: Spreadsheet reading, editing, and formula computation. (`/xlsx`)
+- **`web-search`**: Web search returning ranked results with snippets and URLs. (`/web-search`)
+- **`web-browser-search`**: Unified search and page interaction. (`/web-browser-search`)
+- **`duckducksearch`**: DuckDuckGo search with filters. (`/duckducksearch`)
+- **`agent-browser`**: Browser automation and extraction. (`/agent-browser`)
+- **`playwright-cli`**: Playwright browser automation and testing. (`/playwright-cli`)
+- **`creating-skills`**: Framework for developing, validating, and deploying agent skills. (`/creating-skills`)
+- **`multi-ide-artifacts`**: Cross-IDE artifact design, synchronization, and migration. (`/multi-ide-artifacts`)
 
 ---
 
@@ -58,8 +69,8 @@ tolkien ensures quality through a structured flow with **mandatory Gates (Checkp
 
 1. **Phase 0-1 (The Map)**: PRD Generation → Implementation Plan [Gate G1 & G2]
 2. **Phase 2-3 (The Foundation)**: Literature Research → Outline & Architecture [Gate G3]
-3. **Phase 4-5 (The Draft)**: Section Drafting → Citation & Bib Cross-Validation [Gate G4] → Data Integrity [Gate G4.5]
-4. **Phase 6-7 (The Quality)**: Humanization → Full 6-D Peer Review [Gate G5]
+3. **Phase 4-5 (The Draft)**: Section Drafting (Scope Cards & CEI) → Citation & Bib Cross-Validation [Gate G4] → Data Integrity [Gate G4.5]
+4. **Phase 6-7 (The Quality)**: Humanization (Local & Global) → Writing Quality Audit (`academic-writing-reviewer`) → Full 6-D Peer Review [Gate G5]
 5. **Phase 8-9 (The Finalized Output)**: Output Formatting (LaTeX/PDF/DOCX) [Output Format Gate — always-on] → Process Documentation.
 
 > **Always-on validation.** The Data Integrity Gate (G4.5) and the Output Format Gate are
@@ -96,23 +107,38 @@ Inside the chosen root, a subfolder with the project or paper name (slug) MUST b
 ├── draft/                    ← Markdown sections (abstract, intro, methods, etc.)
 ├── review/                   ← Review reports and revision logs
 ├── output/                   ← ALL generated deliverables (PDF, LaTeX, etc.)
+├── resources/                ← (OPTIONAL) Base/auxiliary files provided by researcher
 └── process-record.md         ← Human-AI collaboration history
 ```
+
+> **About `resources/`**: This is an **optional** directory for base and auxiliary files. It is not mandatory — the pipeline works without it. Use it to store: reference guidelines (e.g. `style-guide.md`, `anti-style-guide.md`, `human-decisions.md`), raw data, pre-existing documents, or any researcher-provided material that aids paper construction.
 
 ---
 
 ## Configuration & Environment
 
-tolkien for Claude Code is configured via the **`.claude/`** directory at the repository root:
-- **`.claude/commands/`**: All skill and agent definitions (`.md` files).
+tolkien for Claude Code is configured via the **`.claude/`** directory and root `CLAUDE.md`:
+- **`.claude/skills/`**: All specialized Agent Skills (`SKILL.md`, scripts, and references).
+- **`.claude/agents/`**: Claude Code custom subagents (`.md` files).
 - **`.claude/settings.json`**: Hooks and behavioral configuration for the Claude Code harness.
 
 ### Project Root Directory Structure
 
 ```
 tolkien/
-├── .claude/                    ← Claude Code configuration
-├── .agents/                    ← OpenCode & OpenAI Codex configuration
+├── .claude/                    ← Claude Code configuration (this harness)
+│   ├── agents/                 ← Claude subagents (.md)
+│   ├── skills/                 ← Claude skills (.claude/skills/*/SKILL.md)
+│   └── settings.json           ← Claude Code hooks and validation settings
+├── .agents/                    ← Canonical configuration (Codex, OpenCode, Antigravity)
+│   ├── agents/                 ← Canonical agent descriptors (.md)
+│   └── skills/                 ← Atomic Agent Skills (SKILL.md, scripts, references)
+├── .codex/                     ← OpenAI Codex configuration
+│   ├── agents/                 ← Codex subagent descriptors (.toml)
+│   └── hooks.json              ← Codex lifecycle hooks
+├── .opencode/                  ← OpenCode configuration
+│   ├── agents/                 ← OpenCode subagent descriptors (.md)
+│   └── plugins/                ← OpenCode validation plugins (.js)
 ├── resources/                  ← Installation scripts and dependencies
 │   ├── install_skills_deps.sh  ← Main dependency installer (run this first)
 │   └── requirements_skills.txt  ← Python package list
@@ -123,7 +149,8 @@ tolkien/
 ├── docs/                       ← System documentation
 ├── papers/                     ← Paper projects (one subdirectory per project)
 ├── projects/                   ← Alternative root for paper projects
-└── CLAUDE.md                   ← This file
+├── AGENTS.md                   ← Canonical rules & system documentation
+└── CLAUDE.md                   ← Claude Code root instructions (this file)
 ```
 
 ### Prerequisites

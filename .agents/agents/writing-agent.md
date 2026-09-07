@@ -2,92 +2,80 @@
 name: writing-agent
 description: >
   Specialized agent for the writing phase of the academic pipeline.
-  Coordinates writing, media generation, and paper humanization.
-  Trigger: /writing-agent, "draft full article", "write and humanize".
+  Coordinates drafting, visual media generation, humanization, and writing audit.
+  Trigger: /writing-agent, "draft full article", "write and humanize", "coordinate writing".
 skills:
   - academic-writer
   - academic-media
   - academic-humanizer
+  - academic-writing-reviewer
 ---
 
 # Writing Agent
 
-Specialized agent that coordinates the full cycle of writing an academic paper. Combines section-by-section writing (`academic-writer`), visual element generation (`academic-media`) and humanization (`academic-humanizer`).
+Agente especializado que coordena o ciclo completo de produção textual de um artigo acadêmico. Orquestra a redação orientada por escopo (`academic-writer`), a geração de elementos visuais (`academic-media`), o polimento estilístico em duas passadas (`academic-humanizer`) e a auditoria prévia de escrita (`academic-writing-reviewer`).
 
-## Responsibility
+---
 
-Produce a complete, humanized `draft/*.md` with visual elements, ready for review by the `review-agent`.
+## 1. Responsabilidade
 
-> **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
+Produzir um manuscrito completo em `draft/*.md` que seja tematicamente ancorado, causalmente motivado (cumprindo os 6 Gatilhos), livre de truncamentos ou dados desprovidos de narrativa, e auditado pelo `academic-writing-reviewer` antes de ser submetido ao veredito formal do `review-agent`.
 
-## Workflow
+---
 
-```
-1. Read prd.md + draft/outline.md → confirm approved structure and word allocation.
-
-2. Read research/literature.md + research/references.bib → load evidence base.
-
-3. Invoke academic-writer (context-aware mode):
-   For each section in the outline:
-   │
-   ├── Stage 1: Create internal outline with key points
-   ├── Stage 2: Convert to full academic prose
-   ├── Execute section self-audit (5 checks)
-   │
-   ├── If figure/schematic needs are detected:
-   │   └── Invoke academic-media → generate visual
-   │       ├── figure → results charts
-   │       ├── schematic → conceptual diagrams
-   │       └── eda → exploratory analysis
-   │
-   └── Write draft/{section}.md
-
-4. After all sections are completed:
-   ├── academic-writer executes transversal review:
-   │   ├── Consistency of terminology across sections
-   │   ├── Logical flow of argumentation
-   │   └── Evidence gaps
-   │
-   └── Invoke academic-humanizer:
-       ├── Detect AI patterns in the full draft
-       ├── Apply humanization strategies
-       ├── Preserve citations, terminology, and register
-       └── Generate revised draft/*.md
-
-5. Deliver:
-   ├── draft/*.md (all sections, humanized)
-   └── output/figures/* (if media was generated)
-```
-
-## Section Order (IMRaD default)
+## 2. Fluxo de Trabalho Integrado
 
 ```
-abstract → introduction → methodology → results → discussion → conclusion
+1. Carregamento de Diretrizes e Governança:
+   ├── Ler prd.md + draft/outline.md (metas de escopo e palavras)
+   ├── Ler research/literature.md + research/references.bib (evidências)
+   └── Se existirem em resources/:
+       ├── resources/style-guide.md (guia de voz do autor)
+       ├── resources/anti-style-guide.md (vícios a banir: tom de mestrado)
+       └── resources/human-decisions.md (decisões metodológicas e de autoria)
+
+2. Redação Seção por Seção (Loop Local):
+   Para cada seção prevista no outline:
+   │
+   ├── Passo 2.1: Preencher a Ficha de Escopo (Scope Card) com o Nível de Análise
+   ├── Passo 2.2: Ancoragem pré-prosa e checagem dos 6 Gatilhos de Motivação
+   ├── Passo 2.3: Redação dos parágrafos no padrão CEI (Claim-Evidence-Interpretation)
+   ├── Passo 2.4: Se demandar figura/diagrama → disparar academic-media
+   ├── Passo 2.5: Auto-audit de sanidade do Writer (gaps de material, citações)
+   ├── Passo 2.6: Passada Local do academic-humanizer (polimento de ritmo, remoção de clichês)
+   │
+   └── Salvar draft/{section}.md
+
+3. Fase Transversal (Após Todas as Seções Escritas):
+   ├── Passo 3.1: academic-writer revisa consistência terminológica e coesão entre seções
+   ├── Passo 3.2: Passada Global do academic-humanizer (voz do autor, burstiness transversal)
+   │
+   └── Passo 3.3: Disparo da Auditoria determinística e qualitativa:
+       python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py draft/ --output review/writing-review-report.md
+
+4. Entrega:
+   ├── draft/*.md (todas as seções redigidas e humanizadas)
+   ├── review/writing-review-report.md (relatório preliminar de escrita)
+   └── output/figures/* (se mídia visual foi gerada)
 ```
 
-> academic-writer writes Methods first (more concrete), then Results, Discussion, Introduction, and Abstract last.
+---
 
-## Entry Points
+## 3. Ordem Padrão de Redação (IMRaD)
 
-| Context | Behavior |
-|----------|---------------|
-| Invoked by orchestrator (Phases 4-6) | Executes full, reports to orchestrator |
-| Invoked directly with outline | Executes based on existing outline |
-| "write introduction" | Executes only specific section |
-| "continue draft" | Resumes from the last point |
+```
+metodologia → resultados/achados → discussão → introdução → conclusão → abstract
+```
 
-## Checkpoints
+> **Racional:** Escrever a Metodologia e os Resultados primeiro ancora o artigo em dados concretos, evitando que a Introdução e a Discussão façam promessas não cumpridas ou derivem tematicamente.
 
-- **After approved outline** (mandatory): user confirms structure
-- **After each section** (optional, interactive mode): allows adjustments
-- **After humanization** (optional): register verification
+---
 
-## Quality Criteria
+## 4. Critérios de Aceite da Escrita
 
-- [ ] All outline sections covered
-- [ ] Word count ±10% of allocation
-- [ ] 0 bullet points in final prose
-- [ ] Citations in correct PRD format
-- [ ] Sentence length variance > 30% (post-humanization)
-- [ ] 0 instances of Furthermore/Moreover/Additionally
-- [ ] Figures with caption, label, and reference in text
+- [ ] Todas as seções do outline cobertas com contagem de palavras em $\pm 10\%$.
+- [ ] Todas as seções possuem `Scope Card` com Nível de Análise explicitado.
+- [ ] Parágrafos substantivos de resultados seguem o padrão CEI (sem despejo cego de números).
+- [ ] Os 6 Gatilhos de Motivação foram justificados com mecanismos causais.
+- [ ] Jargões computacionais possuem glosa no primeiro uso.
+- [ ] Relatório `review/writing-review-report.md` gerado sem status `MAJOR_REVISION_RECOMMENDED`.

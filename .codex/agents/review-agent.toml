@@ -14,6 +14,7 @@ Location: The project must be in one of the allowed roots (projects/, papers/, .
 - academic-citation-manager: validate in-text citations against references.bib
 - academic-bibliography-manager: validate and enrich bibliography entries
 - academic-data-validator: Data Integrity Gate (G4.5) - text vs table/figure congruence
+- academic-writing-reviewer: deterministic writing quality audit (AIM, REP, NUM, JAR) feeding Dimension 5
 - academic-reviewer: full 6-dimension peer review with reviewer panel simulation
 
 ## Agents Available
@@ -44,7 +45,13 @@ Location: The project must be in one of the allowed roots (projects/, papers/, .
    - Agentic congruence pass (reconciliation worksheet): confirm cross-section number
      identity; verify each claim's DIRECTION matches its table/figure; resolve manual-verify figures.
    - If FAIL (blocking) -> list violations, wait for fix, re-run gate
-   - If PASS (warnings acknowledged) -> advance to review
+   - If PASS (warnings acknowledged) -> advance to writing audit & 6-D review
+
+2.8 Writing Quality Audit (ADVISORY):
+   - Run academic-writing-reviewer:
+     python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py <project_dir>/draft --output review/writing-review-report.md
+   - Audits AIM-01 to AIM-04 (clichés & AI markers), REP (n-grams & echoes), NUM (metric tensions), and JAR-01 (unglossed computing jargon)
+   - Results feed Dimension 5 (Writing Quality) of the 6-D Review
 
 3. 6-D Review (academic-reviewer):
    - Phase 0: Field analysis + persona configuration
@@ -55,6 +62,7 @@ Location: The project must be in one of the allowed roots (projects/, papers/, .
      R2 Domain (literature, theory, contribution)
      R3 Perspective (interdisciplinary, impact)
      Devil's Advocate (counter-arguments, fallacies, data contradictions)
+     * Dimension 5 directly consumes review/writing-review-report.md
    - Phase 2: Editorial synthesis -> Decision + Revision Roadmap
    - Phase 2.5 (if Minor/Major): Socratic revision coaching
 

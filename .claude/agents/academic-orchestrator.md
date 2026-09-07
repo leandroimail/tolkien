@@ -129,7 +129,7 @@ hold simultaneously:
 
 If any condition fails, the orchestrator stays in the loop: it routes each finding to the
 owning agent (data → `data-validation-agent`, format → `format-validation-agent`,
-citations → `review-agent`, content/structure → `writing-agent`), applies the correction,
+prose/style → `writing-agent`, citations → `review-agent`), applies the correction,
 and re-runs the affected gate(s) + re-review.
 
 ### Loop control (no infinite loops)
@@ -151,8 +151,8 @@ and re-runs the affected gate(s) + re-review.
 | 4 | `writing-agent` (agent → academic-writer + academic-media) |
 | 5 | `review-agent` (agent → citation-manager + bibliography-manager — gate only) |
 | 5.5 | `data-validation-agent` (agent → academic-data-validator — Data Integrity Gate G4.5) |
-| 6 | `writing-agent` (agent → academic-humanizer) |
-| 7 | `review-agent` (agent → academic-reviewer — full 6-D review) |
+| 6 | `writing-agent` (agent → academic-humanizer global pass + academic-writing-reviewer audit) |
+| 7 | `review-agent` (agent → academic-reviewer — full 6-D review; D5 consumes writing-review-report.md) |
 | 8 | `paper-generator-agent` (agent → latex + pdf + docx) + `format-validation-agent` (Output Format Gate) |
 | 9 | Orchestrator generates `process-record.md` directly |
 

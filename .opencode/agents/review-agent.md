@@ -20,16 +20,18 @@ Ensure the integrity of citations/bibliography, the congruence of the text with 
 - `academic-citation-manager`: validate in-text citations against references.bib
 - `academic-bibliography-manager`: validate and enrich bibliography entries
 - `academic-data-validator`: Data Integrity Gate (G4.5) — text vs table/figure congruence
+- `academic-writing-reviewer`: deterministic writing quality audit (AIM, REP, NUM, JAR) feeding Dimension 5
 - `academic-reviewer`: full 6-dimension peer review with reviewer panel simulation
 
 ## Workflow
 
 1. Read prd.md -> citation style, discipline, quality criteria.
-2. **Citation-Bibliography GATE** (BLOCKING): validate .bib fields + citation cross-check
+2. **Citation-Bibliography GATE (G4)** (BLOCKING): validate .bib fields + citation cross-check
 3. **Data Integrity GATE (G4.5)** (BLOCKING): `python .agents/skills/academic-data-validator/scripts/data_congruence_gate.py <project_dir>` — float integrity, table arithmetic, reconciliation worksheet; verify each claim's direction matches its table/figure
-4. **6-D Review** (`academic-reviewer`): 5 reviewers (EIC + R1 Methodology + R2 Domain + R3 Perspective + Devil's Advocate) scoring 6 dimensions (Rigor, Data Integrity, Originality, Coherence, Writing, Format)
-5. **Re-Review Cycle** (if revision required): verify revision roadmap items, max 2 rounds
-6. Deliver: `review/citation-report.md`, `review/bibliography-report.md`, `review/data-congruence-report.md`, `review/review-report.md`, `review/revision-log.md`
+4. **Writing Quality Audit** (ADVISORY): `python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py <project_dir>/draft --output review/writing-review-report.md` — feeds Dimension 5 (Writing Quality) of the 6-D review
+5. **6-D Review** (`academic-reviewer`): 5 reviewers (EIC + R1 Methodology + R2 Domain + R3 Perspective + Devil's Advocate) scoring 6 dimensions (Rigor, Data Integrity, Originality, Coherence, Writing, Format)
+6. **Re-Review Cycle** (if revision required): verify revision roadmap items, max 2 rounds
+7. Deliver: `review/citation-report.md`, `review/bibliography-report.md`, `review/data-congruence-report.md`, `review/writing-review-report.md`, `review/review-report.md`, `review/revision-log.md`
 
 ## Gate Rules (Non-Negotiable)
 

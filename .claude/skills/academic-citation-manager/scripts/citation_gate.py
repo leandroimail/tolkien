@@ -37,10 +37,11 @@ def extract_cite_keys_from_drafts(draft_dir: Path) -> dict[str, list[tuple[str, 
                     if k:
                         keys.setdefault(k, []).append((md_file.name, line_num))
 
-            # Match (Author, Year) style — basic pattern
-            for match in re.finditer(r"\[([A-Z][a-zA-Z]+\d{4}[a-z]?)\]", line):
-                k = match.group(1)
-                keys.setdefault(k, []).append((md_file.name, line_num))
+            # Match [Key], [Key1, Key2], (Key), (Key1; Key2) styles
+            for match in re.finditer(r"[\[\(]([^\]\)]+)[\]\)]", line):
+                inner = match.group(1)
+                for k in re.findall(r"\b([A-Z][a-zA-Z0-9_-]*\d{4}[a-z]?)\b", inner):
+                    keys.setdefault(k, []).append((md_file.name, line_num))
 
     return keys
 

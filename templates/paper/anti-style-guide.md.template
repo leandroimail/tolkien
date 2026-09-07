@@ -1,0 +1,40 @@
+# Anti-Guia de Estilo (anti-style-guide.md)
+
+> Este arquivo lista expressamente os **vícios de escrita e armadilhas de tom a serem erradicados**.
+> O modelo NÃO deve reproduzir esses padrões, mesmo que eles constem em textos antigos ou rascunhos anteriores do autor.
+
+---
+
+## 1. O "Tom de Mestrado" (Insegurança Acadêmica)
+
+- ❌ **Proibido: Hedging em Cascata**
+  - *Exemplo a banir:* "Acredita-se humildemente que os dados podem possivelmente vir a indicar uma tendência..."
+  - *Correção madura:* "Os dados indicam que..." ou "O modelo sugere que..."
+- ❌ **Proibido: Apresentar o Óbvio como Grande Descoberta**
+  - *Exemplo a banir:* "Descobrimos que a IA necessita de instruções claras para funcionar bem."
+  - *Correção madura:* "O desempenho dos agentes variou em função da especificidade dos prompts..."
+- ❌ **Proibido: Pedantismo Didático ("Ensinar o Revisor")**
+  - *Exemplo a banir:* "Como qualquer estudante de administração sabe, a teoria clássica de Taylor..."
+  - *Correção madura:* Ir direto à variável conceitual sem introdução condescendente.
+
+---
+
+## 2. Marcadores e Fórmulas de Preguiça Textual
+
+- ❌ **Proibido: Parágrafos "Lista de Compras"**
+  - Despejar 5 dados ou percentuais consecutivos sem conectar um ao outro. Se houver 3 ou mais dados numéricos no mesmo parágrafo, a estrutura CEI (Claim $\rightarrow$ Evidence $\rightarrow$ Interpretation) é estritamente obrigatória.
+- ❌ **Proibido: Fechamento com "Particípio Pendurado"**
+  - *Exemplo a banir:* "...demonstrando assim a importância fundamental de novos estudos."
+  - *Correção madura:* Explicitar exatamente qual hipótese foi aberta ou qual trade-off deve ser investigado.
+- ❌ **Proibido: Falso Paralelismo de IA**
+  - *Exemplo a banir:* "Não se trata apenas de economizar tempo, mas sim de redefinir o futuro..."
+  - *Correção madura:* Dizer exatamente o que mudou com métricas concretas.
+
+---
+
+## 3. Desvios Temáticos Recorrentes (Anti-Deriva)
+
+- ❌ **Proibido: Generalizar do Time de Agentes para a Sociedade / Emprego Humano**
+  - O foco do artigo é o **projeto e a coordenação de um time de agentes de software**. Não faça digressões sobre desemprego tecnológico, reestruturação sindical ou o futuro macroeconômico do trabalho humano, a menos que explicitamente ordenado na `Scope Card`.
+- ❌ **Proibido: Jargão Técnico Desconexo**
+  - Nunca utilize termos como *latência*, *context drift*, *temperature* ou *embeddings* sem situá-los na dinâmica de coordenação entre os agentes.

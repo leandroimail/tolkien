@@ -3,152 +3,87 @@ name: academic-writer
 description: >
   Full writing of academic articles section by section, following an approved outline.
   Consolidates best practices for scientific writing, human academic register, and
-  IMRaD/review/case-study structures.
+  IMRaD/review/case-study structures with strict scope discipline and causal motivation.
   Trigger: /academic-writer, "write section", "write article", "write introduction",
   "write paper", "draft manuscript", "write methodology", "write discussion".
 allowed-tools: [Read, Write, Edit, Bash]
 metadata:
-  version: "1.0"
+  version: "2.0"
+  role: "producer"
   depends_on: "academic-prd, academic-plan, academic-researcher"
 ---
 
-Note: Python scripts for this skill must be executed within the project's virtual environment.
-Activate the environment with:
+# Academic Writer v2
 
-```bash
-source .venv/bin/activate
+Redação de artigos acadêmicos com qualidade publicável, seção por seção, orientada por evidências e guiada pela estrutura IMRaD ou temática. Transforma outlines e notas de pesquisa em prosa fluida e madura, combatendo o truncamento, o despejo de dados sem narrativa e a deriva temática.
+
+---
+
+## 1. Regras de Ouro (IRON RULES)
+
+1. **NUNCA ESCREVER NO VÁCUO:** Só redigir se houver `draft/outline.md` aprovado e insumos empíricos/bibliográficos carregados (`research/literature.md`, `research/references.bib`, notas ou tabelas). Faltando insumos, emita `[MATERIAL GAP: descrição do dado faltante]` — nunca preencha com alucinação da memória paramétrica.
+2. **NUNCA INVENTAR DADO OU CITAÇÃO:** Toda alegação factual exige âncora direta em tabela, figura ou chave existente no `.bib`.
+3. **FICHA DE ESCOPO OBRIGATÓRIA (`Scope Card`):** Antes de gerar a prosa de qualquer seção, preencha o bloco `<!-- SCOPE_CARD ... -->` no topo do arquivo com o **Nível de Análise estrito** (ex.: *Team of Agents*, não *Entire Firm*) e os limites fora de escopo.
+4. **PERGUNTAS ANTES DA PROSA & OS 6 GATILHOS:** Antes de redigir, responda mentalmente às perguntas STORM e cumpra rigorosamente o dever de justificar o "porquê" caso o texto atinja algum dos **6 Gatilhos de Motivação** (`references/questions-before-prose.md`).
+5. **ARQUITETURA DE PARÁGRAFO CEI:** Parágrafos substantivos de resultados e discussão devem seguir a tríade **Claim $\rightarrow$ Evidence $\rightarrow$ Interpretation**. Nunca encerre parágrafos apenas com números sem explicar o que significam para a tese.
+6. **DEVER DE GLOSA INTERDISCIPLINAR:** Para artigos na área de Gestão / Engenharia de Produção, termos técnicos de computação (*latência, tokens, context window, temperature*) devem receber definição funcional no primeiro uso.
+7. **HIERARQUIA DE ESTILO & ANTI-VÍCIOS:** Normas da Disciplina > Convenções do Periódico > Guia do Autor (`resources/style-guide.md`). Se `resources/anti-style-guide.md` existir, respeite todas as proibições (especialmente erradicar o "tom de mestrado" e *hedging* excessivo).
+8. **TAGS DE INTERVENÇÃO HUMANA:** Em trechos puramente reflexivos onde a decisão ou posicionamento do autor humano não estiver claro nas notas, marque `[HUMAN VOICE REQUIRED: descreva a questão a ser decidida pelo pesquisador]`.
+
+---
+
+## 2. Pré-Requisitos
+
+1. **`{root}/paper-{slug}/prd.md`** — tipo de artigo, disciplina, periódico alvo, idioma e formato de citação.
+2. **`draft/outline.md`** — estrutura aprovada com meta de contagem de palavras por seção.
+3. **`research/literature.md`** e **`research/references.bib`** — base bibliográfica curada.
+4. **`resources/`** (opcional) — `style-guide.md`, `anti-style-guide.md`, `human-decisions.md` ou dados brutos.
+
+---
+
+## 3. Modos de Execução
+
+| Modo | Trigger | Comportamento |
+|---|---|---|
+| `section` | "write introduction", "escreva a metodologia" | Redige uma seção específica mantendo coerência com o outline. |
+| `full` | "draft full article", "redija o artigo completo" | Executa sequencialmente todas as seções planejadas. |
+| `continue` | "continue draft", "retome a escrita" | Retoma a redação a partir da última seção interrompida. |
+
+---
+
+## 4. Método de Redação em 3 Passos
+
+### Passo 1: Ficha de Escopo e Ancoragem
+Insira no topo de `draft/{section}.md`:
+```markdown
+<!-- SCOPE_CARD
+Section: {nome_da_secao}.md
+Level_of_Analysis: Team of Agents [STRICT] (NOT Entire Organization)
+Primary_Question: {Pergunta respondida por esta seção}
+Out_of_Scope: {Tópicos proibidos de expandir}
+Theoretical_Anchor: {Teoria ou construto base}
+-->
 ```
 
-Alternatively, use `uv run python -B ...` with the `.venv` active.
+### Passo 2: Conversão de Pontos em Prosa Fluida (CEI)
+- Expanda argumentos garantindo que cada dado empírico venha acompanhado da sentença interpretativa.
+- Desdobre construtos novos via: *Definição Operacional $\rightarrow$ Mecanismo Causal $\rightarrow$ Impacto no Sistema*.
+- Aplique *burstiness* consciente (frases curtas intercaladas com sentenças analíticas).
 
-# Academic Writer
+### Passo 3: Auto-Audit Mínimo (Sanity Check do Writer)
+Antes de salvar a seção:
+- [ ] 0 marcadores `[MATERIAL GAP]` não resolvidos sem autorização.
+- [ ] Toda citação segue o formato `\cite{chave}` ou `(Autor, Ano)` correspondente a entrada no `.bib`.
+- [ ] 0 listas de compras em tópicos (bullet points) no texto final (salvo critérios de inclusão na Metodologia).
+- [ ] Tamanho do texto dentro de $\pm 10\%$ da alocação prevista no outline.
+- [ ] O nível de análise respeitou a `Scope Card`.
 
-Writing of academic articles with publishable quality, section by section. Consolidates best practices from scientific-writing, academic-paper, academic-writing, academic-writing-style, and scientific-paper into a unified skill.
+---
 
-## When To Use
+## 5. Referências da Skill
 
-- Drafting any section of an academic paper (abstract, introduction, methods, results, discussion, conclusion)
-- Following IMRaD, systematic review, case study, or thematic structures
-- Producing fluid academic prose without bullet points in the final output
-- Adjusting academic register by discipline (STEM, social sciences, humanities)
-
-## When Not To Use
-
-- To search for literature → use `academic-researcher`
-- To validate in-text citations → use `academic-citation-manager`
-- To review a finished article → use `academic-reviewer`
-- To humanize already written text → use `academic-humanizer`
-- To generate figures/diagrams → use `academic-media`
-
-## Prerequisites
-
-1. **`{root}/paper-{slug}/prd.md`** — type of paper, discipline, citation format, language
-2. **`draft/outline.md`** — approved structure with word count allocation
-3. **`research/literature.md`** — literature synthesis
-4. **`research/references.bib`** — available references for citation
-5. **`resources/`** (optional) — base/auxiliary files provided by researcher (guidelines, raw data, reference docs)
-
-> **Root Path**: The paper must be located in one of: `projects/`, `papers/`, `.projects/`, `.papers/`.
-
-## Modes
-
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| `section` | "write introduction" | Drafts a specific section |
-| `full` | "draft full article" | All sections sequentially |
-| `continue` | "continue draft" | Resumes from the last point |
-
-## Method: Two-Stage Writing Process
-
-### Stage 1: Outline with Key Points (Structural)
-
-For each section, create an internal outline with:
-- Main arguments to present
-- Key studies to cite (with years and findings)
-- Data and statistics to include
-- Logical flow and organization
-
-> This outline is internal scaffolding — it is NOT the final output.
-
-### Stage 2: Conversion to Full Prose
-
-Expand each point into fluid paragraphs:
-1. Transform bullets into sentences with subject, verb, and object
-2. Integrate citations naturally (narrative vs. parenthetical)
-3. Vary sentence structure — avoid monotony
-4. Connect paragraphs by content logic, not by "Furthermore/Moreover"
-
-## Writing Quality Standards
-
-### 5 Anti-Patterns to Avoid
-
-| AI Pattern | How to Fix |
-|-----------|---------------|
-| **Hedging Soup** — stacking "potentially/possibly/may" | Use one precise statement + one precise limitation |
-| **Formulaic Transitions** — "Furthermore/Moreover/Additionally" | Let content logic drive connections; use real transitions |
-| **Structural Monotony** — same length in every paragraph | Vary length by ≥ 30%; mix short and long paragraphs |
-| **Abstraction Fog** — "various studies/the literature suggests" | Name studies: "Patel et al. (2022) found..." |
-| **Voice Erasure** — "it can be argued/it was found" | Use active voice: "We argue..." when the discipline allows |
-
-### Self-Audit Per Section
-
-Before presenting any section:
-- [ ] Hedging: < 2 hedging words per paragraph
-- [ ] Transitions: 0 instances of Furthermore/Moreover/Additionally
-- [ ] Structure: No 3 consecutive paragraphs within 10 words of each other
-- [ ] Specificity: 0 instances of "various studies" without concrete referent
-- [ ] Voice: < 3 instances of "it can be/it was found" per page
-
-## Section-Specific Checkers
-
-| Section | Must Have | Must NOT Have |
-|---------|-----------|---------------|
-| Introduction | Context + gap + objective + paper structure | Results, interpretations |
-| Methods | Design, sample, variables, reproducible protocol | Interpretations of results |
-| Results | Facts, data, objective statistics | Interpretation or speculation |
-| Discussion | results↔questions connection, comparison with literature | New data not presented in Results |
-| Conclusion | Limitations, future work, implications | New data or results |
-
-## Discipline-Aware Register
-
-| Discipline | Voice | Citation Style | Key Features |
-|-----------|-------|---------------|--------------|
-| STEM | Active for claims, passive acceptable in Methods | Author-date or numbered | Numbered hypotheses, statistical reporting |
-| Social Sciences | Active + first person plural | Author-date (APA) | Theoretical framing, effect sizes |
-| Humanities | First person singular | Notes or author-date | Close reading, interpretive argument |
-| Interdisciplinary | Active + first person plural | Per target journal | Define terms from each field |
-
-## Citation Integration
-
-- **Narrative**: when author identity matters — "Foucault (1975) argued..." 
-  - *If ABNT/LaTeX*: Use `\citeonline{foucault1975}`.
-- **Parenthetical**: when the finding matters — "rates tripled (Alexander, 2010)"
-  - *If ABNT/LaTeX*: Use `\cite{alexander2010}`.
-- **Direct quote**: only when wording is the point — definitions, contested phrases (include page numbers, e.g., `\cite[p.~45]{key}`)
-- **Synthesis**: to show consensus — "(Lee, 2019; Nakamura, 2020; dos Santos, 2021)"
-
-## Integration with academic-media
-
-When detecting the need for a figure, schematic, or EDA:
-```
-→ academic-media: {description of the necessary visual element}
-```
-
-## Self-Review
-
-### Deterministic
-- [ ] ∀ citation uses format `\cite{key}` or `(Author, Year)` as per style
-- [ ] Word count ±10% of outline allocation
-- [ ] No bullet points in final prose (except Methods: inclusion criteria)
-- [ ] Academic register maintained (no colloquial language)
-
-### Agentic
-- consistency of terminology across sections
-- logical flow of argumentation
-- evidence gaps (factual claims without citation)
-
-## References
-
-- `references/imrad-structure.md` — detailed IMRAD guide
-- `references/writing-quality-check.md` — anti-AI markers checklist
-- `references/discipline-registers.md` — conventions by field
+- `references/questions-before-prose.md` — Perguntas de ancoragem e os 6 Gatilhos de Motivação.
+- `references/writing-quality-check.md` — Arquitetura CEI, desempacotamento de conceitos e anti-patterns de IA.
+- `references/style-guide-usage.md` — Precedência de estilo e integração com style-guide e anti-style-guide.
+- `references/discipline-registers.md` — Convenções de registro para Gestão, Engenharia de Produção e STEM.
+- `references/imrad-structure.md` — Diretrizes e restrições específicas para cada seção do IMRaD.

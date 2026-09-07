@@ -1,0 +1,37 @@
+# Guia de Voz e Estilo do Autor (style-guide.md)
+
+> Este arquivo calibra a voz e o tom acadêmico maduro desejado para o artigo.
+> **Hierarquia estrita:** Normas da Disciplina (rígida) > Convenções do Periódico Alvo (forte) > Este Guia (suave) > Padrões Genéricos de IA.
+
+---
+
+## 1. Identidade e Postura Acadêmica
+
+- **Postura:** Pesquisador sênior conversando com pares. Assertivo, fundamentado em evidências, direto e sem falso pudor.
+- **Pessoa gramatical:**
+  - *Em Inglês:* Primeira pessoa do plural ativa (*"We argue that..."*, *"We observe that..."*) para escolhas e interpretações; impessoal no método factual.
+  - *Em Português (ABNT / Periódicos de Gestão):* Terceira pessoa impessoal com partícula apassivadora (*"Observa-se que..."*, *"Argumenta-se que..."*) ou primeira do plural sóbria (*"Propomos uma categorização..."*).
+- **Densidade:** Frases compactas, sem rodeios ou floreios decorativos. Prefira substantivos concretos e verbos de ação direta (*analisar, confrontar, delimitar, mensurar*).
+
+---
+
+## 2. Princípios de Prosa
+
+1. **Frontloading de Conclusões:** Comece os parágrafos com o argumento central ou achado; apresente as evidências em seguida e feche com a interpretação teórica.
+2. **Ritmo Natural (Burstiness):** Alterne propositalmente frases curtas e incisivas (8–12 palavras) com frases mais articuladas e analíticas (20–30 palavras).
+3. **Citações Integradas:**
+   - Use citação narrativa quando a autoria for parte do argumento (*"Conforme teorizado por Mintzberg (1979)..."*).
+   - Use citação parentética quando o fato for o protagonista (*"...com redução de 35% no overhead de coordenação (Ferreira et al., 2024)"*).
+4. **Glosa Funcional:** Sempre que um termo do jargão computacional (latência, contexto, temperature, loops agênticos) for introduzido, explique em uma oração breve o que ele significa operacionalmente para o sistema em análise.
+
+---
+
+## 3. Preferências de Vocabulário do Autor
+
+| Prefira | Evite | Motivo |
+|---|---|---|
+| demonstrar, indicar, revelar | salientar, evidenciar (repetitivo) | Clareza e precisão empírica |
+| usar, adotar, aplicar | utilizar, fazer uso de | Economia de palavras |
+| tempo de resposta / atraso | latência (sem explicar) | Calibração para audiência interdisciplinar |
+| configuração, estrutura | tapeçaria, ecossistema (vago) | Evitar metáforas gastas de IA |
+| discrepância, tensão | contradição frontal (sem prova) | Precisão na qualificação de desvios |

@@ -9,6 +9,7 @@ skills:
   - academic-citation-manager
   - academic-bibliography-manager
   - academic-data-validator
+  - academic-writing-reviewer
   - academic-reviewer
 agents:
   - data-validation-agent
@@ -17,11 +18,11 @@ agents:
 
 # Review Agent
 
-Specialized agent that coordinates the full cycle of academic review. Executes the deterministic Citation↔Bibliography gate (`academic-citation-manager` + `academic-bibliography-manager`), the Data Integrity gate (`academic-data-validator`), the multi-perspective 6-D review (`academic-reviewer`), and the post-correction re-review cycle.
+Specialized agent that coordinates the full cycle of academic review. Executes the deterministic Citation↔Bibliography gate (`academic-citation-manager` + `academic-bibliography-manager`), the Data Integrity gate (`academic-data-validator`), the prose writing audit (`academic-writing-reviewer`), the multi-perspective 6-D review (`academic-reviewer`), and the post-correction re-review cycle.
 
 ## Responsibility
 
-Ensure the integrity of citations/bibliography and the academic quality of the article before final formatting.
+Ensure the integrity of citations/bibliography, numerical data, prose writing quality, and overall academic rigour before final formatting.
 
 > **Location**: The project must be in one of the allowed roots (`projects/`, `papers/`, `.projects/`, `.papers/`).
 
@@ -59,7 +60,7 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
 2.5 Data Integrity GATE (G4.5) — BLOCKING (dispatch data-validation-agent):
    │
    ├── Run academic-data-validator:
-   │     python .claude/skills/academic-data-validator/scripts/data_congruence_gate.py <project_dir>
+   │     python -m scripts.data_congruence_gate <project_dir> (or via academic-data-validator)
    │   → writes review/data-congruence-report.md
    │     RULE A: every Table/Figure defined → referenced   (no orphan float)
    │     RULE B: every Table/Figure referenced → defined    (no dangling reference)
@@ -70,7 +71,20 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    │     matches its table/figure; resolve `manual-verify` figures.
    │
    ├── If FAIL (blocking) → list violations, wait for fix → re-run gate
-   └── If PASS (warnings acknowledged) → advance to review
+   └── If PASS (warnings acknowledged) → advance to Writing Audit & 6-D Review
+
+2.8 Writing Quality Audit (ADVISORY):
+   │
+   ├── Run academic-writing-reviewer:
+   │     python .agents/skills/academic-writing-reviewer/scripts/audit_writing.py draft/ --output review/writing-review-report.md
+   │   → writes review/writing-review-report.md
+   │     - AIM: AI markers & clichés (EN & PT-BR)
+   │     - REP: Cross-section repetitions & local echoes
+   │     - NUM: Narrative metric tensions & polarities
+   │     - JAR: Unglossed computing jargon (latency, tokens)
+   │     - Advisory score (0-100) & Status (PASS_FOR_DIM5 | PASS_WITH_MINOR_ISSUES | MAJOR_REVISION_RECOMMENDED)
+   │
+   └── Results feed Dimension 5 of the 6-D Review
 
 3. 6-D Review (academic-reviewer):
    │
@@ -82,6 +96,7 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    │   ├── R2 Domain (literature, theory, contribution)
    │   ├── R3 Perspective (interdisciplinary, impact)
    │   └── Devil's Advocate (counter-arguments, fallacies)
+   │   * Note: Dimension 5 directly consumes review/writing-review-report.md.
    │
    ├── Phase 2: Editorial synthesis → Decision + Revision Roadmap
    │   ├── Accept → advance to formatting
@@ -106,6 +121,7 @@ Ensure the integrity of citations/bibliography and the academic quality of the a
    ├── review/citation-report.md
    ├── review/bibliography-report.md
    ├── review/data-congruence-report.md
+   ├── review/writing-review-report.md
    ├── review/review-report.md
    └── review/revision-log.md
 ```

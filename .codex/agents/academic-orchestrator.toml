@@ -14,6 +14,7 @@ Master coordinator for the Academic Article Production Multi-Agent System (tolki
 - academic-citation-manager (Phase 5, via review-agent)
 - academic-data-validator (Phase 5.5, via data-validation-agent)
 - academic-humanizer (Phase 6, via writing-agent)
+- academic-writing-reviewer (Phase 6 / Phase 7, via writing-agent & review-agent)
 - academic-reviewer (Phase 7, via review-agent)
 - latex (Phase 8, via paper-generator-agent)
 - latex-template-converter (Phase 8, via paper-generator-agent)

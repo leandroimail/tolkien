@@ -92,25 +92,41 @@ def analyze_latex(content: str) -> dict:
 def check(target: Path) -> dict:
     findings: list[dict] = []
     totals = {"defined": 0, "referenced": 0}
-    for path in iter_draft_files(target):
+    all_defined: dict[str, list[tuple[Path, int]]] = {}
+    all_referenced: dict[str, list[tuple[Path, int]]] = {}
+
+    draft_files = iter_draft_files(target)
+    for path in draft_files:
         content = path.read_text(encoding="utf-8", errors="ignore")
         data = analyze_latex(content) if path.suffix.lower() == ".tex" else analyze_markdown(content)
-        defined, referenced = data["defined"], data["referenced"]
-        totals["defined"] += len(defined)
-        totals["referenced"] += len(referenced)
+        for key, line in data["defined"].items():
+            all_defined.setdefault(key, []).append((path, line))
+        for key, line in data["referenced"].items():
+            all_referenced.setdefault(key, []).append((path, line))
 
-        for key, line in defined.items():
-            if key not in referenced:
+    totals["defined"] = len(all_defined)
+    totals["referenced"] = len(all_referenced)
+
+    for key, occurrences in all_defined.items():
+        if key not in all_referenced:
+            for path, line in occurrences:
                 findings.append({
-                    "severity": "BLOCKING", "type": "orphan_float", "key": key,
-                    "file": str(path), "line": line,
+                    "severity": "BLOCKING",
+                    "type": "orphan_float",
+                    "key": key,
+                    "file": str(path),
+                    "line": line,
                     "message": f"{key} is defined/captioned but never referenced in the prose.",
                 })
-        for key, line in referenced.items():
-            if key not in defined:
+    for key, occurrences in all_referenced.items():
+        if key not in all_defined:
+            for path, line in occurrences:
                 findings.append({
-                    "severity": "BLOCKING", "type": "dangling_reference", "key": key,
-                    "file": str(path), "line": line,
+                    "severity": "BLOCKING",
+                    "type": "dangling_reference",
+                    "key": key,
+                    "file": str(path),
+                    "line": line,
                     "message": f"{key} is referenced in the prose but has no caption/definition.",
                 })
     return {"findings": findings, "totals": totals}

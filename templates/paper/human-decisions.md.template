@@ -1,0 +1,46 @@
+# Registro de Decisões e Governança Humana (human-decisions.md)
+
+> Este artefato registra as decisões conceituais, metodológicas e interpretativas tomadas pelos autores humanos.
+> Ele documenta que a IA atuou como copiloto instrumental, enquanto a tese, a curadoria e o julgamento crítico foram integralmente humanos.
+> Pode ser sintetizado na subseção de Metodologia / Procedimentos de Pesquisa do artigo.
+
+---
+
+## 1. Tese Central e Recorte Conceitual (Autores)
+
+- **Tese Defendida:** [Descrever em 2-3 frases a contribuição teórica/empírica central concebida pelos pesquisadores]
+- **Nível de Análise Deliberado:** [Ex.: Projeto e coordenação de um time de agentes de software — não aplicável diretamente à macro-organização corporativa]
+- **Quadro Teórico Adotado:** [Ex.: As 5 configurações organizacionais de Mintzberg transpostas para coordenação agêntica]
+- **Limites da Transposição Teórica:** [Onde os autores julgam que a teoria clássica se sustenta e onde ela quebra no contexto computacional]
+
+---
+
+## 2. Decisões Metodológicas e de Curadoria
+
+| Etapa | Decisão Humana dos Coautores | Justificativa do Grupo de Pesquisa |
+|---|---|---|
+| Seleção de Modelos / Ferramentas | [Ex.: Uso de modelos X e Y] | [Custo, controle de contexto e disponibilidade de API] |
+| Engenharia de Prompts e Pipeline | [Ex.: Divisão em arquitetura orquestrada com gates determinísticos] | [Garantir reprodutibilidade e evitar alucinação factual] |
+| Triage e Filtragem da Literatura | [Ex.: Exclusão de papers pré-2022 sem validação empírica] | [Manter apenas literatura contemporânea a LLMs maduros] |
+| Tratamento de Dados e Anomalias | [Ex.: Como outliers de tempo de resposta foram tratados] | [Critério de descarte aprovado pela equipe humana] |
+
+---
+
+## 3. Interpretação Crítica dos Resultados (Autoria Exclusiva)
+
+- **Por que a configuração X superou a configuração Y?**
+  - *Interpretação humana:* [Explicar o insight dos autores que a IA não geraria sozinha]
+- **Reflexão sobre os Trade-offs (Latência vs. Custo vs. Qualidade):**
+  - *Visão do autor:* [Posicionamento crítico sobre as escolhas de arquitetura]
+- **Agenda Futura Recomendada:**
+  - *Direcionamento dos pesquisadores:* [Quais perguntas emergem para o campo de Gestão / Engenharia de Produção]
+
+---
+
+## 4. Seções com Redação Humana Direta ou Intervenção Manual Pesada
+
+Marque com `[X]` as seções em que o autor realizou intervenção redacional substantiva:
+- [ ] Título e Abstract (formulação final)
+- [ ] Introdução (delimitação do gap de pesquisa e motivação)
+- [ ] Discussão (interpretação da escolha de mecanismos de coordenação)
+- [ ] Limitações e Conclusão (implicações teóricas e práticas)

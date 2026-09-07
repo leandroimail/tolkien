@@ -51,9 +51,11 @@ artifact the project produces — Markdown drafts, LaTeX sources, and Word docum
 
 ### Phase 1: Auto-detect artifacts
 
-Discover what to validate: `draft/**/*.md` always; LaTeX/DOCX in the canonical
-`output/` directory (or the project root's top-level files if no `output/`), never
-descending into stale `output_v*` siblings or vendor templates.
+Discover what to validate: `draft/**/*.md` always; LaTeX/DOCX recursively in the
+canonical `output/` and `draft/` directories, plus the project root's top-level
+`.tex`/`.docx` files. Never descends into stale `output_v*` siblings or vendor
+templates (excluded by name). Falls back to the project root only when neither
+`output/` nor `draft/` exists.
 
 ### Phase 2: Markdown (always, self-contained)
 
